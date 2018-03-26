@@ -8,7 +8,7 @@
 
 ```sh
 git config --global user.name "zbz"
-git config --global user.email "nnzbz@qq.com"
+git config --global user.email "nnzbz@163.com"
 # 查看配置信息
 git config --list
 ```
@@ -35,6 +35,12 @@ git --bare init
 
 ```sh
 git clone http://zbz@192.168.1.201:10080/wboly/wboly-suc.git
+```
+
+#### 3.1.3. 第一次将本地仓库添加到远程仓库
+
+```sh
+git remote add origin https://github.com/nnzbz/notes.git
 ```
 
 ### 3.2. 检查当前状态
