@@ -88,7 +88,6 @@ https://github.com/eeichinger/maven-enforcer-plugin-enforcer-rule-extensions
 当使用此插件在父Maven项目时，运行如下命令将更新全部项目的版本号，包括子项目之间的依赖也都同步更新：
 
 ```sh
-mvn versions:set -DnewVersion=2.0-SNAPSHOT
 mvn versions:set -DoldVersion=* -DnewVersion=1.0.1-SNAPSHOT -DprocessAllModules=true -DallowSnapshots=true
 ```
 
