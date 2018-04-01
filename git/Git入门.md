@@ -143,3 +143,9 @@ logs
 3. 输入Github的用户和密码，选中 ```Store in Secure Store```；
 4. 点击 ```next```，再点击 ```next```，在 ```Local Destination``` 页面中，注意修改 ```Directory``` 为自己的 workspace的路径，点击 ```Finish``` 完成；
 5. 导入本地已经存在的项目（略）。
+
+## 5. 常见问题
+
+### 5.1. 误用了pull，本地代码被产生冲突，怎么恢复？
+
+git reset --hard
