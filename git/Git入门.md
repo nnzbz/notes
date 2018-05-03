@@ -94,6 +94,8 @@ git push origin master
 git push origin dev
 ```
 
+ **注意：** 如果要覆盖远程分支，请加  ```-f```
+
 ### 3.6. 拉取分支
 
 - ```git fetch```

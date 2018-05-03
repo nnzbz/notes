@@ -76,7 +76,7 @@ vi /etc/docker/daemon.json
 }
 ```
 
-**注意重启docker才能生效**
+ **注意重启docker才能生效**
 
 ```sh
 systemctl restart docker
@@ -84,7 +84,7 @@ systemctl restart docker
 
 - mac
 
- ```Preferences``` -> ```Daemon``` –> ```Basic``` –> ```Registry mirrors``` ，添加如下内容：
+ 选择 ```Preferences``` -> ```Daemon``` –> ```Basic``` –> ```Registry mirrors``` ，添加如下内容：
 
 ```text
 https://registry.docker-cn.com
@@ -308,4 +308,10 @@ docker update --restart=always redis1
 
 ```sh
 docker inspect node1 | grep IPA
+```
+
+### 4.12. 清空容器日志
+
+```sh
+docker inspect 【container name】| grep LogPath | cut -d ':' -f 2 | cut -d ',' -f 1 | xargs echo | xargs truncate -s 0
 ```

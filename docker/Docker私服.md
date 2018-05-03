@@ -17,6 +17,10 @@
 
 ### 3.1. 方案一
 
+- Mac
+
+ 右上角系统任务栏Docker图标 -> Preferences... -> Daemon -> Insecure registries -> + -> hub.docker.com
+
 - Ubuntu
 
 ```sh
