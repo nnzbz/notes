@@ -153,3 +153,15 @@ logs
 ```sh
 git reset --hard
 ```
+
+### 5.2. push时报 ```rejected - non-fast-forward``` 错误
+
+简单来说，就是 ```fetch``` -> ```merge``` -> ```push``` ，详细步骤如下：
+
+1. 打开 ```Git Repositories```，在 ```Working Directory``` 中确保可以看到要提交的工程
+2. 在 ```Remotes``` 中可以看到远端分支，在分支下向左的绿色箭头图标代表 ```Fetch``` ，右键 -> ```Configure Fetch```
+3. 确认 ```URI``` 和 ```Ref mappings``` 都是正确的，点击 ```Save and Fetch```，之后可以看到 Fetch Results 分支在一起，点击OK
+4. 此时在 ```Branches``` 中应该可以看到 ```Remote Tracking``` 存在远端分支
+5. 右键 ```Branches``` 中的 ```Local``` 中的 ```master``` ，选择 ```Merge```
+6. 选择 ```Remote Tracking``` 中的 ```origin/master```，点击 ```Merge```
+7. 这是合并后的反馈结果，之后就可以重新提交代码了
