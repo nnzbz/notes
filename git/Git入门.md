@@ -154,7 +154,7 @@ logs
 git reset --hard
 ```
 
-### 5.2. push时报 ```rejected - non-fast-forward``` 错误
+### 5.2. push时报 ```rejected - non-fast-forward``` 错误
 
 简单来说，就是 ```fetch``` -> ```merge``` -> ```push``` ，详细步骤如下：
 
@@ -164,4 +164,4 @@ git reset --hard
 4. 此时在 ```Branches``` 中应该可以看到 ```Remote Tracking``` 存在远端分支
 5. 右键 ```Branches``` 中的 ```Local``` 中的 ```master``` ，选择 ```Merge```
 6. 选择 ```Remote Tracking``` 中的 ```origin/master```，点击 ```Merge```
-7. 这是合并后的反馈结果，之后就可以重新提交代码了
+7. 这是合并后的反馈结果，之后就可以重新 ```push``` 代码了
