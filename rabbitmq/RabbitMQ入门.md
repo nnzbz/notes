@@ -167,3 +167,9 @@ channel.basicConsume(QUEUE_NAME, false, consumer);
 8. channel.basicPublish如果不指定队列名称，则broke默认会将消息投递到以routeKey命名的队列中，如果此队列不存在，则消息丢失。
 9. 为了消息可靠性考虑，一般exchange和queue以及binding会在生产者和消费者两端一起声明。生产者声明queue为了保证消息发送到exchange后可以入队列，此时如果队列不存在，消息会丢弃。消费者声明exchange可以保证binding正确进行，若exchange不存在，binding异常退出。
 
+## 5. 注意
+
+- 消息发送到Exchange后，如果没有找到匹配的Queue，则会被丢弃
+- 如果尝试创建一个已经存在的Queue，RabbitMQ不会做任何事情，并返回创建成功
+- 如果多个消费者订阅同一个Queue，则Queue中的消息会被平摊给多个消费者。
+- 如上的情况，为了避免各消费者出现工作不均衡的情况，可以通过设置prefetchCount来限制Queue每次发送给每个消费者的消息数
