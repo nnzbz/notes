@@ -266,7 +266,13 @@ docker diff redis-temp
 docker commit -m "redis cluster node" -a "zbz" redis-temp zboss/redis-cluster-node:v1.0.0
 ```
 
-### 4.7. 主机与容器间复制文件
+### 4.7. 在容器外编辑容器内的文件
+
+```sh
+docker exec -it gitlab vi /etc/gitlab/gitlab.rb
+```
+
+### 4.8. 主机与容器间复制文件
 
 - 从主机往容器内复制文件
 
@@ -280,13 +286,13 @@ docker cp /host/path/target <containerId>:/file/path/within/container
 docker cp <containerId>:/file/path/within/container /host/path/target
 ```
 
-### 4.8. 修改容器时区和主机一致
+### 4.9. 修改容器时区和主机一致
 
 ```sh
 docker cp /etc/localtime [容器ID或者NAME]:/etc/localtime
 ```
 
-### 4.9. 修改容器的运行参数(手动修改配置文件)
+### 4.10. 修改容器的运行参数(手动修改配置文件)
 
 > **注意：修改参数的时候要将docker停掉**
 
@@ -296,13 +302,13 @@ docker cp /etc/localtime [容器ID或者NAME]:/etc/localtime
 
 默认路径在 ```/var/lib/docker/containers/{容器id}/hostconfig.json```
 
-### 4.10. 修改容器的运行参数(update)
+### 4.11. 修改容器的运行参数(update)
 
 ```sh
 docker update --restart=always redis1
 ```
 
-### 4.11. 查看容器的IP地址
+### 4.12. 查看容器的IP地址
 
 查看容器内部的IP地址
 
@@ -310,7 +316,7 @@ docker update --restart=always redis1
 docker inspect node1 | grep IPA
 ```
 
-### 4.12. 清空容器日志
+### 4.13. 清空容器日志
 
 ```sh
 docker inspect 【container name】| grep LogPath | cut -d ':' -f 2 | cut -d ',' -f 1 | xargs echo | xargs truncate -s 0
