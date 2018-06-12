@@ -357,6 +357,8 @@ ReactDOM.render(<Input />, document.getElementById('example'));
 
 ## 9. 组件的生命周期
 
+![Component的生命周期](Component的生命周期.png)
+
 ### 9.1. 组件的三个状态
 
 组件的生命周期分成三个状态：
