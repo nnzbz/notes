@@ -146,15 +146,41 @@ logs
 4. 点击 ```next```，再点击 ```next```，在 ```Local Destination``` 页面中，注意修改 ```Directory``` 为自己的 workspace的路径，点击 ```Finish``` 完成；
 5. 导入本地已经存在的项目（略）。
 
-## 5. 常见问题
+## 5. 如果进行PR(Pull Request)
 
-### 5.1. 误用了pull，本地代码被产生冲突，怎么恢复？
+帮助他人的GitHub项目修正代码
+
+1. Fork
+ fork他人的项目到自己Github的仓库
+2. Clone
+ 将fork到自己仓库中的项目Clone到本地
+3. 与原项目建立连接
+ 用 ```git remote -v``` 命令检查已有链接
+ 用 ```git remote add upstream https://github.com/他人仓库/原项目名称.git``` 与原项目建立连接
+ 再用先前命令检查与原项目是否建立连接成功
+4. 新建分支并Checkout
+ 用 ```git checkout -b 分支名称```
+5. 修改
+6. Add -> Commit -> Push
+ 注意Push的是自己的仓库
+7. 发起PR
+ 在自己仓库Fork的项目中，点击 ```Pull Requests``` 页面 -> 点击 ```New pull requests``` 按钮 -> 进入 ```Comparing changes```
+ ![ComparingChanges](ComparingChanges.png)
+8. 建立PR
+ 点击 ```Create pull request``` 按钮 -> 填写相关信息 -> 点击 ```Create pull request``` 按钮
+9. Merge
+ 这就是原项目开发人员的事了
+
+
+## 6. 常见问题
+
+### 6.1. 误用了pull，本地代码被产生冲突，怎么恢复？
 
 ```sh
 git reset --hard
 ```
 
-### 5.2. push时报 ```rejected - non-fast-forward``` 错误
+### 6.2. push时报 ```rejected - non-fast-forward``` 错误
 
 简单来说，就是 ```fetch``` -> ```merge``` -> ```push``` ，详细步骤如下：
 

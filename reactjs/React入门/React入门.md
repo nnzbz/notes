@@ -103,7 +103,7 @@ ReactDOM.render(
 ### 4.2. 容易出错的地方
 
 - **组件类的第一个字母必须大写**，否则会报错，比如HelloMessage不能写成helloMessage。
-- 另外，**组件类只能包含一个顶层标签**，否则也会报错。
+- 另外，**组件类只能包含一个顶层标签**，否则也会报错(可以用 ```Fragment``` 标签包围起来)。
 
 例如:下面包含了两个顶层标签h1和p，是会报错
 
@@ -353,7 +353,7 @@ var Input = React.createClass({
 ReactDOM.render(<Input />, document.getElementById('example'));
 ```
 
-上面代码中，文本输入框的值，不能用 this.props.value 读取，而要定义一个 onChange 事件的回调函数，通过 event.target.value 读取用户输入的值。textarea 元素、select元素、radio元素都属于这种情况
+上面代码中，文本输入框的值，不能用 this.props.value 读取，而要定义一个 onChange 事件的回调函数，通过 event.target.value 读取用户输入的值。textarea 元素、select元素、radio元素也属于这种情况
 
 ## 9. 组件的生命周期
 
