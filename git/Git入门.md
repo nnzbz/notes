@@ -37,7 +37,7 @@ git --bare init
 git clone http://zbz@192.168.1.201:10080/wboly/wboly-suc.git
 ```
 
-#### 3.1.3. 第一次将本地仓库添加到远程仓库
+#### 3.1.3. 给本地仓库添加远程仓库
 
 ```sh
 git remote add origin https://github.com/nnzbz/notes.git
@@ -132,23 +132,32 @@ target
 logs
 ```
 
-## 4. Eclipse中使用Git
+## 4. 几种常见场景
 
-### 4.1. 打开 ```Git Perspective```
+### 4.1. 提交代码到多个git仓库
 
- 工具栏右上角的 ```Open Perspective``` ，选择 ```Git``` 选项打开。
+1. 给本地仓库添加新的远程仓库
 
-### 4.2. 从Github中克隆项目到本地
+```sh
+git remote add origin_repo_b git@server_ip:/path/repo_b.git
+```
 
-1. 在 ```Git Perspective``` 中，左边有一个 ```Git Repostories``` 的 ```View``` ，鼠标点击左上方工具栏的 ```Clone a Git Repository and add the clone to this view``` 按钮；
-2. 浏览器打开Githut仓库页面，鼠标点击 ```Clone or download```按钮，复制仓库链接，并将其粘贴到上一步弹出窗口的URI中；
-3. 输入Github的用户和密码，选中 ```Store in Secure Store```；
-4. 点击 ```next```，再点击 ```next```，在 ```Local Destination``` 页面中，注意修改 ```Directory``` 为自己的 workspace的路径，点击 ```Finish``` 完成；
-5. 导入本地已经存在的项目（略）。
+- origin_repo_b
+ 远程仓库映射在本地仓库的名字(自己起的名字，只要不与现有的remote名重复即可)
+- git@server_ip:/path/repo_b.git
+ repo_b的远程路径
 
-## 5. 如果进行PR(Pull Request)
+2. 将代码推送到远程repo_b
 
-帮助他人的GitHub项目修正代码
+```sh
+git push origin_repo_b branch_a
+```
+
+### 4.2. 作者请你帮助修改代码 ```Welcome PR```
+
+帮助他人的GitHub项目修改代码
+
+如何 **PR(Pull Request)** ?
 
 1. Fork
  fork他人的项目到自己Github的仓库
@@ -171,6 +180,19 @@ logs
 9. Merge
  这就是原项目开发人员的事了
 
+## 5. Eclipse中使用Git
+
+### 5.1. 打开 ```Git Perspective```
+
+ 工具栏右上角的 ```Open Perspective``` ，选择 ```Git``` 选项打开。
+
+### 5.2. 从Github中克隆项目到本地
+
+1. 在 ```Git Perspective``` 中，左边有一个 ```Git Repostories``` 的 ```View``` ，鼠标点击左上方工具栏的 ```Clone a Git Repository and add the clone to this view``` 按钮；
+2. 浏览器打开Githut仓库页面，鼠标点击 ```Clone or download```按钮，复制仓库链接，并将其粘贴到上一步弹出窗口的URI中；
+3. 输入Github的用户和密码，选中 ```Store in Secure Store```；
+4. 点击 ```next```，再点击 ```next```，在 ```Local Destination``` 页面中，注意修改 ```Directory``` 为自己的 workspace的路径，点击 ```Finish``` 完成；
+5. 导入本地已经存在的项目（略）。
 
 ## 6. 常见问题
 
