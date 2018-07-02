@@ -114,6 +114,12 @@ git fetch origin master
 git pull origin master
 ```
 
+### 删除远程仓库链接
+
+```sh
+git remote remove origin
+```
+
 ### 3.7. 撤销文件的修改
 
 其实， ```git status``` 提示了如何操作
@@ -134,7 +140,7 @@ logs
 
 ## 4. 几种常见场景
 
-### 4.1. 提交代码到多个git仓库
+### 4.1. 将代码推送到另一个仓库
 
 1. 给本地仓库添加新的远程仓库
 
@@ -153,7 +159,23 @@ git remote add origin_repo_b git@server_ip:/path/repo_b.git
 git push origin_repo_b branch_a
 ```
 
-### 4.2. 作者请你帮助修改代码 ```Welcome PR```
+### 4.2. 将代码同时推送到多个仓库
+
+1. 将远程repo_c配置到当前的工作的本地git仓库中
+
+```sh
+git remote set-url --add origin_repo_b git@192.168.1.101:~/project/repo_c.git
+```
+
+这句话的意思是，将远程仓库git@192.168.1.101:~/project/repo_c.git也加入到origin_repo_b这个名字下面管理
+
+2. 将代码同时提交到远程仓库repo_b和远程仓库repo_c
+
+```sh
+git push origin_repo_b branch_a
+```
+
+### 4.3. 作者请你帮助修改代码 ```Welcome PR```
 
 帮助他人的GitHub项目修改代码
 
