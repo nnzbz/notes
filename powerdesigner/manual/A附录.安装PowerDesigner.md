@@ -6,7 +6,7 @@
 
 ### 2.1. 关系连接线中部不显示关系名称
 
-> tool -> Display preferences -> relationship ->center框中选择none
+> tool -> Display preferences -> relationship ->center框中把name去掉
 
 ![视图不显示关系名称](视图不显示关系名称.png)
 
