@@ -114,13 +114,13 @@ git fetch origin master
 git pull origin master
 ```
 
-### 删除远程仓库链接
+### 3.7. 删除远程仓库链接
 
 ```sh
 git remote remove origin
 ```
 
-### 3.7. 撤销文件的修改
+### 3.8. 撤销文件的修改
 
 其实， ```git status``` 提示了如何操作
 
@@ -128,7 +128,7 @@ git remote remove origin
 git checkout -- <file>
 ```
 
-### 3.8. .gitignore
+### 3.9. .gitignore
 
 ```text
 target
@@ -201,6 +201,10 @@ git push origin_repo_b branch_a
  点击 ```Create pull request``` 按钮 -> 填写相关信息 -> 点击 ```Create pull request``` 按钮
 9. Merge
  这就是原项目开发人员的事了
+
+### 4.4. 在GitLab中修改仓库名称及路径
+
+进入仓库 -> ```Settings``` -> ```General``` -> ```Advanced settings``` -> ```Expand``` -> 设置 ```Project name``` 与 ```Path``` -> ```Rename project```
 
 ## 5. Eclipse中使用Git
 
