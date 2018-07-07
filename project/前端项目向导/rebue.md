@@ -40,7 +40,8 @@
 
 ##### team -> share project
 
-####### 点击create repository 再点击finish
+###### 点击create repository 再点击finish
+
 ![创建本地残仓库](创建本地仓库.png)
 
 
