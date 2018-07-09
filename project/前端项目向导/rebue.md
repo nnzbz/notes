@@ -56,6 +56,12 @@
 
 ### （version：16.5）toos -> customize Menus and tools -> toolbars ->将palette打勾。
 
+![创建模型](0.png)
+![创建模型](1.png)
+![创建模型](2.png)
+![创建模型](3.png)
+![创建模型](4.png)
+![创建模型](5.png)
 
 
 
