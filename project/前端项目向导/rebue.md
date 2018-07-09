@@ -56,14 +56,14 @@
 
 ### （version：16.5）toos -> customize Menus and tools -> toolbars ->将palette打勾。
 
-###### 双击实体
+######  》双击表
 ![创建模型](0.png)
 
 ![创建模型](1.png)
 
 ![创建模型](2.png)
 
-###### 选中实体，点击tools 再选择物理模型
+###### 》选中表，点击tools 再选择物理模型
 
 ![创建模型](3.png)
 
