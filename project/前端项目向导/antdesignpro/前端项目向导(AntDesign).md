@@ -62,18 +62,16 @@ yarn run build
 
 ## 7. 引入自定义图标字体库
 
-### iconfont维护项目
+### 7.1. iconfont维护项目
 
 http://www.iconfont.cn/
 
 注意：项目编辑一定要编辑 ```FontClass/Symbol``` 前缀，antd用的是anticon，我们用的是rebue
 
-### 将项目下载到本地
+### 7.2. 将项目下载到本地
 
-### 解压zip中的文件到项目中的静态资源目录中
+### 7.3. 解压zip中的文件到项目中的静态资源目录中
 
 打开zip文件，demo那几个文件可不要
 
 例如 ```assets/icon/rebue```
-
-### 
