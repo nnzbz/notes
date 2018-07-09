@@ -48,5 +48,14 @@
 
 ## 看git笔记，先cd切换到要上传项目的根路径再进行git命令的操作。
 
+# 使用PowerDesigner创建模型
+
+## 先创建逻辑模型logical(LDM)
+
+### file -> new model -> logical data model ->修改model name 再ok，这时候可能工具栏没有出来，
+
+### （version：16.5）toos -> customize Menus and tools -> toolbars ->将palette打勾。
+
+
 
 
