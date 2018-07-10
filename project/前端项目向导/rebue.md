@@ -89,7 +89,7 @@
 
 ### 2：生成代码后会报错找不到jar，这时候就要对比原来的pom.xml,将所有第三方(mysql等)或者是工具类(前辈封装的工具等)的依赖加进来。
 
-### 3：将参考项目的OldApplication.java改成NewApplication.java，应该还不需要远程调用，所有将有关feigin的删掉。
+### 3：(切记)将参考项目的OldApplication.java改成NewApplication.java，应该还不需要远程调用，所有将有关feigin的删掉。
 
 ###### 成功后的控制台显示为 
 
