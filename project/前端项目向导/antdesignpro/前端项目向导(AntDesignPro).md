@@ -1,4 +1,4 @@
-# 前端项目向导(AntDesign)
+# 前端项目向导(AntDesignPro)
 
 [TOC]
 
@@ -31,6 +31,34 @@ yarn start
 ### 4.1. 动态查询菜单
 
 https://github.com/ant-design/ant-design-pro/commit/3d7d0fd87d7ead34999a2d56bc5d73c9cf4b2c8b#diff-fb32c22981db5099518584991bd60917
+
+### 4.2. 响应请求延迟1秒
+
+- .roadhogrc.mock.js
+
+```js
+export default (noProxy ? {} : delay(proxy, 1000));
+```
+
+### 4.3. 从mock切换切换到服务端请求
+
+- .roadhogrc.mock.js
+
+```js
+// 响应请求不延迟
+export default (noProxy ? {
+  'GET /pfm-svr/(.*)': 'http://192.168.1.24:20182/',
+  'POST /pfm-svr/(.*)': 'http://192.168.1.24:20182/',
+  'PUT /pfm-svr/(.*)': 'http://192.168.1.24:20182/',
+  'DELETE /pfm-svr/(.*)': 'http://192.168.1.24:20182/',
+} : proxy);
+```
+
+- 启动代理
+
+```sh
+yarn start:no-proxy
+```
 
 ## 5. 部署配置
 
