@@ -1,8 +1,8 @@
-#ant_design
+# ant_design
 
 [TOC]
 
-#目录说明
+# 目录说明
 1.dist:编译后的文件，每次将此目录部署至线上需要先将原来的dist目录删除；
 2.doc:说明文档；
 3.mock:模拟后台服务的服务器；
@@ -12,7 +12,7 @@
 7.src/models:与service层过渡层
 8.src/services:向服务器发请求的封装
 
-#新建页面
+# 新建页面
 以新建快递单管理页面为例说明如何构件一个页面:
 
 1,如果需要增加目录节点，首先在src/common/menu.js增加目录节点;
@@ -63,7 +63,7 @@ import {
 
 8,最后在控制台进入项目文件夹用yarn start 命令启动项目后，就可以在浏览器看到我们新建的页面了。
 
-#常见问题：
+# 常见问题：
 1.项目启动时报no space left on the device错误
 由于linux打开文件数量的限制，运行下面命令修改系统的打开文件数量限制：
 echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
