@@ -3,14 +3,14 @@
 [TOC]
 
 # 目录说明
-1.dist:编译后的文件，每次将此目录部署至线上需要先将原来的dist目录删除；
-2.doc:说明文档；
-3.mock:模拟后台服务的服务器；
-4.src:源代码文件。
-5.src/routes:放置页面文件
-6.src/components:公用组件
-7.src/models:与service层过渡层
-8.src/services:向服务器发请求的封装
+1. dist:编译后的文件，每次将此目录部署至线上需要先将原来的dist目录删除；
+2. doc:说明文档；
+3. mock:模拟后台服务的服务器；
+4. src:源代码文件。
+5. src/routes:放置页面文件
+6. src/components:公用组件
+7. src/models:与service层过渡层
+8. src/services:向服务器发请求的封装
 
 # 新建页面
 以新建快递单管理页面为例说明如何构件一个页面:
