@@ -28,6 +28,8 @@
 1. 如果需要增加目录节点，首先在src/common/menu.js增加目录节点;
 
 ```js
+const menuData = [
+  ...
  {
     name: '快递管理',
     icon: 'profile',
@@ -38,7 +40,8 @@
         path: 'kdi-mng',
       },
     ],
-  },
+},
+...
 ```
 
 2. 在src/common/router.js增加路由配置，需要注意组件命名需要与数据库表名相一致，如快递物流单管理的组件名为kdilogistic；
@@ -51,11 +54,13 @@
 
 3. 在src/routes文件夹下新建一个 ```Kdi``` 的文件夹存放快递管理的页面，并在该文件夹下新建页面组件文件 ```KdiLogistic.js``` 以及其它需要导入的组件文件；
 
-4. 在src/models文件夹下新建一个快递的模型文件kdilogistic.js;
+    3.1 页面文件中，render()是渲染页面的方法，return()方法则是将渲染出来的页面返回
 
-5. 在src/serivces文件夹下新建一个快递的服务层文件kdilogistic.js;
+4. 在```src/models```文件夹下新建一个快递的模型文件kdilogistic.js;
 
-6. 在.roadhogrc.mock.js文件中增加快递请求的映射;
+5. 在```src/serivces```文件夹下新建一个快递的服务层文件```kdilogistic.js```;
+
+6. 在```.roadhogrc.mock.js```文件中增加快递请求的映射;
 
 ```js
 import {
@@ -68,12 +73,15 @@ import {
 ```
 
 ```js
+const proxy = {
+  ...
 //kdilogitic
   'GET /kdi-svr/kdi/logistic': kdilogisticList,
   'GET /kdi-svr/kdi/logistic/getbyid': kdilogisticGetById,
   'POST /kdi-svr/kdi/logistic': kdilogisticAdd,
   'PUT /kdi-svr/kdi/logistic': kdilogisticModify,
   'DELETE /kdi-svr/kdi/logistic': kdilogisticDel,
+  ...
 ```
 
 7. 在mock文件夹下新建模拟服务器数据文件kdilogistic.js;
