@@ -47,9 +47,12 @@ const menuData = [
 2. 在src/common/router.js增加路由配置，需要注意组件命名需要与数据库表名相一致，如快递物流单管理的组件名为kdilogistic；
 
 ```js
+const routerConfig = {
+  ...
 '/kdi/kdi-mng': {
       component: dynamicWrapper(app, ['kdilogistic'], () => import('../routes/Kdi/KdiLogistic')),
     },
+  ...
 ```
 
 3. 在src/routes文件夹下新建一个 ```Kdi``` 的文件夹存放快递管理的页面，并在该文件夹下新建页面组件文件 ```KdiLogistic.js``` 以及其它需要导入的组件文件；
