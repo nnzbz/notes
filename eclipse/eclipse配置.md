@@ -52,11 +52,19 @@
 - 写在语句后面的注释 ```//``` 对齐
  在 ```Comments``` > 勾选 ```Preserve white space between code and line comments```
 
-### 1.6. HTML延长换行宽度
+### 1.6. 保存时自动系统化imports以及格式化代码
+
+菜单 ```Preferences``` > ```Java``` > ```Editor``` > ```Save Actions```
+
+配置如下图：
+
+![eclipse配置-保存自动系统化imports和格式化代码](eclipse配置-保存自动系统化imports和格式化代码.png)
+
+### 1.7. HTML延长换行宽度
 
 在 ```web``` > ```HTML Files``` > ```Editor``` > Line width > 180
 
-### 1.7. 配置Maven
+### 1.8. 配置Maven
 
 - maven通用配置
 
@@ -68,7 +76,7 @@
 
 - Installations
 
-### 1.8. 配置GIT
+### 1.9. 配置GIT
 
 - Configuration
 
@@ -82,7 +90,7 @@ Location: /home/zbz/.gitconfig
     autocrlf = input
 ```
 
-### 1.9. 关闭校验
+### 1.10. 关闭校验
 
 - 关闭Validation
 
@@ -92,11 +100,11 @@ Location: /home/zbz/.gitconfig
 
  在 ```General``` > ```Editors``` > ```Text Editors``` > ```Spelling``` > 取消勾选 ```Enable spell checking```
 
-### 1.10. 去掉多余的启动项
+### 1.11. 去掉多余的启动项
 
  在 ```Genaral``` > ```Startup and Shutdown```
 
-### 1.11. 打开过多自动关闭前面的页面
+### 1.12. 打开过多自动关闭前面的页面
 
  在 ```General``` > ```Editors``` > 勾选 ```Close editors automatically```
 
