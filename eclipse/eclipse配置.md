@@ -60,9 +60,11 @@
 
 ![eclipse配置-保存自动系统化imports和格式化代码](eclipse配置-保存自动系统化imports和格式化代码.png)
 
-### 1.7. HTML延长换行宽度
+### 1.7. HTML与XML延长换行宽度
 
 在 ```web``` > ```HTML Files``` > ```Editor``` > Line width > 180
+
+在 ```XML``` > ```XML Files``` > ```Editor``` > Line width > 180
 
 ### 1.8. 配置Maven
 
