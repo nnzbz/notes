@@ -99,6 +99,8 @@ mvn versions:set -DoldVersion=* -DnewVersion=1.0.1-SNAPSHOT -DprocessAllModules=
 mvn versions:set -DnewVersion=2.1-SNAPSHOT
 ```
 
+- 注意：更新后需要刷新Eclipse中打开的项目
+
 #### 2.2.3. 回滚
 
 当更改版本号时有问题，可以通过以下命令进行版本号回滚：
