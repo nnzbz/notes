@@ -156,4 +156,15 @@ sudo chmod u+x ~/Desktop/eclipse.desktop
 
 YAML文件编辑插件
 
+### 3.5. Lombok
+
+下载
+https://projectlombok.org/downloads/lombok.jar
+
+双击运行jar包安装
+
+重启eclipse
+
+在 eclipse about 中看到文本最后一行有 Lombok.... 字样表示安装成功
+
 ## 4. 配置Tomcat
