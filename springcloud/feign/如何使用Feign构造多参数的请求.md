@@ -9,7 +9,7 @@
 ```java
 @FeignClient(name = "microservice-provider-user")
 public interface UserFeignClient {
-  @RequestMapping(value = "/get", method = RequestMethod.GET)
+  @GetMapping("/get")
   public User get1(@RequestParam("id") Long id, @RequestParam("username") String username);
 }
 ```
@@ -21,7 +21,7 @@ public interface UserFeignClient {
 ```java
 @FeignClient(name = "microservice-provider-user")
 public interface UserFeignClient {
-  @RequestMapping(value = "/get", method = RequestMethod.GET)
+  @GetMapping("/get")
   public User get2(@RequestParam Map<String, Object> map);
 }
 ```
@@ -33,7 +33,7 @@ public interface UserFeignClient {
 ```java
 @FeignClient(name = "microservice-provider-user")
 public interface UserFeignClient {
-  @PostMapping(value = "/post", consumes = MediaType.APPLICATION_JSON_VALUE)
+  @PostMapping("/post")
   public User post(@RequestBody User user);
 }
 ```
