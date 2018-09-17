@@ -33,7 +33,7 @@ public interface UserFeignClient {
 ```java
 @FeignClient(name = "microservice-provider-user")
 public interface UserFeignClient {
-  @RequestMapping(value = "/post", method = RequestMethod.POST)
+  @PostMapping(value = "/post", consumes = MediaType.APPLICATION_JSON_VALUE)
   public User post(@RequestBody User user);
 }
 ```
