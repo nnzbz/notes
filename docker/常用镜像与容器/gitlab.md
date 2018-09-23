@@ -11,11 +11,15 @@ docker pull gitlab/gitlab-ce
 ## 2. 创建并运行容器
 
 ```sh
-docker run --name gitlab-data gitlab/gitlab-ce echo "data-only container for gitlab"
-docker run -d --hostname 192.168.1.201 --name gitlab -p10443:443 -p10022:22 -p10080:80 --restart always --volumes-from gitlab-data -e 'GITLAB_SSH_PORT=10022' -e 'GITLAB_PORT=10080' -e 'GITLAB_HOST=IP_ADDRESS' gitlab/gitlab-ce
-#    -e 'GITLAB_SECRETS_DB_KEY_BASE=long-and-random-alpha-numeric-string' \
-#    -e 'GITLAB_SECRETS_SECRET_KEY_BASE=long-and-random-alpha-numeric-string' \
-#    -e 'GITLAB_SECRETS_OTP_KEY_BASE=long-and-random-alpha-numeric-string' \
+docker run --detach \
+    --hostname 192.168.1.201 \
+    --publish 10443:443 --publish 10080:80 --publish 10022:22 \
+    --name gitlab \
+    --restart always \
+    --volume /srv/gitlab/config:/etc/gitlab:Z \
+    --volume /srv/gitlab/logs:/var/log/gitlab:Z \
+    --volume /srv/gitlab/data:/var/opt/gitlab:Z \
+    gitlab/gitlab-ce:latest
 ```
 
 ## 3. 打开防火墙端口
