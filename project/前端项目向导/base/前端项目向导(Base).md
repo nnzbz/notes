@@ -4,84 +4,11 @@
 
 ## 1. 安装nodejs
 
-## 2. 安装cnpm及升级npm
+## 2. 安装yarn
 
-### 2.1. 安装cnpm
+## 3. 创建项目
 
-```sh
-npm install -g cnpm --registry=https://registry.npm.taobao.org
-```
-
-### 2.2. 升级npm
-
-```sh
-cnpm install npm@latest -g
-```
-
-## 3. 安装模拟后台的服务器
-
-### 3.1. 安装json-server
-
-```sh
-cnpm i json-server -g
-```
-
-### 3.2. 新建服务器目录及放置模拟数据的文件
-
-新建```/json-server```目录用于放置服务端的文件
-
-新建```/json-server/db.json```文件
-
-db.json的内容示例如下:
-
-```json
-{
-    "user": [
-        {
-            "id": 10000,
-            "name": "一韬",
-            "age": 25,
-            "gender": "male"
-        },
-        {
-            "id": 10001,
-            "name": "张三",
-            "age": 30,
-            "gender": "female"
-        }
-    ],
-    "book": [
-        {
-            "id": 10000,
-            "name": "JavaScript从入门到精通",
-            "price": 9990,
-            "owner_id": 10000
-        },
-        {
-            "id": 10001,
-            "name": "Java从入门到放弃",
-            "price": 1990,
-            "owner_id": 10001
-        }
-    ]
-}
-```
-
-### 3.3. 启动json-server
-
-```sh
-json-server db.json -w -p 3000
-```
-
-### 3.4. 检查json-server是否启动成功
-
-```sh
-http://localhost:3000
-```
-
-## 4. 创建项目
-
-### 4.1. 创建项目文件夹
+### 3.1. 创建项目文件夹
 
 ```text
 [project-demo]                //模拟项目文件夹
@@ -92,13 +19,13 @@ http://localhost:3000
 ```
 
 
-### 4.2. 初始化项目文件夹
+### 3.2. 初始化项目文件夹
 
 ```sh
-cnpm init -y
+yarn init -y
 ```
 
-### 4.3. 编辑packege.json
+### 3.3. 编辑packege.json
 
 ```json
 ...
@@ -110,9 +37,9 @@ cnpm init -y
 ...
 ```
 
-### 4.4. 创建webpack.config.js
+### 3.4. 创建webpack.config.js
 
-#### 4.4.1. webpack.config.dev.js
+#### 3.4.1. webpack.config.dev.js
 
 ```js
 'use strict';
@@ -170,7 +97,7 @@ module.exports = {
 };
 ```
 
-#### 4.4.2. webpack.config.prod.js
+#### 3.4.2. webpack.config.prod.js
 
 ```js
 'use strict';
@@ -224,7 +151,7 @@ module.exports = {
 };
 ```
 
-### 4.5. 文件.babelrc
+### 3.5. 文件.babelrc
 
 ```json
 {
@@ -237,15 +164,15 @@ module.exports = {
 }
 ```
 
-## 5. 安装一些常用的包
+## 4. 安装一些常用的包
 
-### 5.1. 全局安装
+### 4.1. 全局安装
 
 ```sh
 cnpm i webpack-dev-server -g
 ```
 
-### 5.2. 本地安装
+### 4.2. 本地安装
 
 ```sh
 cnpm i webpack --save-dev
@@ -261,16 +188,78 @@ cnpm i react react-dom react-router-dom -S
 cnpm i vue vue-loader --save-dev
 ```
 
-## 6. 打包运行
+## 5. 打包运行
 
-### 6.1. 运行调试
-
-```sh
-cnpm run dev
-```
-
-### 6.2. 编译打包
+### 5.1. 运行调试
 
 ```sh
-cnpm run prod
+yarn run dev
 ```
+
+### 5.2. 编译打包
+
+```sh
+yarn run prod
+```
+
+## 6. 安装模拟后台的服务器
+
+### 6.1. 安装json-server
+
+```sh
+yarn i json-server -g
+```
+
+### 6.2. 新建服务器目录及放置模拟数据的文件
+
+新建```/json-server```目录用于放置服务端的文件
+
+新建```/json-server/db.json```文件
+
+db.json的内容示例如下:
+
+```json
+{
+    "user": [
+        {
+            "id": 10000,
+            "name": "一韬",
+            "age": 25,
+            "gender": "male"
+        },
+        {
+            "id": 10001,
+            "name": "张三",
+            "age": 30,
+            "gender": "female"
+        }
+    ],
+    "book": [
+        {
+            "id": 10000,
+            "name": "JavaScript从入门到精通",
+            "price": 9990,
+            "owner_id": 10000
+        },
+        {
+            "id": 10001,
+            "name": "Java从入门到放弃",
+            "price": 1990,
+            "owner_id": 10001
+        }
+    ]
+}
+```
+
+### 6.3. 启动json-server
+
+```sh
+json-server db.json -w -p 3000
+```
+
+### 6.4. 检查json-server是否启动成功
+
+```sh
+http://localhost:3000
+```
+
