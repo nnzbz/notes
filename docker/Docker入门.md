@@ -60,7 +60,7 @@ https://hub.docker.com/
 
 #### 3.2.1. 设置默认从国内镜像拉取
 
-- ubuntu
+- ubuntu/centos
 
 ```sh
 vi /etc/docker/daemon.json
