@@ -2,23 +2,24 @@
 
 [TOC]
 
-创建并运行容器
+## 1. 创建目录
 
 ```sh
 mkdir ~/nginx
 mkdir ~/nginx/mynginx
 mkdir ~/nginx/mynginx/conf
 mkdir ~/nginx/mynginx/logs
-docker run -p 80:80 --name mynginx -v ~/nginx/mynginx/html:/usr/share/nginx/html:ro -v ~/nginx/mynginx/conf/nginx.conf:/etc/nginx/nginx.conf:ro -v ~/nginx/mynginx/logs:/var/log/nginx -d nginx
 ```
 
-- :ro 在容器内只读
+## 2. 创建配置文件nginx.conf
 
-- nginx.conf
+```sh
+vim ~/nginx/mynginx/conf/nginx.conf
+```
 
 ```text
 user  nginx;
-worker_processes  1;
+worker_processes 1;
 
 error_log  /var/log/nginx/error.log warn;
 pid        /var/run/nginx.pid;
@@ -49,3 +50,14 @@ http {
     include /etc/nginx/conf.d/*.conf;
 }
 ```
+
+## 3. 创建并运行容器
+
+```sh
+docker run -p80:80 --name mynginx -v ~/nginx/mynginx/html:/usr/share/nginx/html:ro -v ~/nginx/mynginx/conf/nginx.conf:/etc/nginx/nginx.conf:ro -v ~/nginx/mynginx/logs:/var/log/nginx -d nginx
+```
+
+- p
+  如果要建立自定义的端口号，请修改“:”前面的80
+- :ro
+  在容器内只读
