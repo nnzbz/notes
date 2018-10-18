@@ -98,3 +98,9 @@ done
 ```sh
 ~/sh/sshNAT.sh --local-port 8080 --remote-host 120.78.180.227 --remote-port 80
 ```
+
+## 5. 确认内网穿透是否打通
+
+```sh
+curl http://<remote host>:<remote port>
+```
