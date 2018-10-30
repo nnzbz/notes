@@ -6,19 +6,7 @@
 
 略
 
-## 2. 服务端安装nginx代理
-
-在有公网IP的服务端搭建nginx代理，并修改配置如下：
-
-```text
-....
-location / {
-    proxy_pass http://<remote host>:<remote port>;
-}
-....
-```
-
-## 3. 服务端的ssh开启网关配置
+## 2. 服务端的ssh开启网关配置
 
 ```sh
 vim /etc/ssh/sshd_config
@@ -34,9 +22,9 @@ GatewayPorts yes
 systemctl restart sshd
 ```
 
-## 4. 客户端通过ssh将流量转发到本地
+## 3. 客户端通过ssh将流量转发到本地
 
-### 4.1. ssh命令
+### 3.1. ssh命令
 
 利用 ```ssh``` 的转发功能 ```-R``` 参数。
 
@@ -50,7 +38,7 @@ done
 
 为了在自动重连时避免每次输入密码，还需要配置 ssh 证书实现免密码登录。
 
-### 4.2. 脚本示例
+### 3.2. 脚本示例
 
 ```sh
 #!/bin/bash
@@ -99,7 +87,7 @@ done
 ~/sh/sshNAT.sh --local-port 8080 --remote-host 120.78.180.227 --remote-port 80
 ```
 
-## 5. 确认内网穿透是否打通
+## 4. 确认内网穿透是否打通
 
 ```sh
 curl http://<remote host>:<remote port>
