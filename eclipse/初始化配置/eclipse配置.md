@@ -72,6 +72,14 @@
 
 ![eclipse配置-maven通用配置](eclipse配置-maven通用配置.png)
 
+- Archetypes
+
+![eclipse配置-添加自定义archetype1](eclipse配置-添加自定义archetype1.png)
+
+填入类似<http://192.168.1.201:8081/repository/my-repository/archetype-catalog.xml>的私服仓库地址的链接
+
+![eclipse配置-添加自定义archetype1](eclipse配置-添加自定义archetype2.png)
+
 - 默认打开pom.xml文件时打开XML页面
 
  在 ```Maven``` > ```User Interface``` > 勾选 ```Open XML page in the POM editor by default```
