@@ -208,6 +208,25 @@ docker run --name redis-temp redis echo "no run"
 
 该命令在创建容器后，运行 ```echo``` 然后退出，通常用于数据卷容器
 
+#### 4.1.3. 启动容器不自动退出
+
+两种方法
+
+- 创建并运行容器时，后面用 ```/bin/sh```
+
+```sh
+docker run -d -it <容器ID> /bin/sh
+```
+　　
+- 在镜像里面配置启动脚本里面增加一个执行进程
+
+Dockerfile文件
+
+```Dockerfile
+RUN touch /var/log/1.txt
+CMD "tail" "-f" "/var/log/1.txt"
+```
+
 ### 4.2. 启动/停止/重启/删除容器
 
 - start/stop/restart/rm
