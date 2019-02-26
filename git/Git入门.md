@@ -37,7 +37,9 @@ git --bare init
 git clone http://zbz@192.168.1.201:10080/wboly/wboly-suc.git
 ```
 
-#### 3.1.3. 给本地仓库添加远程仓库（进入项目的根路径执行操作）
+#### 3.1.3. 给本地仓库添加远程仓库
+
+进入项目的根路径执行操作
 
 ```sh
 git remote add origin https://github.com/nnzbz/notes.git
