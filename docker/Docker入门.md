@@ -347,3 +347,21 @@ docker inspect node1 | grep IPA
 ```sh
 docker inspect 【container name】| grep LogPath | cut -d ':' -f 2 | cut -d ',' -f 1 | xargs echo | xargs truncate -s 0
 ```
+### 4.15. 报错
+
+
+```sh
+
+当使用 docker ps报错
+
+Cannot connect to the Docker daemon at unix:///var/run/docker.sock. Is the docker daemon running?
+
+再使用 service docker start 报错
+
+Redirecting to /bin/systemctl start docker.service
+
+就使用 systemctl start docker
+
+然后 docker ps 检验
+
+```
