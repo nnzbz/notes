@@ -356,11 +356,11 @@ docker inspect 【container name】| grep LogPath | cut -d ':' -f 2 | cut -d ','
 
 Cannot connect to the Docker daemon at unix:///var/run/docker.sock. Is the docker daemon running?
 
-再使用 service docker start 报错
+或者 service docker start 报错
 
 Redirecting to /bin/systemctl start docker.service
 
-就使用 systemctl start docker
+使用该命令解决： systemctl start docker
 
 然后 docker ps 检验
 
