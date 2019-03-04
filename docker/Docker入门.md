@@ -352,7 +352,7 @@ docker inspect 【container name】| grep LogPath | cut -d ':' -f 2 | cut -d ','
 
 ```sh
 
-当使用 docker ps报错
+每次开机当使用 docker ps报错
 
 Cannot connect to the Docker daemon at unix:///var/run/docker.sock. Is the docker daemon running?
 
@@ -360,8 +360,8 @@ Cannot connect to the Docker daemon at unix:///var/run/docker.sock. Is the docke
 
 Redirecting to /bin/systemctl start docker.service
 
-使用该命令解决： systemctl start docker
+是因为没有设置开机启动  systemctl enable docker
 
-然后 docker ps 检验
+
 
 ```
