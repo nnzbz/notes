@@ -142,13 +142,21 @@ logs
 
 ## 4. 几种常见场景
 
-### 4.1. 修改远程仓库地址
+### 4.1. 放弃本地修改(谨慎)
+
+```sh
+git fetch --all
+git reset --hard origin/master
+git fetch
+```
+
+### 4.2. 修改远程仓库地址
 
 ```sh
 git remote set-url origin [url]
 ```
 
-### 4.2. 将代码推送到另一个仓库
+### 4.3. 将代码推送到另一个仓库
 
 1. 给本地仓库添加新的远程仓库
 
@@ -167,7 +175,7 @@ git remote add origin_repo_b git@server_ip:/path/repo_b.git
 git push origin_repo_b branch_a
 ```
 
-### 4.3. 将代码同时推送到多个仓库
+### 4.4. 将代码同时推送到多个仓库
 
 1. 将远程repo_c配置到当前的工作的本地git仓库中
 
@@ -183,7 +191,7 @@ git remote set-url --add origin_repo_b git@192.168.1.101:~/project/repo_c.git
 git push origin_repo_b branch_a
 ```
 
-### 4.4. 作者请你帮助修改代码 ```Welcome PR```
+### 4.5. 作者请你帮助修改代码 ```Welcome PR```
 
 帮助他人的GitHub项目修改代码
 
@@ -210,7 +218,7 @@ git push origin_repo_b branch_a
 9. Merge
  这就是原项目开发人员的事了
 
-### 4.5. 在GitLab中修改仓库名称及路径
+### 4.6. 在GitLab中修改仓库名称及路径
 
 进入仓库 -> ```Settings``` -> ```General``` -> ```Advanced settings``` -> ```Expand``` -> 设置 ```Project name``` 与 ```Path``` -> ```Rename project```
 
