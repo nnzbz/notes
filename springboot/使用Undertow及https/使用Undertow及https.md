@@ -14,16 +14,17 @@
 
 ![阿里云下载证书1](阿里云下载证书1.png)
 ![阿里云下载证书2](阿里云下载证书2.png)
+![阿里云下载证书3](阿里云下载证书3.png)
 
-## 2. 导出pfx证书
-
-如果不想生成新的证书，可跳过本步骤，密码见 ```pfx-password.txt```。
+## 2. 导入key/pem证书到本地仓库
 
 ```sh
 openssl pkcs12 -export -out 214717098860811.pfx -inkey 214717098860811.key -in 214717098860811.pem
 ```
 
-- 注意：这里要输入pfx的密码，要牢记。
+- 注意：
+  - 输入的pfx证书密码，要牢记。
+  - 这里输入的密码与下一节转化为jks的密码要相同。
 
 ## 3. 将pfx证书转换为jks证书
 
@@ -32,6 +33,8 @@ keytool -importkeystore -srckeystore xxx.pfx -destkeystore your-name.jks -srcsto
 ```
 
 - 注意：这里输入的目标密钥库口令就是jks密码，而源密钥库口令为上一步设置的pfx密码，建议两个密码相同，否则可能会导致Tomcat启动失败。
+  - 前两次要输入新的jks证书的密码，要牢记。
+  - 最后一次输入的是原始密码，也就是上一节中生成pfx证书的密码，要和上面的jks证书的密码相同。
 
 ## 4. 部署jks证书
 
@@ -43,11 +46,12 @@ keytool -importkeystore -srckeystore xxx.pfx -destkeystore your-name.jks -srcsto
 server:
   port: 443
   ssl:
+    enabled: true
     key-store: xxx.jks
     key-password: ********
 ```
 
-## 将http的80端口重定向https的433端口
+## 6. 将http的80端口重定向https的433端口
 
 ```java
 @Configuration
@@ -73,4 +77,4 @@ public class SslConfig {
 }
 ```
 
-## 6. 重启微服务
+## 7. 重启微服务
