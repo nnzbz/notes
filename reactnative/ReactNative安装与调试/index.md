@@ -1,4 +1,4 @@
-# React Native入门
+# React Native安装与调试
 
 [TOC]
 
@@ -54,7 +54,7 @@ react-native bundle --platform android --dev false --entry-file index.js --bundl
 1. 手机通过USB线连上电脑(手机端必须打开USB调试)
 2. 在电脑端运行 `adb devices`，列出设备详情列表，记录好设备（必须确认有且只有一个设备，否则不好调试）
   ![列出设备](列出设备.png)
-3. 在电脑上运行 `react-native run-android --port=13080` ，13080是端口号
+3. 在电脑端项目根目录下运行 `react-native run-android --port=13080` ，13080是端口号
 4. 此步骤好像可以不用，`adb -s <device name> reverse tcp:13080 tcp:13080`
 5. 如何在运行的App中调出开发者菜单？
   手机摇一摇，或在电脑端执行 `adb shell input keyevent 82`，即可调出 `Developer menu` 开发者菜单
