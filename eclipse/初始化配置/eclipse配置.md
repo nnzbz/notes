@@ -154,13 +154,13 @@ sudo chmod u+x ~/Desktop/eclipse.desktop
 > 1、 ```Preferences``` > ```General``` > ```Keys``` > ```Filters...``` > 取消选择 ```Filter uncategorized commands``` > ```OK```
 > 2、 ```Keys``` > ```"Go To Symbol in File"``` > ```Unbind Command``` > ```Apply and Close```
 
-### 3.3. Docker工具(Eclipse Docker Tooling)
+### ~~3.3. Docker工具(Eclipse Docker Tooling)~~
 
 管理docker的镜像及容器
 
 或docker editor 1.0.0
 
-### 3.4. YEdit
+### ~~3.4. YEdit~~
 
 YAML文件编辑插件
 
