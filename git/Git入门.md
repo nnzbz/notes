@@ -224,7 +224,7 @@ git push origin_repo_b branch_a
 
 ## 5. Eclipse中使用Git
 
-### 5.1. 打开 ```Git Perspective```
+### 5.1. 开启 ```Git Perspective``` 视图
 
  工具栏右上角的 ```Open Perspective``` ，选择 ```Git``` 选项打开。
 
@@ -236,15 +236,22 @@ git push origin_repo_b branch_a
 4. 点击 ```next```，再点击 ```next```，在 ```Local Destination``` 页面中，注意修改 ```Directory``` 为自己的 workspace的路径，点击 ```Finish``` 完成；
 5. 导入本地已经存在的项目（略）。
 
+### 5.3. 解决冲突
+
+1. 右击冲突文件 > `team` > `merge tool`
+2. 将左边框中的代码修改为正确代码，保存（如果本来就是正确的，直接保存）
+3. 将修正的文件从 `Unstaged Changes` 添加到 `Staged Changes`
+4. 提交
+
 ## 6. 常见问题
 
-### 6.1. 误用了pull，本地代码被产生冲突，怎么恢复？
+### 6.1. 误用了pull，本地代码被产生冲突，如何恢复之前的本地代码
 
 ```sh
 git reset --hard
 ```
 
-### 6.2. push时报 ```rejected - non-fast-forward``` 错误
+### 6.2. ~~push时报 ```rejected - non-fast-forward``` 错误~~
 
 简单来说，就是 ```fetch``` -> ```merge``` -> ```push``` ，详细步骤如下：
 
