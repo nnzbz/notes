@@ -236,10 +236,20 @@ git push origin_repo_b branch_a
 4. 点击 ```next```，再点击 ```next```，在 ```Local Destination``` 页面中，注意修改 ```Directory``` 为自己的 workspace的路径，点击 ```Finish``` 完成；
 5. 导入本地已经存在的项目（略）。
 
-### 5.3. 解决冲突
+### 5.3. 将已有项目添加到远程仓库
+
+1. 右击项目 > `Team` > `Share Project...` > 勾选 `Use or create repository in parent folder of project` > 选择下面列表框中的项目 > 点击 `Create Repository` 按钮 > `Finish`
+2. 复制经典的 `.gitignore` 文件，或自己创建一个，到项目根目录下
+3. 右击项目 > `Team` > `Commit...`，将有用的文件添加到 `Staged Changes` 的框
+4. 点击 `Commit and Push...` 按钮
+5. 在弹出的框中输入远程git仓库的地址
+6. 一路 `next` 直到 `Finish`
+7. 如果与线上版本有冲突，请走下一节“解决冲突”
+
+### 5.4. 解决冲突
 
 1. 右击冲突文件 > `team` > `merge tool`
-2. 将左边框中的代码修改为正确代码，保存（如果本来就是正确的，直接保存）
+2. 将左边框中的代码修改为正确代码，保存（如果本来就是正确的，随便加一个空行，然后保存）
 3. 将修正的文件从 `Unstaged Changes` 添加到 `Staged Changes`
 4. 提交
 
