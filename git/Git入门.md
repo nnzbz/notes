@@ -242,9 +242,10 @@ git push origin_repo_b branch_a
 2. 复制经典的 `.gitignore` 文件，或自己创建一个，到项目根目录下
 3. 右击项目 > `Team` > `Commit...`，将有用的文件添加到 `Staged Changes` 的框
 4. 点击 `Commit and Push...` 按钮
-5. 在弹出的框中输入远程git仓库的地址
-6. 一路 `next` 直到 `Finish`
-7. 如果与线上版本有冲突，请走下一节“解决冲突”
+5. 如果要合并已有远程仓库有冲突，先pull->merge，再提交
+6. 在弹出的框中输入远程git仓库的地址
+7. 一路 `next` 直到 `Finish`
+8. 如果与线上版本有冲突，请走下一节“解决冲突”
 
 ### 5.4. 解决冲突
 
