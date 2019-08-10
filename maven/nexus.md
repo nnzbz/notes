@@ -4,7 +4,7 @@
 
 ## 1. Nexus简介
 
-### 1.1. Nexus是什么？
+### 1.1. Nexus是什么
 
 Sonatype Nexus Repository OSS 是 Apache Maven 私服仓库，永久免费。
 
