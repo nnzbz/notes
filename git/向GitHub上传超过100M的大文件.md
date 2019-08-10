@@ -2,32 +2,23 @@
 
 ## 1. 安装lfs
 
-https://github.com/git-lfs/git-lfs/wiki/Installation
+Git LFS 是 Github 开发的一个 Git 的扩展，用于实现 Git 对大文件的支持
 
-## 2. 移除错误缓存并重新提交
+<https://github.com/git-lfs/git-lfs/wiki/Installation>
 
-### 2.1. 移除错误缓存
-
-首先应该移除所有错误的 cache，对于文件：
+## 2. 开启lfs功能
 
 ```sh
-git rm --cached path_of_a_giant_file
+git lfs install
 ```
 
-对于文件夹：
+## 3. 使用命令查看追踪了哪些大文件
 
 ```sh
-git rm --cached -r path_of_a_giant_dir
+git lfs track
 ```
 
-### 2.2. 重新提交与推送：
-
-```sh
-git commit --amend
-git push
-```
-
-## 3. 将大文件加入 Git Large File Storage
+## 4. 使用命令配置追踪哪些大文件
 
 将想要保存的大文件 “路径” 或者 “类型” 添加进 track
 
@@ -37,25 +28,39 @@ git lfs track "name_of_a_giant_file"
 
 **注意：这里面仅能添加类型的扩展名或者文件名作为跟踪方式，不可以添加路径或者目录进行跟踪。**
 
-## 4. 将想要保存的大文件正常添加进 git
+例如追踪所有后缀名为png的文件
+
+```sh
+git lfs track "*.png"
+```
+
+## 5. 与 `.gitattributes` 文件一并提交
+
+`.gitattributes` 文件保存了文件的追踪记录
+
+## 6. 将大文件添加进本地仓库
 
 ```sh
 git add path_of_a_giant_file
 ```
 
-## 5. 正常进行提交&推送
+## 7. 提交&推送
 
 ```sh
 git commit -m "Add large files"
 git push origin master
 ```
 
-## 6. 补充技巧
+## 8. 显示当前追踪到的文件列表
 
-提交以后出错再进行上面的步骤可能比较麻烦，如果你已知自己提交的版本库中确实存在一些大于 100MB 的文件，不妨先搜索：
+```sh
+git lfs ls-files
+```
+
+## 9. 补充技巧
+
+提交以后出错会比较麻烦，所以要在提交前注意有没有大于 100MB 的文件，搜索命令如下：
 
 ```sh
 find ./ -size +100M
 ```
-
-然后将这些文件移除，等待其他文件提交完后再复制回来，这样只需要从步骤3的操作开始就可以了。
