@@ -10,7 +10,7 @@
 
 ```sh
 docker run --name nexus-data sonatype/nexus3 echo "data-only container for Nexus"
-docker run -dp8081:8081 -dp8082:8082 --restart=always --name nexus --volumes-from nexus-data sonatype/nexus3
+docker run -dp8081:8081 -p8082:8082 --restart=always --name nexus --volumes-from nexus-data sonatype/nexus3
 ```
 
 ### 1.2. 浏览器访问

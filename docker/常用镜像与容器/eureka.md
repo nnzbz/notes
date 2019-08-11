@@ -38,19 +38,10 @@ eureka:
 
 ### 1.2. 从eureka-server项目中制作镜像(略)
 
-### 1.3. 上传
+### 1.3. 创建并运行容器
 
 ```sh
-docker tag 127.0.0.1:8082/rebue/eureka-server:1.0.3-SNAPSHOT nnzbz/eureka-server:1.0.3-SNAPSHOT
-docker tag nnzbz/eureka-server:1.0.3-SNAPSHOT nnzbz/eureka-server:latest
-docker push nnzbz/eureka-server:1.0.3-SNAPSHOT
-docker push nnzbz/eureka-server:latest
-```
-
-### 1.4. 创建并运行容器
-
-```sh
-docker run -dp8761:8761 --name eureka-server --restart=always nnzbz/eureka-server
+docker run -dp8761:8761 --name eureka-server -e "ES_JAVA_OPTS=-Xms256m -Xmx256m" --restart=always nnzbz/eureka-server
 ```
 
 ## 2. 制作eureka集群
