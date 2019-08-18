@@ -12,6 +12,12 @@ curl -X PUT 'localhost:9200/hlw-student'
 
 注意索引名称必须全小写，不能有 `/` 等特殊字符
 
+### 列出所有索引
+
+```sh
+curl -X GET "localhost:9200/_cat/indices?v"
+```
+
 ### 1.2. 删除索引
 
 ```sh

@@ -43,6 +43,10 @@ docker run -d --restart=always --name es01 -p 9200:9200 -p 9300:9300 -e "discove
 
 ### 1.4. 开发模式(docker-compose)
 
+```sh
+docker-compose up -d
+```
+
 见本目录下的 `docker-compose.yml` 文件
 
 ### 1.5. 优化内存
@@ -55,19 +59,19 @@ docker run -d --restart=always --name es01 -p 9200:9200 -p 9300:9300 -e "discove
 
 ```json
 {
-  "name" : "9n0f3sY",
+  "name" : "93e8e4378a4d",
   "cluster_name" : "docker-cluster",
-  "cluster_uuid" : "6iF1AAyIRGSzYyyKuBiHDg",
+  "cluster_uuid" : "xgDxGORZSlSiQElPzuvGtQ",
   "version" : {
-    "number" : "6.8.2",
+    "number" : "7.3.0",
     "build_flavor" : "default",
     "build_type" : "docker",
-    "build_hash" : "b506955",
-    "build_date" : "2019-07-24T15:24:41.545295Z",
+    "build_hash" : "de777fa",
+    "build_date" : "2019-07-24T18:30:11.767338Z",
     "build_snapshot" : false,
-    "lucene_version" : "7.7.0",
-    "minimum_wire_compatibility_version" : "5.6.0",
-    "minimum_index_compatibility_version" : "5.0.0"
+    "lucene_version" : "8.1.0",
+    "minimum_wire_compatibility_version" : "6.8.0",
+    "minimum_index_compatibility_version" : "6.0.0-beta1"
   },
   "tagline" : "You Know, for Search"
 }
@@ -95,7 +99,7 @@ elasticsearch.version=ElasticSearch当前的版本
 注意安装后可能需要重启 `ElasticSearch`
 
 ```sh
-./bin/elasticsearch-plugin install --batch https://github.com/medcl/elasticsearch-analysis-ik/releases/download/v6.8.2/elasticsearch-analysis-ik-6.8.2.zip
+./bin/elasticsearch-plugin install --batch https://github.com/medcl/elasticsearch-analysis-ik/releases/download/v7.3.0/elasticsearch-analysis-ik-7.3.0.zip
 ```
 
 最好是先下载下来，复制到容器中去，再安装
@@ -107,7 +111,7 @@ elasticsearch.version=ElasticSearch当前的版本
 ### 1.9. 安装pinyin分词插件
 
 ```sh
-./bin/elasticsearch-plugin install --batch https://github.com/medcl/elasticsearch-analysis-pinyin/releases/download/v6.8.1/elasticsearch-analysis-pinyin-6.8.1.zip
+./bin/elasticsearch-plugin install --batch https://github.com/medcl/elasticsearch-analysis-pinyin/releases/download/v7.3.0/elasticsearch-analysis-pinyin-7.3.0.zip
 ```
 
 ## 2. ElasticSearch集群
