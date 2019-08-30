@@ -24,7 +24,52 @@
 
 官网有详细介绍，请跳转 <https://facebook.github.io/react-native/docs/getting-started>，然后选择 `React Native CLI Quickstart` 标签页。
 
-#### 2.2.2. 安装完成后，直接运行后报错
+#### 2.2.2. ~~安装卡在安装 `CocoaPods` 的地方~~(没试成功)
+
+`info Installing required CocoaPods dependencies`
+
+1. 开始安装Cocoapods
+
+```sh
+sudo gem install cocoapods
+```
+
+2. 切换 镜像cocoapods镜像
+
+```sh
+cd ~/.cocoapods/repos
+pod repo remove master
+# ???
+git clone https://mirrors.tuna.tsinghua.edu.cn/git/CocoaPods/Specs.git master
+# 应为???
+git clone https://mirrors.tuna.tsinghua.edu.cn/git/CocoaPods/Specs.git edu-git-cocoapods-specs
+```
+
+3. 初始化你的项目
+
+```sh
+react-native init MyApp
+```
+
+项目初始化还是会卡住。
+
+4. 修改 `Podfile` 文件
+
+`Podfile` 文件位于项目的 `ios` 目录下，打开文件，在 **第一行** 加上
+
+```text
+source 'https://mirrors.tuna.tsinghua.edu.cn/git/CocoaPods/Specs.git'
+```
+
+5. 按照提示 执行：
+
+进入项目的 `ios` 目录下，执行
+
+```sh
+cd ./MyApp/ios && pod install
+```
+
+#### 2.2.3. 安装完成后，直接运行后报错
 
 - 提示错误: unable to load script from assets
 

@@ -2,14 +2,14 @@
 
 [TOC]
 
-## 1. 域名映射公网IP
+## 1. 将域名映射到服务器的公网IP
 
 略
 
 ## 2. 服务端的ssh开启网关配置
 
 ```sh
-vim /etc/ssh/sshd_config
+vi /etc/ssh/sshd_config
 ```
 
 ```text
@@ -48,7 +48,10 @@ done
 # 参数说明
 # local-port 本地端口
 # remote-host 远程服务器地址
-# remote-port
+# remote-port 远程服务器的端口
+#
+# 示例: 将远程服务器120.78.180.227:80端口映射到本地8080端口
+# sshNAT.sh --local-port 8080 --remote-host 120.78.180.227 --remote-port 80
 
 # 获取参数数组
 args=`getopt -u -o n:h:d: -l local-port-long:,remote-host-long:,remote-port-long: -- $*`
@@ -73,7 +76,7 @@ while true ; do
     esac
 done
 
-echo '穿透内网: localhost:'$LOCAL_PORT' -----> '$REMOTE_HOST':'$REMOTE_PORT
+echo '穿透内网: localhost:'$LOCAL_PORT' <--------> '$REMOTE_HOST':'$REMOTE_PORT
 
 while :
 do
