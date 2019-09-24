@@ -10,6 +10,7 @@
 
 方法1：从 <https://download.eclipse.org/m2e-wtp/releases/1.4/> 安装 `m2e connector for mavenarchiver plugin 0.17.3`
  （推荐）。
+ eclipse:help-->Install New  Software -->粘贴上面的链接后回车-->全选搜索出来的选项-->然后不断地next就行
 方法2：降级 `Maven JAR Plugin` (旧方法，未测试)。`pom.xml` 添加内容如下：
 
 ```xml
