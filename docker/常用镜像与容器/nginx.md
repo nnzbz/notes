@@ -14,7 +14,7 @@ mkdir ~/nginx/mynginx/logs
 ## 2. 创建配置文件nginx.conf
 
 ```sh
-vim ~/nginx/mynginx/conf/nginx.conf
+vi ~/nginx/mynginx/conf/nginx.conf
 ```
 
 ```text

@@ -263,13 +263,22 @@ git push origin_repo_b branch_a
 
 ## 6. 常见问题
 
-### 6.1. 误用了pull，本地代码被产生冲突，如何恢复之前的本地代码
+### 6.1. Git检查不到文件的变化
+
+有时候文件有了修改，而git却检测不出来，这个坑就大了，可能的原因是之前提交的文件"缓存"还在，所以相同的文件再提交时无法被检测。（也有可能是git文件的时间跟比仓库中文件晚，让SourceTree认为这不是新文件）
+
+1. 首先, 提交全部更新
+2. 执行 `git rm -r --cached .` //从 index 内删除所有变更过的文件
+3. 执行 `git add .`
+4. 执行 `git commit -m ".` //SourceTree自带推送按钮，这一步命令行可以省略.
+
+### 6.2. 误用了pull，本地代码被产生冲突，如何恢复之前的本地代码
 
 ```sh
 git reset --hard
 ```
 
-### 6.2. ~~push时报 ```rejected - non-fast-forward``` 错误~~
+### 6.3. ~~push时报 ```rejected - non-fast-forward``` 错误~~
 
 简单来说，就是 ```fetch``` -> ```merge``` -> ```push``` ，详细步骤如下：
 
