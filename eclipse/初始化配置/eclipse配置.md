@@ -4,7 +4,11 @@
 
 ## 1. Preferences配置
 
-### 1.1. 配置utf-8
+### 1.1. 配置utf-8(必须配置)
+
+Preferences -> 在左上角用于过滤关键字的输入框输入 `enc` -> 把不是UTF-8设置的改为UTF-8设置(如为空可忽略)
+
+**注意：一定要每一项都要检查，树节点的要展开检查所有层的子节点**
 
 ### 1.2. 配置养眼的背景
 
@@ -30,7 +34,7 @@
 #org-eclipse-ui-views-ContentOutline Tree,
 #PerspectiveSwitcher ToolBar {
     font-size: 15px; 
-    background-color: rgb(204,238,205); 
+    background-color: rgb(204,238,205);
 }
 ```
 
@@ -38,7 +42,7 @@
 
  ```Java``` > ```Debug``` > 取消勾选 ```Suspend execution on uncaught exceptions```
 
-### 1.5. java格式化代码
+### 1.5. java格式化代码(必须)
 
  ```Java``` > ```Code Style``` > ```formatter``` > ```Edit...```
 
@@ -49,10 +53,10 @@
 - 注释不改变原本的格式
  在 ```Comments``` > 取消勾选 ```Formater line comments on first column```
  在 ```Comments``` > 勾选 ```Never join lines```
-- 写在语句后面的注释 ```//``` 对齐
+- 写在语句后面的注释 ```//``` 对齐
  在 ```Comments``` > 勾选 ```Preserve white space between code and line comments```
 
-### 1.6. 保存时自动系统化imports以及格式化代码
+### 1.6. 保存时自动系统化imports以及格式化代码(必须)
 
 菜单 ```Preferences``` > ```Java``` > ```Editor``` > ```Save Actions```
 
@@ -66,7 +70,7 @@
 
 在 ```XML``` > ```XML Files``` > ```Editor``` > Line width > 180
 
-### 1.8. 配置Maven
+### 1.8. 配置Maven(必须)
 
 - maven通用配置
 
@@ -86,7 +90,9 @@
 
 - Installations
 
-### 1.9. 配置GIT
+### 1.9. 配置GIT(必须)
+
+下面是我个人配置示范，请参考配置
 
 - Configuration
 
@@ -164,7 +170,7 @@ sudo chmod u+x ~/Desktop/eclipse.desktop
 
 YAML文件编辑插件
 
-### 3.5. Lombok
+### 3.5. Lombok(必须)
 
 下载
 https://projectlombok.org/downloads/lombok.jar
