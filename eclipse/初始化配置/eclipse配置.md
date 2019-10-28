@@ -20,9 +20,9 @@
 
 (似乎并不起作用)
 
- 在 ```Contents/MacOS/eclipse.ini``` 下把 ```-Dorg.eclipse.swt.internal.carbon.smallFonts``` 全部删除
+ 在 ```Contents/MacOS/eclipse.ini``` 下把 ```-Dorg.eclipse.swt.internal.carbon.smallFonts``` 全部删除
 
- 在 ```应用程序``` 中找到eclipse，选择 ```显示包内容``` ， 然后到 ```Contents/Eclipse/plugins/org.eclipse.ui.themes_1.2.1.v20170809-1435/css``` 目录下找到 ```e4_default_mac.css``` 文件，将下面的内容添加进去
+ 在 ```应用程序``` 中找到eclipse，选择 ```显示包内容``` ， 然后到 ```Contents/Eclipse/plugins/org.eclipse.ui.themes_1.2.1.v20170809-1435/css``` 目录下找到 ```e4_default_mac.css``` 文件，将下面的内容添加进去
 
 ```css
 #org-eclipse-jdt-ui-PackageExplorer Tree,
