@@ -85,7 +85,7 @@ Preferences -> 在左上角用于过滤关键字的输入框输入 `enc` -> 把�
 
 ![eclipse配置-添加自定义archetype1](eclipse配置-添加自定义archetype1.png)
 
-填入类似<http://192.168.1.201:8081/repository/my-repository/archetype-catalog.xml>的私服仓库地址的链接
+填入类似<http://192.168.1.201:8081/repository/my-repository/archetype-catalog.xml>的私服仓库地址的链接
 
 ![eclipse配置-添加自定义archetype1](eclipse配置-添加自定义archetype2.png)
 
