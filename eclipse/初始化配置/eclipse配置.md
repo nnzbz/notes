@@ -178,7 +178,7 @@ YAML文件编辑插件
 ### 3.5. Lombok(必须)
 
 下载
-https://projectlombok.org/downloads/lombok.jar
+<https://projectlombok.org/downloads/lombok.jar>
 
 双击运行jar包安装
 
