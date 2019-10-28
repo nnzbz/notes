@@ -63,6 +63,11 @@ Preferences -> 在左上角用于过滤关键字的输入框输入 `enc` -> 把�
 配置如下图：
 
 ![eclipse配置-保存自动系统化imports和格式化代码](eclipse配置-保存自动系统化imports和格式化代码.png)
+![eclipse配置-保存自动系统化imports和格式化代码1](eclipse配置-保存自动系统化imports和格式化代码1.png)
+![eclipse配置-保存自动系统化imports和格式化代码2](eclipse配置-保存自动系统化imports和格式化代码2.png)
+![eclipse配置-保存自动系统化imports和格式化代码3](eclipse配置-保存自动系统化imports和格式化代码3.png)
+![eclipse配置-保存自动系统化imports和格式化代码4](eclipse配置-保存自动系统化imports和格式化代码4.png)
+![eclipse配置-保存自动系统化imports和格式化代码5](eclipse配置-保存自动系统化imports和格式化代码5.png)
 
 ### 1.7. HTML与XML延长换行宽度
 
