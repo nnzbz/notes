@@ -60,6 +60,10 @@ docker search ubuntu
 
 #### 3.2.1. 设置默认从国内镜像拉取
 
+- 查看阿里云镜像加速器地址
+
+<https://cr.console.aliyun.com/cn-shenzhen/instances/mirrors>
+
 - ubuntu/centos
 
 ```sh
@@ -70,7 +74,7 @@ vi /etc/docker/daemon.json
 
 ```json
 {
-  "registry-mirrors": ["https://registry.docker-cn.com"]
+  "registry-mirrors": ["https://XXXXXXXX.mirror.aliyuncs.com"]
 }
 ```
 
