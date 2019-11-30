@@ -10,6 +10,7 @@ services:
     ports:
       - 9200:9200
       - 9300:9300
+    network_mode: bridge
   kibana:
     image: docker.elastic.co/kibana/kibana:7.3.0
     container_name: kibana
@@ -20,3 +21,4 @@ services:
       - es01
     links:
       - es01:elasticsearch
+    network_mode: bridge
