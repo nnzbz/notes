@@ -1,0 +1,45 @@
+# This file uses the version 2 docker-compose file format, described here:
+# https://docs.docker.com/compose/compose-file/#version-2
+#
+# This runs the zipkin and zipkin-mysql containers, using docker-compose's
+# default networking to wire the containers together.
+#
+# Note that this file is meant for learning Zipkin, not production deployments.
+ 
+version: '2'
+services:  
+  zipkin:
+    image: openzipkin/zipkin
+    container_name: zipkin
+    # Environment settings are defined here https://github.com/openzipkin/zipkin/tree/1.19.0/zipkin-server#environment-variables
+    environment:
+      # - STORAGE_TYPE=mysql
+      # # Point the zipkin at the storage backend
+      # - MYSQL_DB=shop_zipkin
+      # - MYSQL_USER=root
+      # - MYSQL_PASS=root
+      # - MYSQL_HOST=192.168.1.81
+      # - MYSQL_TCP_PORT=3306
+      # # Uncomment to enable scribe
+      # # - SCRIBE_ENABLED=true
+      # # Uncomment to enable self-tracing
+      # # - SELF_TRACING_ENABLED=true
+      # # Uncomment to enable debug logging
+      # # - JAVA_OPTS=-Dlogging.level.zipkin=DEBUG -Dlogging.level.zipkin2=DEBUG
+      - RABBIT_ADDRESSES=rabbitmq:5672
+      - RABBIT_USER=guest
+      - RABBIT_PASSWORD=guest
+      - RABBIT_QUEUE=zipkin
+      - RABBIT_VIRTUAL_HOST=/
+      - STORAGE_TYPE=elasticsearch
+      - ES_HOSTS=elasticsearch:9200
+    restart: always
+    external_links: 
+      - rabbitmq:rabbitmq
+      - es01:elasticsearch
+    network_mode: bridge
+    ports:
+      # Port used for the Zipkin UI and HTTP Api
+      - 9411:9411
+      # Uncomment if you set SCRIBE_ENABLED=true
+      # - 9410:9410
