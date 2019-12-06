@@ -4,27 +4,27 @@
 
 ## 1. 官网及文档
 
-官网: https://scrapy.org/
+官网: <https://scrapy.org/>
 
-文档: https://doc.scrapy.org/en/latest/
+文档: <https://doc.scrapy.org/en/latest/>
 
 ## 2. Scrapy组件
 
-- 引擎(Scrapy): 
+- 引擎(Scrapy):
  用来处理整个系统的数据流处理, 触发事务(框架核心)
-- 调度器(Scheduler): 
+- 调度器(Scheduler):
  用来接受引擎发过来的请求, 压入队列中, 并在引擎再次请求的时候返回. 可以想像成一个URL（抓取网页的网址或者说是链接）的优先队列, 由它来决定下一个要抓取的网址是什么, 同时去除重复的网址
-- 下载器(Downloader): 
+- 下载器(Downloader):
  用于下载网页内容, 并将网页内容返回给蜘蛛(Scrapy下载器是建立在twisted这个高效的异步模型上的)
-- 爬虫(Spiders): 
+- 爬虫(Spiders):
  爬虫是主要干活的, 用于从特定的网页中提取自己需要的信息, 即所谓的实体(Item)。用户也可以从中提取出链接,让Scrapy继续抓取下一个页面
-- 项目管道(Pipeline): 
+- 项目管道(Pipeline):
  负责处理爬虫从网页中抽取的实体，主要的功能是持久化实体、验证实体的有效性、清除不需要的信息。当页面被爬虫解析后，将被发送到项目管道，并经过几个特定的次序处理数据。
-- 下载器中间件(Downloader Middlewares): 
+- 下载器中间件(Downloader Middlewares):
  位于Scrapy引擎和下载器之间的框架，主要是处理Scrapy引擎与下载器之间的请求及响应。
-- 爬虫中间件(Spider Middlewares): 
+- 爬虫中间件(Spider Middlewares):
  介于Scrapy引擎和爬虫之间的框架，主要工作是处理蜘蛛的响应输入和请求输出。
-- 调度中间件(Scheduler Middewares): 
+- 调度中间件(Scheduler Middewares):
  介于Scrapy引擎和调度之间的中间件，从Scrapy引擎发送到调度的请求和响应。
 
 ## 3. Scrapy 运行流程
@@ -40,6 +40,8 @@
 
 ```sh
 pip3 install Scrapy
+# 上面的命令在天朝会被墙，这里可用下面的命令换源
+pip3 install scrapy -i http://pypi.douban.com/simple --trusted-host pypi.douban.com
 ```
 
 ## 5. 创建项目
@@ -58,7 +60,7 @@ scrapy startproject 项目名
 | settings.py | 配置文件，如：递归的层数、并发数，延迟下载等                                                                |
 | spiders     | 爬虫目录，如：创建文件，编写爬虫规则                                                                        |
 
-## 6. 通过模板创建爬虫
+## 6. 通过模板创建爬虫
 
 ```sh
 scrapy genspider -t crawl 爬虫名 网站域名
@@ -71,7 +73,7 @@ scrapy genspider -t crawl 爬虫名 网站域名
 scrapy genspider -l
 ```
 
-## 7. 编写爬虫
+## 7. 编写爬虫
 
 Scrapy框架中分两类爬虫，Spider类和CrawlSpider类。
 
@@ -131,7 +133,7 @@ class StatsSpider(CrawlSpider):
 
 ## 8. 运行爬虫
 
-### 8.1. 命令行
+### 8.1. 命令行
 
 进入项目目录，运行命令
 
@@ -151,7 +153,7 @@ from scrapy import cmdline
 cmdline.execute("scrapy crawl area".split())
 ```
 
-- 添加项目运行的配置
+- 添加项目运行的配置
 
 ## 9. Scrapy查询语法
 
@@ -221,7 +223,7 @@ class AreaSpider(scrapy.Spider):
             yield areaitem
 ```
 
-## 11. 获取响应的Cookie
+## 11. 获取响应的Cookie
 
 ```py
 def parse(self, response):
@@ -233,15 +235,15 @@ def parse(self, response):
 
 ## 12. Scrapyd
 
-http://scrapyd.readthedocs.io/en/latest
+<http://scrapyd.readthedocs.io/en/latest>
 
 ### 12.1. 安装服务器
 
 ```sh
 # CentOS下先安装需要的环境
 # (无效)可用yum search python | grep -i devel查看
-#yum install python36-devel.x86_64
-# 有效
+# yum install python36-devel.x86_64
+# 有效
 yum install python-devel
 # 安装scrapyd
 pip install scrapyd
@@ -255,11 +257,11 @@ pip install scrapyd
 vi /usr/lib/python2.7/site-packages/scrapyd/default_scrapyd.conf
 ```
 
-将 ```bind_address = 127.0.0.1``` 改为 ```bind_address = 0.0.0.0```
+将 ```bind_address = 127.0.0.1``` 改为 ```bind_address = 0.0.0.0```
 
-### 12.3. 运行服务器
+### 12.3. 运行服务器
 
-下面命令用于启动scrapyd服务器
+下面命令用于启动scrapyd服务器
 
 ```sh
 scrapyd
@@ -271,7 +273,7 @@ nohup scrapyd > nohup.out 2>&1 &
 
 ### 12.4. 服务器的守护进程supervisor
 
-scrapyd服务器实在是太脆弱了，用supervisor保护一下
+scrapyd服务器实在是太脆弱了，用supervisor保护一下
 
 - 安装supervisor
 
@@ -308,7 +310,7 @@ autostart=true
 autorestart=unexpected
 ```
 
-- 创建supervisor服务
+- 创建supervisor服务
 
 ```sh
 vi /usr/lib/systemd/system/supervisord.service
@@ -343,9 +345,9 @@ supervisorctl
 scrapyd                          RUNNING   pid 21599, uptime 0:00:35
 ```
 
-### 12.5. 部署项目
+### 12.5. 部署项目
 
-- 修改项目的 ```scrapy.cfg``` 文件，去掉url前的注释符号，并将地址改为真正的IP地址
+- 修改项目的 ```scrapy.cfg``` 文件，去掉url前的注释符号，并将地址改为真正的IP地址
 
 ```ini
 ....
@@ -562,7 +564,7 @@ pip install scrapy-crawlera
 
 #### 13.3.3. Scrapy Cloud（免费）
 
-提供部署爬虫服务器的地方
+提供部署爬虫服务器的地方
 
 - Code & Deploys
 
@@ -576,7 +578,7 @@ shub deploy <Project ID>
 
 #### 13.3.4. Crawlera（付费)
 
-提供了防止 ban 的机制，通过 ip、user-agent、cookie 等设置，防止爬虫被禁。
+提供了防止 ban 的机制，通过 ip、user-agent、cookie 等设置，防止爬虫被禁。
 
 - settings.py
 

@@ -1,17 +1,17 @@
-# Python入门
+# 1. Python入门
 
 [TOC]
 
-## 1. 安装
+## 1.1. 安装python
 
-### 1.1. MAC下安装
+### 1.1.1. MAC
 
 ```sh
 xcode-select --install
 brew install python3
 ```
 
-### 1.2. CentOS7
+### 1.1.2. CentOS7
 
 1. 安装依赖环境
 
@@ -58,7 +58,17 @@ python3 --version
 pip3 --version
 ```
 
-## 2. 运行与退出
+## 1.2. 安装pip
+
+### 1.2.1. deepin
+
+```sh
+sudo apt install -y python-pip python3-pip
+```
+
+安装完后用pip命令调用python2的pip，pip3命令调用python3的
+
+## 1.3. 运行与退出
 
 - 运行
 
@@ -72,7 +82,7 @@ python
 exit()
 ```
 
-## 3. Python解释器
+## 1.4. Python解释器
 
 | 解释器     | 说明                                                                                                                                                                                                             |
 |:-----------|:-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -82,7 +92,7 @@ exit()
 | Jython     | 运行在Java平台上的Python解释器，可以直接把Python代码编译成Java字节码执行。                                                                                                                                       |
 | IronPython | 运行在微软.Net平台上的Python解释器，可以直接把Python代码编译成.Net的字节码。                                                                                                                                     |
 
-## 4. Python程序后台执行
+## 1.5. Python程序后台执行
 
 ```sh
 nohup python -u myscript.py params1 > nohup.out 2>&1 & 
