@@ -50,7 +50,8 @@ pip3 install scrapy -i http://pypi.douban.com/simple --trusted-host pypi.douban.
 scrapy startproject 项目名
 ```
 
-文件说明：
+- 项目名一般用网站名便于理解
+- 项目文件说明：
 
 | 文件        | 说明                                                                                                        |
 |:------------|:------------------------------------------------------------------------------------------------------------|
@@ -63,9 +64,10 @@ scrapy startproject 项目名
 ## 6. 通过模板创建爬虫
 
 ```sh
-scrapy genspider -t crawl 爬虫名 网站域名
+scrapy genspider -t crawl <爬虫名> <网站域名>
 ```
 
+- 网站域名: 注意域名是不带`http(s)://`前缀的
 - 参数-t: 指出使用的模板
 - 要显示可用的模板，用下面的命令：
 
@@ -82,7 +84,7 @@ Scrapy框架中分两类爬虫，Spider类和CrawlSpider类。
 
 ### 7.1. Spider
 
-在spiders目录中新建 area_spider.py 文件
+在spiders目录中新建 area.py 文件
 
 ```py
 # -*- coding: utf-8 -*-
@@ -150,7 +152,7 @@ scrapy crawl 爬虫名 --nolog
 ```py
 from scrapy import cmdline
 
-cmdline.execute("scrapy crawl area".split())
+cmdline.execute("scrapy crawl area -o area.json".split())
 ```
 
 - 添加项目运行的配置
@@ -244,9 +246,9 @@ def parse(self, response):
 # (无效)可用yum search python | grep -i devel查看
 # yum install python36-devel.x86_64
 # 有效
-yum install python-devel
+yum install python3-devel
 # 安装scrapyd
-pip install scrapyd
+pip3 install scrapyd
 ```
 
 注意：但目前不是最新版本，建议到 https://github.com/scrapy/scrapyd 网站下载最新源码版本，然后解压到任意目录，再用 ```python setup.py install``` 命令手动安装。
@@ -374,10 +376,11 @@ sudo scrapyd-deploy
 ```sh
 # 启动任务
 curl http://localhost:6800/schedule.json -d project=myproject -d spider=somespider
+# 取消任务
 curl http://localhost:6800/cancel.json -d project=<项目名> -d job=<JobID>
 ```
 
-1、启动API（POST）: 
+1、启动API（POST）:
 
 http://192.168.0.2:6800/schedule.json -d project=xxxspider -d spider=cplusplus -d word=['hahaha'] -d version=1.0.2
 
