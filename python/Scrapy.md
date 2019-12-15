@@ -235,11 +235,11 @@ def parse(self, response):
     print(cookieJar._cookies)
 ```
 
-## 12. Scrapyd
+## 12. Scrapyd与ScrapydWeb
 
 <http://scrapyd.readthedocs.io/en/latest>
 
-### 12.1. 安装服务器
+### 12.1. 安装Scrapyd服务器与ScrapydWeb网站
 
 ```sh
 # CentOS下先安装需要的环境
@@ -247,13 +247,15 @@ def parse(self, response):
 # yum install python36-devel.x86_64
 # 有效
 yum install python3-devel
-# 安装scrapyd
+# 安装Scrapyd
 pip3 install scrapyd
+# 安装ScrapydWeb
+pip3 install scrapydweb
 ```
 
-注意：但目前不是最新版本，建议到 https://github.com/scrapy/scrapyd 网站下载最新源码版本，然后解压到任意目录，再用 ```python setup.py install``` 命令手动安装。
+注意：但目前scrapyd不是最新版本，建议到 <https://github.com/scrapy/scrapyd> 网站下载最新源码版本，然后解压到任意目录，再用 ```python setup.py install``` 命令手动安装。
 
-### 12.2. 让非本地也可访问服务器
+### 12.2. 让非本地也可访问Scrapyd服务器
 
 ```sh
 vi /usr/lib/python2.7/site-packages/scrapyd/default_scrapyd.conf
@@ -261,7 +263,7 @@ vi /usr/lib/python2.7/site-packages/scrapyd/default_scrapyd.conf
 
 将 ```bind_address = 127.0.0.1``` 改为 ```bind_address = 0.0.0.0```
 
-### 12.3. 运行服务器
+### 12.3. 运行Scrapyd服务器
 
 下面命令用于启动scrapyd服务器
 
@@ -347,7 +349,31 @@ supervisorctl
 scrapyd                          RUNNING   pid 21599, uptime 0:00:35
 ```
 
-### 12.5. 部署项目
+### 12.5. 运行与配置ScrapydWeb
+
+- 通过运行命令 scrapydweb 启动 ScrapydWeb（首次启动将自动在当前工作目录生成配置文件）。
+- 启用 HTTP 基本认证（可选）：
+
+```ini
+ENABLE_AUTH = True
+USERNAME = 'username'
+PASSWORD = 'password'
+```
+
+- 添加 Scrapyd server，支持字符串和元组两种配置格式，支持添加认证信息和分组/标签：
+
+```ini
+SCRAPYD_SERVERS = [
+    '127.0.0.1',
+    # 'username:password@localhost:6801#group',
+    ('username', 'password', 'localhost', '6801', 'group'),
+]
+```
+
+- 运行命令 scrapydweb 重启 ScrapydWeb。
+
+
+### 12.6. 部署项目
 
 - 修改项目的 ```scrapy.cfg``` 文件，去掉url前的注释符号，并将地址改为真正的IP地址
 
@@ -364,14 +390,14 @@ url = http://localhost:6800/
 pip install Scrapyd-client
 ```
 
-- 部署
+- 上传项目
 
 ```sh
 cd <项目目录>
 sudo scrapyd-deploy
 ```
 
-### 12.6. API控制
+### 12.7. API控制
 
 ```sh
 # 启动任务
