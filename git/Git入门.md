@@ -1,16 +1,16 @@
-# 1. Git入门
+# Git入门
 
 [TOC]
 
-## 1.1. 安装
+## 1. 安装
 
-### 1.1.1. debian(deepin,ubuntu)
+### 1.1. debian(deepin,ubuntu)
 
 ```sh
 sudo apt-get install git
 ```
 
-### 1.1.2. 初次配置
+### 1.2. 初次配置
 
 首先必须配置用户信息，包括用户名和邮箱地址。这两条配置信息很重要，git每次提交时都会引用用户信息，说明是谁提交的更新，并且永久保存到历史记录中。
 
@@ -24,15 +24,15 @@ git config --list
 可以使用#git config --list来查看配置信息，不过有时候会看到重复的变量名，那就说明它们来自不同的配置文件（比如/etc/gitconfig和~/.gitconfig），最终Git 实际采用的是最后一个。
 也可以直接查阅某个变量#git config user.name
 
-## 1.2. 常用命令简图
+## 2. 常用命令简图
 
 ![Git常用命令简图](Git常用命令简图.jpg)
 
-## 1.3. Git常用操作
+## 3. Git常用操作
 
-### 1.3.1. 初始化
+### 3.1. 初始化
 
-#### 1.3.1.1. 创建仓库
+#### 3.1.1. 创建仓库
 
 - 初始化当前文件夹为一个仓库(文件夹里面可以有文件)
 
@@ -46,13 +46,13 @@ git init
 git --bare init
 ```
 
-#### 1.3.1.2. 克隆远程仓库
+#### 3.1.2. 克隆远程仓库
 
 ```sh
 git clone http://zbz@192.168.1.201:10080/wboly/wboly-suc.git
 ```
 
-#### 1.3.1.3. 添加远程仓库
+#### 3.1.3. 添加远程仓库
 
 进入项目的根路径执行操作
 
@@ -60,19 +60,34 @@ git clone http://zbz@192.168.1.201:10080/wboly/wboly-suc.git
 git remote add origin https://github.com/nnzbz/notes.git
 ```
 
-### 1.3.2. 检查当前状态
+### 3.2. 检查当前状态
 
 ```sh
 git status
 ```
 
-### 1.3.3. 添加文件
+### 3.3. 添加文件
 
 ```sh
 git add file
 ```
 
-### 1.3.4. 提交修改
+### 3.4. 移除文件
+
+```sh
+git rm file
+```
+
+**如果只想把文件从 Git 仓库中删除（亦即从暂存区域移除），但仍然希望保留在当前工作目录中，那么请用 --cached 选项**
+
+```sh
+git rm --cached file
+git commit -a
+# 上面的命令会进入一个编辑界面
+# 按i编辑，然后将要delete的行去掉前面的#号，wq退出
+```
+
+### 3.5. 提交修改
 
 ```sh
 git commit -m "提交备注"
@@ -97,7 +112,7 @@ git add forgotten_file
 git commit --amend
 ```
 
-### 1.3.5. 推送分支
+### 3.6. 推送分支
 
 推送分支就是把该分支上的所有本地提交推送到远程库
 
@@ -113,7 +128,7 @@ git push origin dev
 
  **注意：** 如果要覆盖远程分支，请加  ```-f```
 
-### 1.3.6. 拉取分支
+### 3.7. 拉取分支
 
 - ```git fetch```
 
@@ -131,13 +146,13 @@ git fetch origin master
 git pull origin master
 ```
 
-### 1.3.7. 删除远程仓库链接
+### 3.8. 删除远程仓库链接
 
 ```sh
 git remote remove origin
 ```
 
-### 1.3.8. 撤销文件的修改
+### 3.9. 撤销文件的修改
 
 其实， ```git status``` 提示了如何操作
 
@@ -145,7 +160,7 @@ git remote remove origin
 git checkout -- <file>
 ```
 
-### 1.3.9. .gitignore
+### 3.10. .gitignore
 
 ```text
 target
@@ -155,9 +170,9 @@ target
 logs
 ```
 
-## 1.4. 几种常见场景
+## 4. 几种常见场景
 
-### 1.4.1. 放弃本地修改(谨慎)
+### 4.1. 放弃本地修改(谨慎)
 
 ```sh
 git fetch --all
@@ -165,13 +180,13 @@ git reset --hard origin/master
 git fetch
 ```
 
-### 1.4.2. 修改远程仓库地址
+### 4.2. 修改远程仓库地址
 
 ```sh
 git remote set-url origin [url]
 ```
 
-### 1.4.3. 将代码推送到另一个仓库
+### 4.3. 将代码推送到另一个仓库
 
 1. 给本地仓库添加新的远程仓库
 
@@ -190,7 +205,7 @@ git remote add origin_repo_b git@server_ip:/path/repo_b.git
 git push origin_repo_b branch_a
 ```
 
-### 1.4.4. 将代码同时推送到多个仓库
+### 4.4. 将代码同时推送到多个仓库
 
 1. 将远程repo_c配置到当前的工作的本地git仓库中
 
@@ -206,7 +221,7 @@ git remote set-url --add origin_repo_b git@192.168.1.101:~/project/repo_c.git
 git push origin_repo_b branch_a
 ```
 
-### 1.4.5. 作者请你帮助修改代码 ```Welcome PR```
+### 4.5. 作者请你帮助修改代码 ```Welcome PR```
 
 帮助他人的GitHub项目修改代码
 
@@ -233,17 +248,17 @@ git push origin_repo_b branch_a
 9. Merge
  这就是原项目开发人员的事了
 
-### 1.4.6. 在GitLab中修改仓库名称及路径
+### 4.6. 在GitLab中修改仓库名称及路径
 
 进入仓库 -> ```Settings``` -> ```General``` -> ```Advanced settings``` -> ```Expand``` -> 设置 ```Project name``` 与 ```Path``` -> ```Rename project```
 
-## 1.5. Eclipse中使用Git
+## 5. Eclipse中使用Git
 
-### 1.5.1. 开启 ```Git Perspective``` 视图
+### 5.1. 开启 ```Git Perspective``` 视图
 
  工具栏右上角的 ```Open Perspective``` ，选择 ```Git``` 选项打开。
 
-### 1.5.2. 从Github中克隆项目到本地
+### 5.2. 从Github中克隆项目到本地
 
 1. 在 ```Git Perspective``` 中，左边有一个 ```Git Repostories``` 的 ```View``` ，鼠标点击左上方工具栏的 ```Clone a Git Repository and add the clone to this view``` 按钮；
 2. 浏览器打开Githut仓库页面，鼠标点击 ```Clone or download```按钮，复制仓库链接，并将其粘贴到上一步弹出窗口的URI中；
@@ -251,7 +266,7 @@ git push origin_repo_b branch_a
 4. 点击 ```next```，再点击 ```next```，在 ```Local Destination``` 页面中，注意修改 ```Directory``` 为自己的 workspace的路径，点击 ```Finish``` 完成；
 5. 导入本地已经存在的项目（略）。
 
-### 1.5.3. 将已有项目添加到远程仓库
+### 5.3. 将已有项目添加到远程仓库
 
 1. 右击项目 > `Team` > `Share Project...` > 勾选 `Use or create repository in parent folder of project` > 选择下面列表框中的项目 > 点击 `Create Repository` 按钮 > `Finish`
 2. 复制经典的 `.gitignore` 文件，或自己创建一个，到项目根目录下
@@ -262,16 +277,16 @@ git push origin_repo_b branch_a
 7. 一路 `next` 直到 `Finish`
 8. 如果与线上版本有冲突，请走下一节“解决冲突”
 
-### 1.5.4. 解决冲突
+### 5.4. 解决冲突
 
 1. 右击冲突文件 > `team` > `merge tool`
 2. 将左边框中的代码修改为正确代码，保存（如果本来就是正确的，随便加一个空行，然后保存）
 3. 将修正的文件从 `Unstaged Changes` 添加到 `Staged Changes`
 4. 提交
 
-## 1.6. 常见问题
+## 6. 常见问题
 
-### 1.6.1. Git检查不到文件的变化
+### 6.1. Git检查不到文件的变化
 
 有时候文件有了修改，而git却检测不出来，这个坑就大了，可能的原因是之前提交的文件"缓存"还在，所以相同的文件再提交时无法被检测。（也有可能是git文件的时间跟比仓库中文件晚，让SourceTree认为这不是新文件）
 
@@ -280,13 +295,13 @@ git push origin_repo_b branch_a
 3. 执行 `git add .`
 4. 执行 `git commit -m ".` //SourceTree自带推送按钮，这一步命令行可以省略.
 
-### 1.6.2. 误用了pull，本地代码被产生冲突，如何恢复之前的本地代码
+### 6.2. 误用了pull，本地代码被产生冲突，如何恢复之前的本地代码
 
 ```sh
 git reset --hard
 ```
 
-### 1.6.3. ~~push时报 ```rejected - non-fast-forward``` 错误~~
+### 6.3. ~~push时报 ```rejected - non-fast-forward``` 错误~~
 
 简单来说，就是 ```fetch``` -> ```merge``` -> ```push``` ，详细步骤如下：
 
