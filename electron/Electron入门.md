@@ -114,7 +114,7 @@ yarn start
 
 ## 4. 调试应用
 
-打开开发者工具
+打开开发者工具
 
 ```js
 let win = new BrowserWindow();
