@@ -57,4 +57,4 @@ scp ~/.ssh/id_rsa.pub root@主机IP:/root/.ssh/authorized_keys
 vim ~/.ssh/known_hosts
 ```
 
-删除另一端的授信，否则连接报错
+删除另一端的授信，否则连接报错。
