@@ -2,11 +2,22 @@
 
 [TOC]
 
-## 1. 安装五笔输入法(存疑，再装时试试直接搜索input看看有没有Fcitx Configuration)
+## 1.1. 使用左手鼠标
+
+1. `Control Center` > `Mouse` > 打开 `Left Hand`
+2. 下载左手光标
+   <https://www.gnome-look.org/content/show.php/Obsidian+(left+handed+version)?content=121197>
+   或
+   <https://raw.githubusercontent.com/nnzbz/notes/master/linux/deepin/121197-Obsidian_L.tar.gz>(需要翻墙)
+3. 解压目录到 `~/.icons`
+4. 在Deepin的外观设置界面看到这个光标主题，切换过去
+   `Control Center` > `Personalization` > `Theme` > 选择 `Obsidian`
+
+## 1.2. 安装五笔输入法
 
 ```sh
-sudo apt remove fcitx* -y    //删除当前系统所有fcitx包
-sudo apt autoremove    //自动清理所有孤立的包
+sudo apt remove fcitx* -y       #删除当前系统所有fcitx包
+sudo apt autoremove             #自动清理所有孤立的包
 sudo apt install fcitx fcitx-table-wbpy fcitx-config-gtk fcitx-frontend-all  fcitx-ui-classic fcitx-tools fcitx-ui-kimpanel
 ```
 
@@ -16,16 +27,76 @@ sudo apt install fcitx fcitx-table-wbpy fcitx-config-gtk fcitx-frontend-all  fci
 sudo apt --fix-broken install -f
 ```
 
-最后注销再重新进来，配置输入法即可
+最后注销再重新进来，配置输入法(`Fcitx Configuration`)即可
 
-## 2. Deepin中使用Windows字体
-
-只需要把Windows下 `/Windows/Fonts` 文件夹复制到 Deepin下 `/usr/share/fonts/`，再把Fonts改名为winfonts 即可
-
-## 3. 在文件管理器中修改后缀名
+## 1.3. 在文件管理器中修改后缀名
 
 菜单 -> Settings -> Basic -> Open behavior -> 不要勾选 "Hide file extension when rename"
 
 设置如下图
 
 ![修改后缀名](修改后缀名.png)
+
+## 1.4. 解决deepin中vim无法复制文本到系统剪切板的问题
+
+```sh
+sudo apt-get install vim-gtk
+```
+
+然后使用 `"+y` 三个键就可以复制了
+
+## 1.5. 添加ll命令
+
+```sh
+sudo vim ~/.bashrc
+```
+
+打开下面三行的注释
+
+```txt
+....
+#alias ll='ls -l'
+#alias la='ls -A'
+#alias l='ls -CF'
+....
+```
+
+执行
+
+```sh
+. ~/.bashrc
+```
+
+## 1.6. Deepin中使用Windows字体
+
+只需要把Windows下 `/Windows/Fonts` 文件夹复制到 Deepin下 `/usr/share/fonts/`，再把Fonts改名为winfonts 即可
+
+## 1.7. 添加快捷方式
+
+```sh
+sudo vi /usr/share/applications/{文件名}.desktop
+```
+
+添加如下内容
+
+```txt
+[Desktop Entry]
+Encoding=UTF-8
+Name=eclipse  
+Comment=Eclipse IDE  
+Exec=/opt/eclipse/eclipse  
+Icon=/opt/eclipse/icon.xpm  
+Terminal=false  
+StartupNotify=true  
+Type=Application  
+Categories=Application;Development;
+```
+
+- Exec
+  代表应用程序的位置(如果要加参数要在前后空格再加)
+- Icon
+  代表应用程序图标的位置
+- Terminal
+  为false表示启动时不启动命令行窗口，值为true表示启动命令行窗口（建议false）
+- Categories
+  决定创建出的起动器在应用程序菜单中的位置
