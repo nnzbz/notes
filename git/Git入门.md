@@ -22,7 +22,7 @@ git config --list
 ```
 
 可以使用#git config --list来查看配置信息，不过有时候会看到重复的变量名，那就说明它们来自不同的配置文件（比如/etc/gitconfig和~/.gitconfig），最终Git 实际采用的是最后一个。
-也可以直接查阅某个变量#git config user.name
+也可以直接查阅某个变量 `git config user.name`
 
 ## 2. 常用命令简图
 
