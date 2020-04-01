@@ -1,8 +1,12 @@
-# 1. Deepin实用技巧
+# Deepin实用技巧
 
 [TOC]
 
-## 1.1. 使用左手鼠标
+## 1. 自动登录
+
+`Control Center` > `Accounts` > 点击账户右边的 `>` > 打开 `Auto Login` 开关
+
+## 2. 使用左手鼠标
 
 1. `Control Center` > `Mouse` > 打开 `Left Hand`
 2. 下载左手光标
@@ -13,7 +17,7 @@
 4. 在Deepin的外观设置界面看到这个光标主题，切换过去
    `Control Center` > `Personalization` > `Theme` > 选择 `Obsidian`
 
-## 1.2. 安装五笔输入法
+## 3. 安装五笔输入法
 
 ```sh
 sudo apt remove fcitx* -y       #删除当前系统所有fcitx包
@@ -29,7 +33,7 @@ sudo apt --fix-broken install -f
 
 最后注销再重新进来，配置输入法(`Fcitx Configuration`)即可
 
-## 1.3. 在文件管理器中修改后缀名
+## 4. 在文件管理器中修改后缀名
 
 菜单 -> Settings -> Basic -> Open behavior -> 不要勾选 "Hide file extension when rename"
 
@@ -37,7 +41,7 @@ sudo apt --fix-broken install -f
 
 ![修改后缀名](修改后缀名.png)
 
-## 1.4. 解决deepin中vim无法复制文本到系统剪切板的问题
+## 5. 解决deepin中vim无法复制文本到系统剪切板的问题
 
 ```sh
 sudo apt-get install vim-gtk
@@ -45,7 +49,7 @@ sudo apt-get install vim-gtk
 
 然后使用 `"+y` 三个键就可以复制了
 
-## 1.5. 添加ll命令
+## 6. 添加ll命令
 
 ```sh
 sudo vim ~/.bashrc
@@ -67,11 +71,11 @@ sudo vim ~/.bashrc
 . ~/.bashrc
 ```
 
-## 1.6. Deepin中使用Windows字体
+## 7. Deepin中使用Windows字体
 
 只需要把Windows下 `/Windows/Fonts` 文件夹复制到 Deepin下 `/usr/share/fonts/`，再把Fonts改名为winfonts 即可
 
-## 1.7. 添加快捷方式
+## 8. 添加快捷方式
 
 ```sh
 sudo vi /usr/share/applications/{文件名}.desktop
