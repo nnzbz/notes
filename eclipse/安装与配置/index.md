@@ -94,11 +94,11 @@ Preferences -> 在左上角用于过滤关键字的输入框输入 `enc` -> 把�
 
 ### 1.3.4. 未捕获的异常直接抛出
 
- `Java` > `Debug` > 取消勾选 `Suspend execution on uncaught exceptions`
+ `Preferences` > `Java` > `Debug` > 取消勾选 `Suspend execution on uncaught exceptions`
 
 ### 1.3.5. java格式化代码(必须配置)
 
- `Java` > `Code Style` > `formatter` > `Edit...`
+ `Preferences` > `Java` > `Code Style` > `formatter` > `Edit...`
 
 - Tab用Space替换
  在 `Indentation` > `Tab policy` > 勾选 `Spaces only`(201909版本的是下拉框选择)
@@ -245,5 +245,6 @@ YAML文件编辑插件
   如果elipse.ini有参数`-vm`，那么请加入`-vmargs -javaagent:lombok.jar`
 - 查看是否安装成功
   在 eclipse about 中看到文本最后一行有 Lombok.... 字样表示安装成功
+- 如果没有安装成功，可能是linux的文件权限问题，用chown和chmod设置一下eclipse的安装目录下lombok.jar文件的权限
 
 ## 1.6. ~~配置Tomcat~~

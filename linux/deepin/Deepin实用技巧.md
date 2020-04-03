@@ -73,7 +73,8 @@ sudo vim ~/.bashrc
 
 ## 7. Deepin中使用Windows字体
 
-只需要把Windows下 `/Windows/Fonts` 文件夹复制到 Deepin下 `/usr/share/fonts/`，再把Fonts改名为winfonts 即可
+- 只需要把Windows下 `/Windows/Fonts` 文件夹复制到 Deepin下 `/usr/share/fonts/`，再把Fonts改名为winfonts 即可
+- 可以使用 `Gnome Tweak Tool` 来设置默认字体
 
 ## 8. 添加快捷方式
 
