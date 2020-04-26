@@ -22,4 +22,4 @@ LC_ALL=zh_CN.UTF-8
 
  ```Permissions``` > ```Execute``` > 选中 ```Allow executing file as program```
 
- ### 再将桌面快捷方式再拖动到任务栏
+### 再将桌面快捷方式再拖动到任务栏

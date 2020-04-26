@@ -1,21 +1,29 @@
-# 1. eclipse配置
+# eclipse配置
 
 [TOC]
 
-## 1.1. 安装Java
+## 1. 加入staff组
 
-### 1.1.1. 下载java
+因为一般要将软件安装在 `/usr/local` 下并运行，所以要先将当前用户加入 `staff` 组。
+
+```sh
+sudo usermod -a -G staff `whoami`
+```
+
+## 2. 安装Java
+
+### 2.1. 下载java
 
 <https://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html>
 
-### 1.1.2. 解压
+### 2.2. 解压
 
 - debian(ubuntu,deepin)
 
 下载好Linux64位版本的tar.gz包并且解压。
-解压到/usr/bin/java/目录下，完整路径如: `/usr/bin/java/jdk1.8.0_231/`
+解压到 /usr/local/lib/ 目录下，完整路径如: `/usr/local/lib/jdk1.8.0_231/`
 
-### 1.1.3. 配置Java环境
+### 2.3. 配置Java环境
 
 - linux
 
@@ -25,14 +33,13 @@
 sudo vi /etc/profile
 ```
 
-添加内容如下：
+在文件末尾添加如下内容
 
-```ini
-# set java environment
-JAVA_HOME=/usr/bin/java/jdk1.8.0_231
-JRE_HOME=$JAVA_HOME/jre
-CLASSPATH=.:$JAVA_HOME/lib/
-PATH=$PATH:$JAVA_HOME/bin
+```sh
+....
+export JAVA_HOME=/usr/local/lib/jdk1.8.0_144
+export PATH=$JAVA_HOME/bin:$PATH
+# export CLASSPATH=.:$JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tools.jar
 ```
 
 使 `/etc/profile` 文件生效
@@ -41,36 +48,36 @@ PATH=$PATH:$JAVA_HOME/bin
 . /etc/profile
 ```
 
-## 1.2. 安装eclipse
+## 3. 安装eclipse
 
-### 1.2.1. 下载eclipse
+### 3.1. 下载eclipse
 
 <https://www.eclipse.org/downloads/packages/>
 
 请下载 `Eclipse IDE for Enterprise Java Developers` 下对应的版本
 
-### 1.2.2. 解压
+### 3.2. 解压
 
 - debian(ubuntu,deepin)
 
 下载好Linux64位版本的tar.gz包并且解压。
-解压到/usr/bin/eclipse/目录下，完整路径如: `/usr/bin/eclipse/eclipse201909/`
+解压到/usr/local/bin/目录下，完整路径如: `/usr/local/bin/eclipse201909/`
 
-## 1.3. Preferences配置
+## 4. Preferences配置
 
-### 1.3.1. 配置utf-8(必须配置)
+### 4.1. 配置utf-8(必须配置)
 
 Preferences -> 在左上角用于过滤关键字的输入框输入 `enc` -> 把不是UTF-8设置的改为UTF-8设置(如为空可忽略)
 
 **注意：一定要每一项都要检查，树节点的要展开检查所有层的子节点**
 
-### 1.3.2. 配置养眼的背景
+### 4.2. 配置养眼的背景
 
 1. 偏好设置->Preferences->General->Editor->Text Editors
 2. 右边是Text Editors的面板，在下面 `Appearance color options` 选项中选 `Background color` 选择背景颜色，去掉默认勾选的System default
 3. 点击Color来调整背景色：调整RGB为199，237，204(#c7edcc)
 
-### 1.3.3. 配置字体
+### 4.3. 配置字体
 
 修改Project Explorer的字体大小
 
@@ -92,13 +99,13 @@ Preferences -> 在左上角用于过滤关键字的输入框输入 `enc` -> 把�
 }
 ```
 
-### 1.3.4. 未捕获的异常直接抛出
+### 4.4. 未捕获的异常直接抛出
 
- `Java` > `Debug` > 取消勾选 `Suspend execution on uncaught exceptions`
+ `Preferences` > `Java` > `Debug` > 取消勾选 `Suspend execution on uncaught exceptions`
 
-### 1.3.5. java格式化代码(必须配置)
+### 4.5. java格式化代码(必须配置)
 
- `Java` > `Code Style` > `formatter` > `Edit...`
+ `Preferences` > `Java` > `Code Style` > `formatter` > `Edit...`
 
 - Tab用Space替换
  在 `Indentation` > `Tab policy` > 勾选 `Spaces only`(201909版本的是下拉框选择)
@@ -111,7 +118,7 @@ Preferences -> 在左上角用于过滤关键字的输入框输入 `enc` -> 把�
 - 写在语句后面的注释 `//` 对齐
  在 `Comments` > 勾选 `Preserve white space between code and line comments`
 
-### 1.3.6. 保存时自动系统化imports以及格式化代码(必须)
+### 4.6. 保存时自动系统化imports以及格式化代码(必须)
 
 菜单 `Preferences` > `Java` > `Editor` > `Save Actions`
 
@@ -124,13 +131,13 @@ Preferences -> 在左上角用于过滤关键字的输入框输入 `enc` -> 把�
 ![eclipse配置-保存自动系统化imports和格式化代码4](eclipse配置-保存自动系统化imports和格式化代码4.png)
 ![eclipse配置-保存自动系统化imports和格式化代码5](eclipse配置-保存自动系统化imports和格式化代码5.png)
 
-### 1.3.7. HTML与XML延长换行宽度
+### 4.7. HTML与XML延长换行宽度
 
 在 `Web` > `HTML Files` > `Editor` > Line width > 180
 
 在 `XML` > `XML Files` > `Editor` > Line width > 180
 
-### 1.3.8. 配置Maven(必须)
+### 4.8. 配置Maven(必须)
 
 - maven通用配置
 
@@ -150,7 +157,7 @@ Preferences -> 在左上角用于过滤关键字的输入框输入 `enc` -> 把�
 
 - Installations
 
-### 1.3.9. 配置GIT(必须)
+### 4.9. 配置GIT(必须)
 
 下面是我个人配置示范，请参考配置
 
@@ -166,7 +173,7 @@ Location: /home/zbz/.gitconfig
     autocrlf = input
 ```
 
-### 1.3.10. 关闭校验
+### 4.10. 关闭校验
 
 - 关闭Validation
 
@@ -176,15 +183,15 @@ Location: /home/zbz/.gitconfig
 
  在 `General` > `Editors` > `Text Editors` > `Spelling` > 取消勾选 `Enable spell checking`
 
-### 1.3.11. 去掉多余的启动项
+### 4.11. 去掉多余的启动项
 
  在 `Genaral` > `Startup and Shutdown`
 
-### 1.3.12. 打开过多自动关闭前面的页面
+### 4.12. 打开过多自动关闭前面的页面
 
  在 `General` > `Editors` > 勾选 `Close editors automatically`
 
-## 1.4. 创建桌面快捷方式（Ubuntu）
+## 5. 创建桌面快捷方式（Ubuntu）
 
 ```sh
 vi ~/Desktop/eclipse.desktop
@@ -207,11 +214,11 @@ Categories=Application;Development;
 sudo chmod u+x ~/Desktop/eclipse.desktop
 ```
 
-## 1.5. 安装插件
+## 6. 安装插件
 
-### 1.5.1. 反编译(Enhanced Class Decompiler)
+### 6.1. 反编译(Enhanced Class Decompiler)
 
-### 1.5.2. STS(Spring Tools)
+### 6.2. STS(Spring Tools)
 
 **注意:**
 安装STSv3.9.0之后， 与Organize Imports冲突，导致ctrl+shift+o热键失效
@@ -220,24 +227,24 @@ sudo chmod u+x ~/Desktop/eclipse.desktop
 > 1. `Preferences` > `General` > `Keys` > `Filters...` > 取消选择 `Filter uncategorized commands` > `OK`
 > 2. `Keys` > `"Go To Symbol in File"` > `Unbind Command` > `Apply and Close`
 
-### 1.5.3. ~~Docker工具(Eclipse Docker Tooling)~~
+### 6.3. ~~Docker工具(Eclipse Docker Tooling)~~
 
 管理docker的镜像及容器
 
 或docker editor 1.0.0
 
-### 1.5.4. ~~YEdit~~
+### 6.4. ~~YEdit~~
 
 YAML文件编辑插件
 
-### 1.5.5. Lombok(必须)
+### 6.5. Lombok(必须)
 
 - 下载
   <https://projectlombok.org/downloads/lombok.jar>
 - 安装说明
   <https://projectlombok.org/setup/eclipse>
 - 运行安装
-  双击运行jar包安装，或命令行执行 `sudo java -jar ./lombok.jar`
+  双击运行jar包安装，或命令行执行 `java -jar ./lombok.jar`
 - 勾选eclipse的目录
   如果没有可勾选的选项，可用 `Specify location...` 添加
 - Install / Update
@@ -245,5 +252,6 @@ YAML文件编辑插件
   如果elipse.ini有参数`-vm`，那么请加入`-vmargs -javaagent:lombok.jar`
 - 查看是否安装成功
   在 eclipse about 中看到文本最后一行有 Lombok.... 字样表示安装成功
+- 如果没有安装成功，可能是linux的文件权限问题，用chown和chmod设置一下eclipse的安装目录下lombok.jar文件的权限
 
-## 1.6. ~~配置Tomcat~~
+## 7. ~~配置Tomcat~~

@@ -170,7 +170,7 @@ target
 logs
 ```
 
-## 4. 几种常见场景
+## 4. 几种常见场景
 
 ### 4.1. 放弃本地修改(谨慎)
 
@@ -221,7 +221,7 @@ git remote set-url --add origin_repo_b git@192.168.1.101:~/project/repo_c.git
 git push origin_repo_b branch_a
 ```
 
-### 4.5. 作者请你帮助修改代码 ```Welcome PR```
+### 4.5. 作者请你帮助修改代码 ```Welcome PR```
 
 帮助他人的GitHub项目修改代码
 
