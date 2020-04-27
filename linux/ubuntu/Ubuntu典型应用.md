@@ -24,7 +24,7 @@ sudo vi /etc/ssh/sshd_config
 PermitRootLogin yes
 ```
 
-### 1.3. 支持exfat
+### 1.3. ~~支持exfat(新版本默认支持)~~
 
 ```sh
 sudo apt-get install exfat-fuse
@@ -75,6 +75,9 @@ sudo apt install nautilus-admin
 
 ### 1.9. 字体
 
+- 只需要把Windows下 `/Windows/Fonts` 文件夹复制到 Deepin下 `/usr/share/fonts/`，再把Fonts改名为winfonts 即可
+- 可以使用 `Gnome Tweak Tool` 来设置默认字体
+
 ```sh
 sudo apt-get install ttf-mscorefonts-installer
 # 更新字体缓存
@@ -93,6 +96,8 @@ sudo apt install laptop-mode-tools
 
 - 无法使用 `shift` 键切换输入法
   只能使用 `win + space`
+- 解决字体渲染问题(网页中的汉字歪歪扭扭，大小不一)
+  在 Setting 里设置字体
 
 ### 1.12. wps
 

@@ -162,7 +162,7 @@ git checkout -- <file>
 
 ### 3.10. .gitignore
 
-```text
+```sh
 target
 .project
 .classpath
