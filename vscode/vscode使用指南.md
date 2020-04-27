@@ -15,6 +15,16 @@
 
 ## 2. 插件配置
 
+### GitLens
+
+- 解决每次 `push` 都要输入用户名和密码的问题
+
+```sh
+git config --global credential.helper store
+```
+
+不要忘记重启VsCode
+
 ### 2.1. Markdown Preview Enhanced
 
 - 解决预览的字体问题
