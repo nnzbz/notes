@@ -42,7 +42,38 @@ sudo apt-get install ibus ibus-table ibus-table-wubi
 
 安装后要记得注销再进来
 
-### 1.5. 字体
+### 1.5. 重装Vi
+
+如果不重装，进入vi方向键会乱码
+
+```sh
+# 卸载自带的vim-tiny版本
+sudo apt-get remove vim-common
+# 重装
+sudo apt-get install vim
+```
+
+### 1.6. 文件管理器
+
+```sh
+# 增加 `Open as Administator` 功能
+sudo apt install nautilus-admin
+```
+
+### 1.7. 系统配置
+
+安装 `GNOME Tweak`
+
+### 1.8. 左手鼠标
+
+- 三种鼠标主题
+  - 下载 <https://www.gnome-look.org/content/show.php/Obsidian+(left+handed+version)?content=121197>
+  - 下载 <https://raw.githubusercontent.com/nnzbz/notes/master/linux/deepin/121197-Obsidian_L.tar.gz> (需要翻墙)
+  - `apt-get install crystalcursors`
+- 如果是下载的，须将下载的文件解压到 `~/.icons/` (Deepin) or `/usr/share/icons/` (Ubuntu)
+- 利用之前安装的 `GNOME Tweak` 设置鼠标主题
+
+### 1.9. 字体
 
 ```sh
 sudo apt-get install ttf-mscorefonts-installer
@@ -50,7 +81,7 @@ sudo apt-get install ttf-mscorefonts-installer
 sudo fc-cache -f -v
 ```
 
-### 1.6. 笔记本模式工具
+### 1.10. 笔记本模式工具
 
 如果不安装，部分环境关机的时候会变成重启
 
@@ -58,23 +89,14 @@ sudo fc-cache -f -v
 sudo apt install laptop-mode-tools
 ```
 
-### 1.7. 系统配置
+### 1.11. Chrome
 
-安装 ```Unity Tweak Tool```
+- 无法使用 `shift` 键切换输入法
+  只能使用 `win + space`
 
-### 1.8. Chrome
+### 1.12. wps
 
-ppa如果已经安装，可不用再次安装
-
-```sh
-sudo add-apt-repository ppa:a-v-shkop/chromium
-sudo apt-get update
-sudo apt-get install chromium-browser
-```
-
-### 1.9. wps
-
-#### 1.9.1. 安装缺失字体
+#### 1.12.1. 安装缺失字体
 
 - 下载缺失的字体文件
 
@@ -94,7 +116,7 @@ sudo mkfontdir
 sudo fc-cache
 ```
 
-#### 1.9.2. libpng12-0
+#### 1.12.2. libpng12-0
 
 进入https://packages.ubuntu.com搜索
 
@@ -105,7 +127,7 @@ https://packages.debian.org/zh-cn/wheezy/amd64/libpng12-0/download
 
 下载完后安装
 
-#### 1.9.3. wps
+#### 1.12.3. wps
 
 http://community.wps.cn/download/
 http://kdl1.cache.wps.com/ksodl/download/linux/a21//wps-office_10.1.0.5707~a21_amd64.deb
@@ -113,7 +135,7 @@ http://kdl1.cache.wps.com/ksodl/download/linux/a21//wps-office_10.1.0.5707~a21_a
 下载完后安装
 
 
-### 1.10. eclipse
+### 1.13. eclipse
 
 配置图标在启动栏
 
@@ -138,13 +160,13 @@ Categories=Application;Development;
 sudo chmod u+x /usr/share/applications/eclipse.desktop
 ```
 
-### 1.11. meld
+### 1.14. meld
 
 ```sh
 sudo apt-get install meld
 ```
 
-### 1.12. wireshark
+### 1.15. wireshark
 
 ppa如果已经安装，可不用再次安装
 
