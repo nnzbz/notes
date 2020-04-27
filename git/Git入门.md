@@ -17,6 +17,8 @@ sudo apt-get install git
 ```sh
 git config --global user.name "zbz"
 git config --global user.email "nnzbz@qq.com"
+# 保存用户名和密码，这样就不用每次push时都要输入用户名和密码
+git config --global credential.helper store
 # 查看配置信息
 git config --list
 ```
