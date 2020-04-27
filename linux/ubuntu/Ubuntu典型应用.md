@@ -32,7 +32,15 @@ sudo apt-get install exfat-fuse
 
 ### 1.4. 安装五笔输入法
 
-桌面右上角下拉箭头 -> Settings -> Region & Language
+桌面右上角下拉箭头 -> Settings -> Region & Language -> 点击 `+` 号添加
+
+如果没有可添加的五笔输入法，需先进行安装
+
+```sh
+sudo apt-get install ibus ibus-table ibus-table-wubi
+```
+
+安装后要记得注销再进来
 
 ### 1.5. 字体
 
