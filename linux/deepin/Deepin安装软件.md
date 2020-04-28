@@ -2,7 +2,14 @@
 
 [TOC]
 
-## 1. 坚果云
+## 1. Git
+
+```sh
+# 不用每次 `push` 都要输入用户名和密码
+git config --global credential.helper store
+```
+
+## 2. 坚果云
 
 如果安装后启动没反应
 
@@ -18,7 +25,7 @@ vi ~/.nutstore/dist/bin/nutstore-pydaemon.py
     ....
 ```
 
-## 2. VisualStudioCode
+## 3. VisualStudioCode
 
 1. 先在Deepin的应用市场中安装，然后检查更新，安装最新的版本
 2. 安装完后打开资源管理器默认就被vscode替换了，运行下面的指令
@@ -27,7 +34,7 @@ vi ~/.nutstore/dist/bin/nutstore-pydaemon.py
 xdg-mime default dde-file-manager.desktop inode/directory
 ```
 
-## 3. VirtualBox
+## 4. VirtualBox
 
 ```sh
 sudo apt-get install virtualbox-6.1
