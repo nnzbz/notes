@@ -12,6 +12,7 @@
 | Markdown Preview Enhanced | 可预览Markdown文件            |
 | Markdown TOC              | 增强对Markdown中TOC语法的支持 |
 | markdownlint              | Markdown语法检查              |
+| Prettier                  |                               |
 
 ## 2. 插件配置
 

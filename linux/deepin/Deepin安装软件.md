@@ -2,13 +2,23 @@
 
 [TOC]
 
-## 1. 安装 git
+## 1. 坚果云
+
+如果安装后启动没反应
 
 ```sh
-sudo apt-get install git
+vi ~/.nutstore/dist/bin/nutstore-pydaemon.py
 ```
 
-## 2. 安装VisualStudioCode
+将 50 行注释即可
+
+```py
+    ....
+    # gi.require_version('Notify', '0.7')
+    ....
+```
+
+## 2. VisualStudioCode
 
 1. 先在Deepin的应用市场中安装，然后检查更新，安装最新的版本
 2. 安装完后打开资源管理器默认就被vscode替换了，运行下面的指令
@@ -17,6 +27,8 @@ sudo apt-get install git
 xdg-mime default dde-file-manager.desktop inode/directory
 ```
 
-## 3. 安装VirtualBox
+## 3. VirtualBox
 
-先在Deepin的应用市场中安装，然后检查更新，安装最新的版本
+```sh
+sudo apt-get install virtualbox-6.1
+```
