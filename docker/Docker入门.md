@@ -5,16 +5,28 @@
 ## 1. 安装
 
 - CentOS
-
 <https://docs.docker.com/install/linux/docker-ce/centos/>
-
 - Ubuntu
-
 <https://docs.docker.com/install/linux/docker-ce/ubuntu/#install-docker-ce>
-
-- mac
-
+- Mac
 <https://docs.docker.com/docker-for-mac/install/#what-to-know-before-you-install>
+- Deepin
+由于 Deepin 是基于 debian 的 unstable 版本开发的，通过 $(lsb_release -cs) 获取到的版本信息为 unstable，而 docker 官方源并没支持 debian 的 unstable 版本，因此使用 docker 官方教程是安装不成功的。
+安装请参考官方Debian的方案
+<https://docs.docker.com/engine/install/debian/>
+但是在 `SET UP THE REPOSITORY`的第 `3` 步时注意，修改为下面的命令
+
+```sh
+sudo vi /etc/apt/sources.list.d/docker.list
+```
+
+```sh
+deb [arch=amd64] https://download.docker.com/linux/debian buster stable
+```
+
+解释
+
+- 官方文档使用 `$(lsb_release -cs)`，在Deepin中得到 *unstable*， 这里就具体指定debian的版本(在Deepin中查看Debian的版本请用 `cat /etc/debian_version` ，然后查看该版本对应的代号)
 
 ## 2. 配置
 
