@@ -39,3 +39,13 @@ xdg-mime default dde-file-manager.desktop inode/directory
 ```sh
 sudo apt-get install virtualbox-6.1
 ```
+
+## 5. dbeaver
+
+Deepin中的MySQL Workbench使用有问题，可以用这个软件代替
+
+```sh
+wget -O - https://dbeaver.io/debs/dbeaver.gpg.key | sudo apt-key add -
+echo "deb https://dbeaver.io/debs/dbeaver-ce /" | sudo tee /etc/apt/sources.list.d/dbeaver.list
+sudo apt-get update && sudo apt-get install dbeaver-ce
+```
