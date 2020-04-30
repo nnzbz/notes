@@ -27,6 +27,11 @@ sudo usermod -a -G staff `whoami`
 
 ## 4. 安装五笔输入法
 
+- 删除 `fcitx-table-wbpy` 的简繁转换快捷键
+  `Fcitx Configuration` > 选择 `Addon` Tab页 > 双击 `Simplified Chiness To Tradiional Chinese` > 清空快捷键
+
+- ~~安装 `ibus-wubi` (不稳定)~~
+
 ```sh
 # 删除当前系统所有fcitx包
 sudo apt remove fcitx* -y
@@ -35,13 +40,12 @@ sudo apt autoremove
 # sudo apt install fcitx fcitx-table-wbpy fcitx-config-gtk fcitx-frontend-all  fcitx-ui-classic fcitx-tools fcitx-ui-kimpanel
 sudo apt-get install ibus ibus-table ibus-table-wubi
 # 这一步不做似乎也可以
-echo -e "export GTK_IM_MODULE=ibus\nexport XMODIFIERS=@im=ibus\nexport # 清理一下冗余文件(这一步关键，否则下面im-config设置识别不了ibus)
+echo -e "\n# 支持ibus启动\nexport GTK_IM_MODULE=ibus\nexport XMODIFIERS=@im=ibus\nexport QT_IM_MODULE=ibus" >> ~/.bashrc
+# 清理一下冗余文件(这一步关键，否则下面im-config设置识别不了ibus)
 sudo rm -f /usr/share/im-config/data/23_ibus.*
-QT_IM_MODULE=ibus" >> ~/.bashrc
 # 设定默认的输入法为ibus
 im-config
 ....
-
 ```
 
 如果安装命令出现提示没有依赖的错误，请运行下面的指令
