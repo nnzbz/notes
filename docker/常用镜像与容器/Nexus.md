@@ -22,6 +22,11 @@ docker run -dp8081:8081 -p8082:8082 --restart=always --name nexus --volumes-from
 查看初始密码，需进入容器，查看下面文件的内容:
 `/nexus-data/admin.password`
 
+```sh
+docker exec -it nexus /bin/bash
+cat /nexus-data/admin.password
+```
+
 ## 2. 自己制作镜像文件
 
 ### 2.1. 准备文件
