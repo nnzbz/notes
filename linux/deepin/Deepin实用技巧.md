@@ -128,3 +128,9 @@ Categories=Application;Development;
   为false表示启动时不启动命令行窗口，值为true表示启动命令行窗口（建议false）
 - Categories
   决定创建出的起动器在应用程序菜单中的位置
+
+## 10. 微信不能打开
+
+```sh
+rm -rf ~/.deepinwine/Deepin-WeChat/*
+```
