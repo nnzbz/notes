@@ -61,7 +61,9 @@ export PATH=$JAVA_HOME/bin:$PATH
 - debian(ubuntu,deepin)
 
 下载好Linux64位版本的tar.gz包并且解压。
-解压到/usr/local/bin/目录下，完整路径如: `/usr/local/bin/eclipse201909/`
+解压到/usr/local/bin/目录下，完整路径如: `/usr/local/bin/eclipse202003R/`
+
+**注意，请不要在命令行运行eclipse，然后dock创建图标，这样在后面安装lombok的时候会不成功。应该用文件管理器直接去到 `/usr/local/bin/eclipse202003R/` 双击eclipse来运行，然后dock创建图标**
 
 ## 4. Preferences配置
 
