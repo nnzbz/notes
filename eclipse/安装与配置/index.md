@@ -245,6 +245,24 @@ YAML文件编辑插件
   <https://projectlombok.org/setup/eclipse>
 - 运行安装
   双击运行jar包安装，或命令行执行 `java -jar ./lombok.jar`
+  如果出现 `Exception in thread "main" java.awt.AWTError: Assistive Technology not found: org.GNOME.Accessibility.AtkWrapper` 的错误，
+
+```sh
+sudo vi /etc/java-8-openjdk/accessibility.properties
+```
+
+注释下面这行，如下
+
+```ini
+# assistive_technologies=org.GNOME.Accessibility.AtkWrapper
+```
+
+也可以直接运行
+
+```sh
+sudo sed -i -e '/^assistive_technologies=/s/^/#/' /etc/java-*-openjdk/accessibility.properties
+```
+
 - 勾选eclipse的目录
   如果没有可勾选的选项，可用 `Specify location...` 添加
 - Install / Update
@@ -253,5 +271,6 @@ YAML文件编辑插件
 - 查看是否安装成功
   在 eclipse about 中看到文本最后一行有 Lombok.... 字样表示安装成功
 - 如果没有安装成功，可能是linux的文件权限问题，用chown和chmod设置一下eclipse的安装目录下lombok.jar文件的权限
+- 我碰到的启动不成功时，发现是用命令行运行eclipse后dock，以后运行时直接点dock了的图标运行，这里发现没有安装成功，后来直接用文件管理器跑到/use/local/bin/eclipse202003R目录下双击运行eclipse，再dock，又能成功了，非常奇怪，记录一下
 
 ## 7. ~~配置Tomcat~~
