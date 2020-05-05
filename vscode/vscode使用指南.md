@@ -30,6 +30,8 @@ git config --global credential.helper store
 
 - 解决预览的字体问题
 编辑 `/home/zbz/.vscode/extensions/shd101wyy.markdown-preview-enhanced-0.5.3/node_modules/@shd101wyy/mume/styles/preview.css` 文件，查找 `.preview-container .mume[for="preview"] {......}`， 在省略号里面的开头添加 `font-family:'Microsoft YaHei';`
+最好使用等宽字体，如更纱字体(sarasa mono)
+
 
 ### 2.3. Markdown TOC
 

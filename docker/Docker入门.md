@@ -5,7 +5,7 @@
 ## 1. 安装
 
 - CentOS
-<https://docs.docker.com/install/linux/docker-ce/centos/>
+<https://docs.docker.com/engine/install/centos/>
 - Ubuntu
 <https://docs.docker.com/install/linux/docker-ce/ubuntu/#install-docker-ce>
 - Mac

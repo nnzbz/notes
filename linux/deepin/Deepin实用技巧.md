@@ -79,7 +79,13 @@ sudo vim ~/.bashrc
 . ~/.bashrc
 ```
 
-## 8. Deepin中使用Windows字体
+## 8. 字体
+
+### 8.1. 更纱字体
+
+<https://github.com/be5invis/Sarasa-Gothic/releases>
+
+### 8.2. Deepin中使用Windows字体
 
 - 只需要把Windows下 `/Windows/Fonts` 文件夹复制到 Deepin下 `/usr/share/fonts/`，再把Fonts改名为winfonts 即可
 - 可以使用 `Gnome Tweak Tool` 来设置默认字体
