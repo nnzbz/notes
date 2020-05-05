@@ -9,7 +9,11 @@
 git config --global credential.helper store
 ```
 
-## 2. 坚果云
+## 2. Chrome
+
+在标题栏右键，去掉选择“Use system title bar and borders”。
+
+## 3. 坚果云
 
 如果安装后启动没反应
 
@@ -25,22 +29,25 @@ vi ~/.nutstore/dist/bin/nutstore-pydaemon.py
     ....
 ```
 
-## 3. VisualStudioCode
+## 4. VsCode
 
-1. 先在Deepin的应用市场中安装，然后检查更新，安装最新的版本
-2. 安装完后打开资源管理器默认就被vscode替换了，运行下面的指令
+- 先在Deepin的应用市场中安装，然后检查更新，安装最新的版本
+- 安装完后打开资源管理器默认就被vscode替换了，运行下面的指令
 
 ```sh
 xdg-mime default dde-file-manager.desktop inode/directory
 ```
 
-## 4. VirtualBox
+- 使用自定义标题栏
+File-Preference-Settings-Window-Title Bar Style > “custom”
+
+## 5. VirtualBox
 
 ```sh
 sudo apt-get install virtualbox-6.1
 ```
 
-## 5. dbeaver
+## 6. dbeaver
 
 Deepin中的MySQL Workbench使用有问题，可以用这个软件代替
 
