@@ -4,19 +4,19 @@
 
 ## 1. 优雅退出
 
-敲下按键 ```~.```
+敲下按键 `~.`
 
 ## 2. 在客户端配置
 
 ```sh
-vim ~/.ssh/config
+vi ~/.ssh/config
 ```
 
 （注意不是/etc/ssh/sshd_config文件）
 
 后面添加
 
-```text
+```ini
 Host *
   ServerAliveInterval 30
 ```
@@ -38,10 +38,10 @@ ssh -o ServerAliveInterval=30 IP地址
 　　基于安全的理由，如果用户连线到 SSH Server 后闲置，SSH Server 会在超过特定时间后自动终止 SSH 连线。以下是设定终止连线时间的方法:
 
 ```sh
-vim /etc/ssh/sshd_config
+vi /etc/ssh/sshd_config
 ```
 
-```text
+```ini
 TCPKeepAlive yes
 。。。。
 ClientAliveInterval 60
@@ -66,12 +66,12 @@ systemctl restart sshd
 另：
 
 ```sh
-vim .bash_profile
+vi .bash_profile
 ```
 
 编辑
 
-```text
+```sh
 export TMOUT=1000000
 ```
 
