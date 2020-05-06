@@ -263,16 +263,16 @@ docker rm $(docker ps -a -q)
 docker stop $(docker ps -q) & docker rm $(docker ps -aq)
 ```
 
-### 4.3. 连接/断开容器
+### 4.3. 进入/退出容器
 
-- 连接已启动的容器
+- 进入已启动的容器
 
 ```sh
 docker exec -it redis1 /bin/bash
 ```
 
-- 断开与容器的连接
- 在容器内的命令行运行 ```exit```的指令或 ```ctrl+d``` 即可断开与容器的连接
+- 退出容器
+ 在容器内的命令行运行 ```exit```的指令或 ```ctrl+d```
 
 ### 4.4. 查看所有容器
 

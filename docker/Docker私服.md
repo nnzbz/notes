@@ -96,7 +96,7 @@ In the case of HTTPS, if you have access to the registry's CA certificate, no ne
 
 ### 6.1. 登录私服
 
-```shdocker login 
+```sh
 docker login 127.0.0.1:8082 -umy-deployment -pdeployment123
 ```
 

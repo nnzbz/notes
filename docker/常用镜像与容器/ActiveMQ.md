@@ -11,7 +11,7 @@ docker pull rmohr/activemq
 ## 2. 创建并运行容器
 
 ```sh
-docker run -p 61616:61616 -p 8161:8161 rmohr/activemq
+docker run --name activemq -dp 61616:61616 -p 8161:8161 --restart always rmohr/activemq
 ```
 
 ## 端口映射
