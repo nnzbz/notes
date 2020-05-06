@@ -19,4 +19,4 @@ docker run --name zookeeper -dp2181:2181 -p2888:2888 -p3888:3888 -p12080:8080 --
 
 ## 3. AdminServer
 
-New in 3.5.0: The AdminServer is an embedded Jetty server that provides an HTTP interface to the four letter word commands. By default, the server is started on port 8080, and commands are issued by going to the URL "/commands/[command name]", e.g., http://localhost:8080/commands/stat.
+New in 3.5.0: The AdminServer is an embedded Jetty server that provides an HTTP interface to the four letter word commands. By default, the server is started on port 8080, and commands are issued by going to the URL "/commands/[command name]", e.g., <http://localhost:8080/commands/stat>.
