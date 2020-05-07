@@ -49,10 +49,15 @@ vi /etc/firewalld/zones/public.xml
 - 允许docker容器访问外网
 
 ```sh
-# 设置启用ip转发功能
-cat >> /etc/sysctl.conf << EOF
-# 查看是否设置成功
+# 查看有没有设置启用ip转发功能，即 net.ipv4.ip_forward=1
+cat /etc/sysctl.conf|grep 'net.ipv4.ip_forward = 1'
+# 如果没有设置，启用ip转发功能
+echo 'net.ipv4.ip_forward = 1' >> /etc/sysctl.conf
+# 加载并查看是否设置成功
 sysctl -p
 # 开启类似NAT的功能, 让docker容器内部可以访问外网资源
 firewall-cmd --permanent --zone=public --add-masquerade
+
+# 重新加载防火墙
+firewall-cmd --reload
 ```
