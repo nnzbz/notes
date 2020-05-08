@@ -47,7 +47,17 @@ File-Preference-Settings-Window-Title Bar Style > “custom”
 sudo apt-get install virtualbox-6.1
 ```
 
-## 6. dbeaver
+## 6. electerm
+
+Terminal/ssh/sftp client(linux, mac, win) based on electron/ssh2/node-pty/xterm/antd/subx and other libs.
+
+不要从 Deepin 的 `App Store` 中安装，直接从下面的网址下载安装 <https://github.com/electerm/electerm/releases>
+
+## 7. Remmina
+
+从 Deepin 的 `App Store` 中安装，然后再更新
+
+## 8. dbeaver
 
 Deepin中的MySQL Workbench使用有问题，可以用这个软件代替
 

@@ -105,7 +105,48 @@ sudo vim ~/.bashrc
 - 只需要把Windows下 `/Windows/Fonts` 文件夹复制到 Deepin下 `/usr/share/fonts/`，再把Fonts改名为winfonts 即可
 - 可以使用 `Gnome Tweak Tool` 来设置默认字体
 
-## 9. 添加快捷方式
+## 9. 利用Deepin Terminal上传下载服务器的文件
+
+- 服务器端安装rz和lz
+  - CentOS
+
+    ```sh
+    yum -y install lrzsz
+    ```
+
+- 客户端配置 > Deepin Terminal > 右键 > `Remote management` > ....
+
+- 上传与下载
+  - 通过 `Remote management` 连接上服务器
+  - 右键菜单: `上传文件` 、 `下载文件`
+
+## 10. 跳板配置
+
+配置 `~/.ssh/config` 文件
+
+```ini
+Host Relay
+hostname 跳板机地址
+user 跳板机用户
+port 跳板机端口
+
+Host host-1-behind-Replay
+hostname 跳板机能访问的 host-1 的地址或者内网别名
+user 目标机器 host-1 的用户名
+port 目标机器 host-1 的 ssh 端口
+proxyjump Relay #使用的跳板机名称 这里就是上面配置的 Relay
+identityfile ~/.ssh/私钥
+```
+
+连接的时候 只要 `ssh host-1` 按 tab 自动补全 回车自动从 Relay 登录目标机器
+
+如果临时要登录某机器 但是没配置 proxyjump 可以用 -J 参数临时指定
+比如上面的配置 移除 proxyjump 配置后
+`ssh host-1-behind-Replay -J Relay`
+是等效的。
+其他可以看 ssh config 的文档 还有很多高级用法，比如用 ssh-agent 或这个 gpg 管理秘钥等
+
+## 11. 添加快捷方式
 
 ```sh
 sudo vi /usr/share/applications/{文件名}.desktop
@@ -135,7 +176,7 @@ Categories=Application;Development;
 - Categories
   决定创建出的起动器在应用程序菜单中的位置
 
-## 10. 微信不能打开
+## 12. 微信不能打开
 
 ```sh
 rm -rf ~/.deepinwine/Deepin-WeChat/*
