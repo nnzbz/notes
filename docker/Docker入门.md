@@ -28,7 +28,9 @@ deb [arch=amd64] https://download.docker.com/linux/debian buster stable
 
 - 官方文档使用 `$(lsb_release -cs)`，在Deepin中得到 *unstable*， 这里就具体指定debian的版本(在Deepin中查看Debian的版本请用 `cat /etc/debian_version` ，然后查看该版本对应的代号)
 
-## 2. 配置
+## 2. 安装后配置系统
+
+<https://docs.docker.com/engine/install/linux-postinstall/>
 
 如果还没有 docker group 就添加一个
 
@@ -39,7 +41,7 @@ sudo groupadd docker
 将当前用户加入Docker组
 
 ```sh
-sudo gpasswd -a ${USER} docker
+sudo usermod -aG docker $USER
 ```
 
 设置开机启动
