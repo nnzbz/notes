@@ -126,16 +126,16 @@ sudo vim ~/.bashrc
 
 ```ini
 Host Relay
-hostname 跳板机地址
-user 跳板机用户
-port 跳板机端口
+  hostname 跳板机地址
+  user 跳板机用户
+  port 跳板机端口
 
 Host host-1-behind-Replay
-hostname 跳板机能访问的 host-1 的地址或者内网别名
-user 目标机器 host-1 的用户名
-port 目标机器 host-1 的 ssh 端口
-proxyjump Relay #使用的跳板机名称 这里就是上面配置的 Relay
-identityfile ~/.ssh/私钥
+  hostname 跳板机能访问的 host-1 的地址或者内网别名
+  user 目标机器 host-1 的用户名
+  port 目标机器 host-1 的 ssh 端口
+  proxyjump Relay #使用的跳板机名称 这里就是上面配置的 Relay
+  identityfile ~/.ssh/私钥
 ```
 
 连接的时候 只要 `ssh host-1` 按 tab 自动补全 回车自动从 Relay 登录目标机器
