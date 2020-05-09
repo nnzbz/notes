@@ -148,19 +148,19 @@ git fetch origin master
 git pull origin master
 ```
 
-### 创建分支
+### 3.8. 创建分支
 
 ```sh
 git branch xxx
 ```
 
-### 3.8. 删除远程仓库链接
+### 3.9. 删除远程仓库链接
 
 ```sh
 git remote remove origin
 ```
 
-### 3.9. 撤销文件的修改
+### 3.10. 撤销文件的修改
 
 其实， ```git status``` 提示了如何操作
 
@@ -168,7 +168,7 @@ git remote remove origin
 git checkout -- <file>
 ```
 
-### 3.10. .gitignore
+### 3.11. .gitignore
 
 ```sh
 target
