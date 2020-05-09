@@ -12,10 +12,10 @@ docker pull gogs/gogs
 
 ```sh
 # Create local directory for volume.
-$ mkdir -p /var/gogs
+mkdir -p /var/gogs
 
 # Use `docker run` for the first time.
-$ docker run --name=gogs -dp 10022:22 -p 10080:3000 -v /var/gogs:/data --restart always gogs/gogs
+docker run --name=gogs -dp 10022:22 -p 10080:3000 -v /var/gogs:/data --restart always gogs/gogs
 ```
 
 - 如果指定使用同为docker容器内的mysql数据库，请用link参数
@@ -35,7 +35,9 @@ firewall-cmd --reload
 ## 4. 初始化
 
 - 访问 <http://ip:10080>
-  注意填写上部分连接mysql的参数，其它默认即可
+  - 注意填写上部分连接mysql的参数
+  - 由于是docker容器，映射到外面的地址和端口不一样，所以注意填写ip和端口为宿主机的
+  - 其它默认即可
 - 注册新用户
   第一次注册的用户即为管理员
 
