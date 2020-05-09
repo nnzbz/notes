@@ -148,6 +148,12 @@ git fetch origin master
 git pull origin master
 ```
 
+### 创建分支
+
+```sh
+git branch xxx
+```
+
 ### 3.8. 删除远程仓库链接
 
 ```sh

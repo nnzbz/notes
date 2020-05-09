@@ -6,6 +6,29 @@ Git LFS 是 Github 开发的一个 Git 的扩展，用于实现 Git 对大文件
 
 <https://github.com/git-lfs/git-lfs/wiki/Installation>
 
+- Deepin
+
+    ```sh
+    # stretch是debian的代号，Deepin按官网方式不能安装，只能假装是debian
+    sudo curl -o /etc/apt/sources.list.d/git-lfs.list "https://packagecloud.io/install/repositories/github/git-lfs/config_file.list?os=debian&dist=stretch&source=script"
+    curl -L "https://packagecloud.io/github/git-lfs/gpgkey" 2> /dev/null | sudo apt-key add -
+    sudo apt update && sudo apt install git-lfs
+    ```
+
+- Debian/Ubuntu
+
+    ```sh
+    curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | sudo bash
+    sudo apt-get install git-lfs
+    ```
+
+- Mac
+
+    ```sh
+    brew update
+    brew install git-lfs
+    ```
+
 ## 2. 开启lfs功能
 
 ```sh

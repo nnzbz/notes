@@ -22,7 +22,7 @@ mkdir /var/jenkins_home
 # 添加jenkins用户并指定uid为1000
 useradd jenkins -u 1000
 sudo chown -R jenkins:jenkins /var/jenkins_home
-# 或
+# 或直接
 sudo chown -R 1000:1000 /var/jenkins_home
 
 # sudo chmod 774 -R /var/jenkins_home
