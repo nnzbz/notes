@@ -37,7 +37,22 @@ firewall-cmd --reload
 - 访问 <http://ip:10080>
   - 注意填写上部分连接mysql的参数
   - 由于是docker容器，映射到外面的地址和端口不一样，所以注意填写ip和端口为宿主机的
+
+    ```ini
+    # 主要配置好这三项
+    DOMAIN           = <公网IP>
+    HTTP_PORT        = 3000
+    EXTERNAL_URL     = http://<公网IP>:10080/
+    ```
+
   - 其它默认即可
+  - 如果第一次配置错了后面相修改，如下
+
+    ```sh
+    docker exec -it gogs /bin/bash
+    vi /data/gogs/conf/app.ini
+    ```
+
 - 注册新用户
   第一次注册的用户即为管理员
 
