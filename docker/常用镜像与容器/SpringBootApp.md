@@ -19,6 +19,9 @@ ln ../luban-captcha-svr-0.0.1-SNAPSHOT.jar myservice.jar
 docker run -d --net=host --name luban-captcha-svr-a -e "SERVER_PORT=9101" -v /usr/local/luban-captcha-svr/9101:/usr/local/myservice --restart=always nnzbz/spring-boot-app
 ```
 
+- JAVA_OPTS
+  如需自定义 JVM内存参数 等配置，可通过 "-e JAVA_OPTS" 指定，参数格式 `JAVA_OPTS="-Xmx512m"`
+
 ## 3. 开启防火墙
 
 ```sh
