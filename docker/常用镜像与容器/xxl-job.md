@@ -32,3 +32,14 @@ docker run -e PARAMS="--spring.datasource.url=jdbc:mysql://db:3306/xxl_job?Unico
   必须填，因为目前 xxl_job 没有 latest 的 tag
 - JAVA_OPTS
   如需自定义 JVM内存参数 等配置，可通过 "-e JAVA_OPTS" 指定，参数格式 JAVA_OPTS="-Xmx512m"
+
+## 4. 网页管理地址
+
+`http://<IP>:<port>/xxl-job-admin`
+
+- IP
+  docker宿主机的IP
+- port
+  docker容器暴露出来的端口
+- 默认的登录名称和密码
+  admin 123456
