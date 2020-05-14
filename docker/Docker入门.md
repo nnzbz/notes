@@ -176,49 +176,7 @@ docker run -d -p 7000:6379 --name redis1 --restart=always redis
 - -t
  分配一个终端或控制台
 
-运行后可以看到指令前缀变成了下面这样
-
-```text
-[root@02bb74d47dfd /]#
-```
-
-#### 4.1.1. IPv4 forwarding is disabled
-
-WARNING IPv4 forwarding is disabled. Networking will not work
-
-解决办法：
-
-```sh
-vi /etc/sysctl.conf
-```
-
-或者
-
-```sh
-vi /usr/lib/sysctl.d/00-system.conf
-```
-
-添加如下代码：
-
-```text
-net.ipv4.ip_forward=1
-```
-
-重启network服务
-
-```sh
-systemctl restart network
-```
-
-查看是否修改成功
-
-```sh
-sysctl net.ipv4.ip_forward
-```
-
-如果返回为“net.ipv4.ip_forward = 1”则表示成功了
-
-#### 4.1.2. 创建并运行完退出
+#### 4.1.1. 创建并运行完退出
 
 ```sh
 docker run --name redis-temp redis echo "no run"
@@ -226,7 +184,7 @@ docker run --name redis-temp redis echo "no run"
 
 该命令在创建容器后，运行 ```echo``` 然后退出，通常用于数据卷容器
 
-#### 4.1.3. 启动容器不自动退出
+#### 4.1.2. 启动容器不自动退出
 
 两种方法
 
@@ -244,6 +202,15 @@ Dockerfile文件
 RUN touch /var/log/1.txt
 CMD "tail" "-f" "/var/log/1.txt"
 ```
+
+#### 4.1.3. 创建容器后修改参数
+
+如果创建容器后想修改参数，如设置为自动启动，如下：
+
+```sh
+docker container update --restart=always 容器名字
+```
+
 
 ### 4.2. 启动/停止/重启/删除容器
 
@@ -269,9 +236,15 @@ docker stop $(docker ps -q) & docker rm $(docker ps -aq)
 
 - 进入已启动的容器
 
-```sh
-docker exec -it redis1 /bin/bash
-```
+  ```sh
+  docker exec -it redis1 /bin/bash
+  ```
+
+  进入后可以看到指令前缀变成了下面这样
+
+  ```sh
+  [root@02bb74d47dfd /]#
+  ```
 
 - 退出容器
  在容器内的命令行运行 ```exit```的指令或 ```ctrl+d```
@@ -365,21 +338,61 @@ docker inspect node1 | grep IPA
 ```sh
 docker inspect 【container name】| grep LogPath | cut -d ':' -f 2 | cut -d ',' -f 1 | xargs echo | xargs truncate -s 0
 ```
-### 4.15. 报错
 
+### 4.15. 常见报错
 
-```sh
+- 未启动docker会报错
 
-每次开机当使用 docker ps报错
+  当使用 docker ps报错
 
-Cannot connect to the Docker daemon at unix:///var/run/docker.sock. Is the docker daemon running?
+  ```sh
+  Cannot connect to the Docker daemon at unix:///var/run/docker.sock. Is the docker daemon running?
+  ```
 
-或者 service docker start 报错
+  - service docker start 报错
 
-Redirecting to /bin/systemctl start docker.service
+  ```sh
+  Redirecting to /bin/systemctl start docker.service
+  ```
 
-是因为没有设置开机启动  systemctl enable docker
+  可以设置开机启动  
 
+  ```sh
+  systemctl enable docker
+  ```
 
+- IPv4 forwarding is disabled
 
-```
+  WARNING IPv4 forwarding is disabled. Networking will not work
+
+  解决办法：
+
+  ```sh
+  vi /etc/sysctl.conf
+  ```
+
+  或者
+
+  ```sh
+  vi /usr/lib/sysctl.d/00-system.conf
+  ```
+
+  添加如下代码：
+
+  ```text
+  net.ipv4.ip_forward=1
+  ```
+
+  重启network服务
+
+  ```sh
+  systemctl restart network
+  ```
+
+  查看是否修改成功
+
+  ```sh
+  sysctl net.ipv4.ip_forward
+  ```
+
+  如果返回为“net.ipv4.ip_forward = 1”则表示成功了
