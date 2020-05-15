@@ -56,7 +56,7 @@ Caused by: java.net.NoRouteToHostException: No route to host (Host unreachable)
 ifconifg
 ```
 
-我查到是 `172.17.0.1`，这说明docker将分配容器使用的ip段在 `172.17.0.0/16` 范围内
+我查到是 `172.17.0.1`，这说明docker将容器的IP分配在 `172.17.0.0/16` 范围内
 
 将  `172.17.0.0/16` 加入我之前配置的白名单内
 
