@@ -8,10 +8,39 @@
 
 ### 1.1. 创建并运行nexus的容器和容器卷
 
-```sh
-docker run --name nexus-data sonatype/nexus3 echo "data-only container for Nexus"
-docker run -dp8081:8081 -p8082:8082 --restart=always --name nexus --volumes-from nexus-data sonatype/nexus3
-```
+- 存放数据在宿主机
+  先查看宿主机有没有UID为200的用户
+  
+  ```sh
+  cat /etc/passwd | grep 200
+  ```
+
+  - 如果宿主机没有UID为200的用户
+
+    ```sh
+    # 添加nexus用户并指定uid为200
+    useradd nexus -u 200
+    mkdir /var/lib/nexus && chown -R nexus:nexus /var/lib/nexus
+    docker run -dp 8081:8081 --name nexus -v /var/lib/nexus:/nexus-data --restart=always sonatype/nexus3
+    ```
+
+  - 宿主机已经有UID为200的用户
+    200的用户是容器中使用的nexus用户，如果在宿主机中添加200的UID会有冲突，可添加另一个没有冲突的，然后在创建容器时使用 `--user` 参数
+
+    ```sh
+    # 添加nexus用户并未指定uid为200
+    adduser nexus
+    cat /etc/passwd|grep nexus # 例如我这里看到UID是1001
+    mkdir /var/lib/nexus && chown -R nexus:nexus /var/lib/nexus
+    docker run -dp 8081:8081 --name nexus -v /var/lib/nexus:/nexus-data --user 1001:1001 --restart=always sonatype/nexus3
+    ```
+
+- ~~存放数据在数据卷~~(推荐使用上面的方式)
+
+  ```sh
+  docker run --name nexus-data sonatype/nexus3 echo "data-only container for Nexus"
+  docker run -dp8081:8081 -p8082:8082 --restart=always --name nexus --volumes-from nexus-data sonatype/nexus3
+  ```
 
 ### 1.2. 浏览器访问
 
@@ -19,13 +48,22 @@ docker run -dp8081:8081 -p8082:8082 --restart=always --name nexus --volumes-from
 
 ### 1.3. 查看初始密码
 
-查看初始密码，需进入容器，查看下面文件的内容:
-`/nexus-data/admin.password`
+查看初始密码，需查看下面文件的内容
 
-```sh
-docker exec -it nexus /bin/bash
-cat /nexus-data/admin.password
-```
+`admin.password`
+
+- 如果目录影射到宿主机
+  
+  ```sh
+  cat /var/lib/nexus/admin.password
+  ```
+
+- 如果目录没有影射到宿主机，需进入容器
+
+  ```sh
+  docker exec -it nexus /bin/bash
+  cat /nexus-data/admin.password
+  ```
 
 ## 2. 自己制作镜像文件
 

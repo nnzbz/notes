@@ -8,7 +8,7 @@
 
 Sonatype官网: <http://www.sonatype.org/>
 issue地址: <https://issues.sonatype.org/>
-查询及管理地址: <https://oss.sonatype.org/>
+查询及管理地址: <https://oss.sonatype.org/>
 
 ## 2. 注册
 
@@ -19,7 +19,7 @@ issue地址: <https://issues.sonatype.org/>
 Project: Community Support - Open Source Project Repository Hosting (OSSRH)
 Issue Type: New Project
 
-申请表单填写示例如下：v
+申请表单填写示例如下：v
 
 ![申请填写示例](申请填写示例.png "申请填写示例")
 
@@ -27,7 +27,7 @@ Issue Type: New Project
 
 ## 4. 等待 Issue 审批通过
 
-我是在下午18:00提交的，两个小时后就通过了，审批通过Status就会变为 ```RESOLVED```
+我是在下午18:00提交的，两个小时后就通过了，审批通过Status就会变为 ```RESOLVED```
 
 ![审批通过](审批通过.png "审批通过")
 
@@ -41,17 +41,36 @@ Mac下载地址: <https://releases.gpgtools.org/GPG_Suite-2018.1.dmg>
 
 ### 5.2. 生成新的密钥对
 
-Generate new pair key
+- MacOS
+  Generate new pair key
+- Deepin
+
+  ```sh
+  gpg --gen-key
+  ```
 
 姓名:
 电子邮件:
 Password:
 
-### 5.3. 上传公钥到GPG密钥服务器
+### 5.3. 上传公钥到GPG密钥服务器
 
-Upload Public Key
+- MacOS
+  Upload Public Key
+- Deepin
+  
+  ```sh
+  # 查出keyid，为pub下一行的字符串
+  gpg --list-keys
+  # 上传
+  # gpg --keyserver hkp://pool.sks-keyservers.net --send-keys [keyid]
+  # 目前Maven中央仓库似乎使用的是下面这个公钥服务器(在一次部署时报错的时候看到)
+  gpg --keyserver http://keys.openpgp.org:11371 --send-keys [keyid]
+  ```
 
-## 6. 管理 ```User Token``` 用于上传服务器的凭证
+  - 这个keyid为
+
+## 6. 管理 ```User Token``` 用于上传服务器的凭证
 
 1. 访问管理地址并登录：<https://oss.sonatype.org/>
 2. 右上角 ```zbz``` -> Profile -> 下拉 ```Summary``` 并选到 ```User Token```
@@ -65,7 +84,7 @@ Upload Public Key
 </server>
 ```
 
-## 7. 修改Maven配置文件
+## 7. 修改Maven配置文件
 
 ### 7.1. settings.xml
 
@@ -76,6 +95,7 @@ Upload Public Key
     ....
     <!-- Maven中央仓库 -->
     <server>
+        <!-- 这个id要与pom.xml文件中部署配置的id对应 -->
         <id>oss</id>
         <username>User Token中的username</username>
         <password>User Token中的password</password>
@@ -169,6 +189,7 @@ Upload Public Key
         <!-- 配置部署的中央仓库 -->
         <distributionManagement>
             <snapshotRepository>
+                <!-- 这个id要与settings.xml中部署server的id对应 -->
                 <id>oss</id>
                 <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
             </snapshotRepository>
@@ -185,14 +206,16 @@ Upload Public Key
 ## 8. 上传构件到 OSS 中
 
 ```sh
-mvn clean deploy -P release
+mvn clean javadoc:jar deploy -P release
 ```
+
+- **注意要加入 `javadoc:jar`**
 
 ## 9. 在 OSS 中查看和发布上传的构件
 
 ### 9.1. 登录地址
 
-<https://oss.sonatype.org/>
+<https://oss.sonatype.org/>
 
 ### 9.2. 查看
 
@@ -202,19 +225,21 @@ mvn clean deploy -P release
 
 此时，该构件的状态为 ```Open``` ，需要勾选它，然后点击 ```Close``` 按钮。接下来系统会自动验证该构件是否满足指定要求，当验证完毕后，状态会变为 ```Closed``` ，最后，点击 ```Release``` 按钮来发布该构件。
 
-## 10. 通知工作人员已发布
+**提示**: 如果关闭不成功，可以在页面下面区域的 `Activity` Tab页里查看出错在什么地方
+
+## 10. 通知工作人员已发布
 
 <https://issues.sonatype.org/>
 
 回复以下内容：
 
-```text
+```ini
 rebue components was released, and id is comgithubrebue-1007, thanks
 ```
 
 ## 11. 完成
 
-等待工作人员审核通过既完成，网上说要1~2天，我实际上等了4天。
+等待工作人员审核通过既完成，网上说要1~2天，我实际上等了4天。
 
 ## 12. 重新发布
 
@@ -228,4 +253,4 @@ rebue components was released, and id is comgithubrebue-1007, thanks
 
 - 而如果只是deploy不成功，例如断网，重新deploy就可以了，不用drop；
 - 如果已经deploy成功的部分，重新deploy时可屏蔽起来不发布；
-- 如果上次deploy时，close没有成功，修正问题后，有可能要先drop掉，再重新deploy；
+- 如果上次deploy时，close没有成功，修正问题后，有可能要先drop掉，再重新deploy

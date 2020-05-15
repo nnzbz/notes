@@ -201,7 +201,7 @@ sudo launchctl load /Library/LaunchDaemons/com.sonatype.nexus.plist
   - Privileges > Given :
     - ```nx-repository-admin-maven2-my-repository-*```
     - ```nx-repository-view-maven2-my-repository-*```
-    - 或
+    - 或
     - ```nx-repository-admin-maven2-my-releases-*```
     - ```nx-repository-admin-maven2-my-snapshots-*```
     - ```nx-repository-view-maven2-my-releases-*```
@@ -236,12 +236,13 @@ sudo launchctl load /Library/LaunchDaemons/com.sonatype.nexus.plist
         <username>my-deployment</username>
         <password>deployment123</password>
     </server>
-    <!-- Maven中央仓库 -->
+    <!-- Maven中央仓库 -->
     <!-- <server>
         <id>oss</id>
         <username>Username Of User Token</username>
         <password>Password Of User Token</password>
     </server> -->
+    <!-- Docker官方仓库 -->
     <!-- <server>
         <id>docker.io</id>
         <username>nnzbz</username>

@@ -114,7 +114,7 @@ Preferences -> 在左上角用于过滤关键字的输入框输入 `enc` -> 把�
 - 垂直对齐
   - 201909之前的版本是：`Indentation` > 勾选 `Indentation` 选项卡中的 `Align fields in columns` / `Blank lines separating independent groups`
   - 201909版本是： `Indentation` > `Align items in columns` > 勾选下面所有可勾选的选项
-- 注释不改变原本的格式(201909版本默认就是如此)
+- 注释不改变原本的格式
  在 `Comments` > 取消勾选 `Formater line comments on first column`
  在 `Comments` > 勾选 `Never join lines`
 - 写在语句后面的注释 `//` 对齐
