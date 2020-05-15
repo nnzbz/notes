@@ -304,6 +304,7 @@ sudo launchctl load /Library/LaunchDaemons/com.sonatype.nexus.plist
         </properties>
     </profile>
 
+    <!-- 本机私服配置 -->
     <profile>
         <id>local-nexus-host</id>
         <properties>
@@ -316,8 +317,9 @@ sudo launchctl load /Library/LaunchDaemons/com.sonatype.nexus.plist
         </properties>
     </profile>
 
+    <!-- 内网私服配置 -->
     <profile>
-        <id>wbl-nexus-host</id>
+        <id>intranet-nexus-host</id>
         <properties>
             <nexus.host>192.168.1.201:8081</nexus.host>
             <!-- 配置部署的远程仓库url -->
@@ -329,14 +331,14 @@ sudo launchctl load /Library/LaunchDaemons/com.sonatype.nexus.plist
     </profile>
 </profiles>
 
-....
-
 <activeProfiles>
     <activeProfile>repository</activeProfile>
     <!-- <activeProfile>aliyun-url</activeProfile> -->
     <activeProfile>nexus-url</activeProfile>
+    <!-- 本机私服配置 -->
     <!-- <activeProfile>local-nexus-host</activeProfile> -->
-    <activeProfile>wbl-nexus-host</activeProfile>
+    <!-- 内网私服配置 -->
+    <activeProfile>intranet-nexus-host</activeProfile>
 </activeProfiles>
 ```
 
