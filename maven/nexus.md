@@ -10,7 +10,7 @@ Sonatype Nexus Repository OSS 是 Apache Maven 私服仓库，永久免费。
 
 ### 1.2. 官网
 
-http://www.sonatype.com/nexus-repository-oss
+<http://www.sonatype.com/nexus-repository-oss>
 
 ## 2. 安装配置
 
@@ -159,7 +159,7 @@ sudo launchctl load /Library/LaunchDaemons/com.sonatype.nexus.plist
 ### 4.4. 运行 Nexus OSS 服务
 
 1、 在 Windows 服务管理中，启动 名为 “nexus” 的服务，可设置为随操作系统自动启动
-2、 访问地址：http://localhost:8081，默认账号密码：admin / admin123
+2、 访问地址：<http://localhost:8081>，默认账号密码：admin / admin123
 
 ## 5. 配置Nexus
 
@@ -168,10 +168,10 @@ sudo launchctl load /Library/LaunchDaemons/com.sonatype.nexus.plist
 1、登录后，进入菜单：```Nexus Repository Manager``` > ```Repository``` > ```Repositories```
 
 2、常用的代理仓库如下
-| name   | type  | url                                                  | remark                |
-| ------ | ----- | ---------------------------------------------------- | --------------------- |
-| aliyun | proxy | http://maven.aliyun.com/nexus/content/groups/public/ | 阿里国内镜像          |
-| spring | proxy | http://repo.spring.io/milestone/                     | 有spring一些较新的jar |
+| name   | type  | url                                                    | remark                |
+| ------ | ----- | ------------------------------------------------------ | --------------------- |
+| aliyun | proxy | <http://maven.aliyun.com/nexus/content/groups/public/> | 阿里国内镜像          |
+| spring | proxy | <http://repo.spring.io/milestone/>                     | 有spring一些较新的jar |
 
 > 注意： ```Maven 2``` > ```Version policy``` > 选择 ```Mixed```
 

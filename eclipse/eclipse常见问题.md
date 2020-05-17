@@ -2,9 +2,19 @@
 
 [TOC]
 
-## 1. Ubuntu下不能删除项目及文件
+## 1. 项目报警告 `Access restriction: The type 'BASE64Encoder'`
 
-### 1.1. 方案一
+右键项目，点属性（Properties）
+
+java bulid path-->Libraries-->jre System Library
+
+Access Rules-->Edit
+
+Add，resolution选择accessible，下面填上** 点击确定即可！
+
+## 2. Ubuntu下不能删除项目及文件
+
+### 2.1. 方案一
 
 此方案只能将项目改成一个不用的名字
 
@@ -30,7 +40,7 @@ ls ~/workspaces/02/.metadata/.plugins/org.eclipse.core.resources/.projects
 
 如果使用了 ```working sets``` ，还要在下面的文件中删除 ```/.metadata/.plugins/org.eclipse.ui.workbench/workingsets.xml```
 
-### 1.2. 方案二
+### 2.2. 方案二
 
 此方案会清空所有项目
 
