@@ -211,7 +211,6 @@ CMD "tail" "-f" "/var/log/1.txt"
 docker container update --restart=always 容器名字
 ```
 
-
 ### 4.2. 启动/停止/重启/删除容器
 
 - start/stop/restart/rm

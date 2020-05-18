@@ -24,7 +24,7 @@ chown -R mysql:mysql /var/lib/mysql/
 chown -R 999:999 /var/lib/mysql/
 
 # 创建并运行MySQL的容器
-docker run --name mysql -dp3306:3306 -e MYSQL_ROOT_PASSWORD=root -v /var/lib/mysql:/var/lib/mysql --restart=always nnzbz/mysql
+docker run --name mysql -dp -e MYSQL_ROOT_PASSWORD=root -v /var/lib/mysql:/var/lib/mysql --restart=always nnzbz/mysql
 ```
 
 - 如果要复制容器内数据库的数据到宿主机中，可使用如下命令
@@ -49,7 +49,7 @@ docker run --name mysql -dp3306:3306 -e MYSQL_ROOT_PASSWORD=root -v /var/lib/mys
   chown -R mysql:mysql /var/lib/mysql/
 
   # 创建并运行MySQL的容器，注意1001为之前前一步
-  docker run --name mysql -dp3306:3306 -e MYSQL_ROOT_PASSWORD=root -v /var/lib/mysql:/var/lib/mysql --user 1001:1001 --restart=always nnzbz/mysql
+  docker run --name mysql -d -e MYSQL_ROOT_PASSWORD=root -v /var/lib/mysql:/var/lib/mysql --user 1001:1001 --restart=always nnzbz/mysql
   ```
 
 ### 2.2. ~~将数据映射到数据卷中保存~~(推荐使用上面的方式)
