@@ -5,7 +5,7 @@
 ## 1. 简单的命令(适合本机开发调试)
 
 ```sh
-docker run --name nacos-standalone -e MODE=standalone -p 8848:8848 -d nacos/nacos-server:latest
+docker run --name nacos-standalone -e MODE=standalone -dp 8848:8848 --restart=always nacos/nacos-server:latest
 ```
 
 ## 2. docker-compose
