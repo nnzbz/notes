@@ -47,14 +47,13 @@ cd nacos-docker
     ....
     # 2. 删除 nacos 节点下的 depenOn 节点
     ....
-    # 3. 修改restart的值为always
-    ....
     ```
   
   - 修改示例 yaml 中映射卷的地方
     - `- ./standalone-logs/:/home/nacos/logs` 中的后面的路径改为 `/var/log/nacos`，并且创建此路径
     - 删除 `- ./init.d/custom.properties:/home/nacos/init.d/custom.properties` 行(因为目前没什么要自定义的)  
   - 删除示例 yaml 中 `prometheus` 与 `grafana` 的节点(可选)
+  - 修改 yaml 中 `restart` 的值为 `always`
   - 配置数据库连接参数(与上面创建数据库时的参数要一致)
 
     ```sh
