@@ -6,11 +6,11 @@
 
 同一个类的对象强转居然会报强转的异常，这是用了Spring boot devtools热加载器，类加载到了不同的ClassLoader下造成的。
 
-https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#using-boot-devtools-customizing-classload
+<https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#using-boot-devtools-customizing-classload>
 
 在 ```src/main/resources``` 目录下创建 ```META-INF/spring-devtools.properties```
 
-```text
+```ini
 restart.exclude.companycommonlibs=/mycorp-common-[\\w-]+\.jar
 restart.include.projectcommon=/mycorp-myproj-[\\w-]+\.jar
 ```

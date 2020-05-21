@@ -16,7 +16,7 @@
 ![阿里云下载证书2](阿里云下载证书2.png)
 ![阿里云下载证书3](阿里云下载证书3.png)
 
-## 2. 将key/pem证书转换为pfx证书
+## 2. 将key/pem证书转换为pfx证书
 
 ```sh
 openssl pkcs12 -export -out 214717098860811.pfx -inkey 214717098860811.key -in 214717098860811.pem
@@ -40,7 +40,7 @@ keytool -importkeystore -srckeystore xxx.pfx -destkeystore your-name.jks -srcsto
 
 将 ```xxx.jks``` 文件复制到 ```spring boot``` 应用的目录下
 
-## 5. 修改Spring Boot的配置文件
+## 5. 修改Spring Boot的配置文件
 
 ```yml
 server:
