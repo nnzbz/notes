@@ -13,5 +13,5 @@ docker run --name zipkin --restart=always -dp 9411:9411 openzipkin/zipkin
 只支持in-memory与Elasticsearch的精简版
 
 ```sh
-docker run --name zipkin --restart=always -dp 9411:9411 openzipkin/zipkin-slim -name zipkin
+docker run -dp 9411:9411 --name zipkin --restart=always openzipkin/zipkin-slim
 ```
