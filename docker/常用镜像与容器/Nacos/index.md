@@ -2,13 +2,15 @@
 
 [TOC]
 
-## 1. 简单的命令(适合本机开发调试)
+## 1. 简单创建并运行
+
+本方案适合初次尝试，数据库是内置的derby。为方便管理，推荐第二节中的 MySQL 方式
 
 ```sh
 docker run --name nacos-standalone -e MODE=standalone -dp 8848:8848 --restart=always nacos/nacos-server:latest
 ```
 
-## 2. docker-compose
+## 2. 利用官方 `docker-compose`
 
 ### 2.1. 从github下载nacos示例
 
