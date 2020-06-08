@@ -73,13 +73,23 @@ Preferences -> 在左上角用于过滤关键字的输入框输入 `enc` -> 把�
 
 **注意：一定要每一项都要检查，树节点的要展开检查所有层的子节点**
 
-### 4.2. 配置养眼的背景
+### 4.2. 配置自动激活内容辅助触发器
+
+- 在下图的输入框中填入: `.abcdefghijklmnopqrstuvwxyABCDEFGHIJKLMNOPQRSTUVWXYZ`
+
+![自动激活内容辅助触发器](自动激活内容辅助触发器.png)
+
+- 在下图的输入框中填入: `<=:.abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVW(,`
+
+![自动激活XML内容辅助触发器](自动激活XML内容辅助触发器.png)
+
+### 4.3. 配置养眼的背景
 
 1. 偏好设置->Preferences->General->Editor->Text Editors
 2. 右边是Text Editors的面板，在下面 `Appearance color options` 选项中选 `Background color` 选择背景颜色，去掉默认勾选的System default
 3. 点击Color来调整背景色：调整RGB为199，237，204(#c7edcc)
 
-### 4.3. 配置字体
+### 4.4. 配置字体
 
 修改Project Explorer的字体大小
 
@@ -101,11 +111,11 @@ Preferences -> 在左上角用于过滤关键字的输入框输入 `enc` -> 把�
 }
 ```
 
-### 4.4. 未捕获的异常直接抛出
+### 4.5. 未捕获的异常直接抛出
 
  `Preferences` > `Java` > `Debug` > 取消勾选 `Suspend execution on uncaught exceptions`
 
-### 4.5. java格式化代码(必须配置)
+### 4.6. java格式化代码(必须配置)
 
  `Preferences` > `Java` > `Code Style` > `formatter` > `Edit...`
 
@@ -120,7 +130,7 @@ Preferences -> 在左上角用于过滤关键字的输入框输入 `enc` -> 把�
 - 写在语句后面的注释 `//` 对齐
  在 `Comments` > 勾选 `Preserve white space between code and line comments`
 
-### 4.6. 保存时自动系统化imports以及格式化代码(必须)
+### 4.7. 保存时自动系统化imports以及格式化代码(必须)
 
 菜单 `Preferences` > `Java` > `Editor` > `Save Actions`
 
@@ -133,13 +143,13 @@ Preferences -> 在左上角用于过滤关键字的输入框输入 `enc` -> 把�
 ![eclipse配置-保存自动系统化imports和格式化代码4](eclipse配置-保存自动系统化imports和格式化代码4.png)
 ![eclipse配置-保存自动系统化imports和格式化代码5](eclipse配置-保存自动系统化imports和格式化代码5.png)
 
-### 4.7. HTML与XML延长换行宽度
+### 4.8. HTML与XML延长换行宽度
 
 在 `Web` > `HTML Files` > `Editor` > Line width > 180
 
 在 `XML` > `XML Files` > `Editor` > Line width > 180
 
-### 4.8. 配置Maven(必须)
+### 4.9. 配置Maven(必须)
 
 - maven通用配置
 
@@ -159,7 +169,7 @@ Preferences -> 在左上角用于过滤关键字的输入框输入 `enc` -> 把�
 
 - Installations
 
-### 4.9. 配置GIT(必须)
+### 4.10. 配置GIT(必须)
 
 下面是我个人配置示范，请参考配置
 
@@ -175,7 +185,7 @@ Location: /home/zbz/.gitconfig
     autocrlf = input
 ```
 
-### 4.10. 关闭校验
+### 4.11. 关闭校验
 
 - 关闭Validation
 
@@ -185,11 +195,11 @@ Location: /home/zbz/.gitconfig
 
  在 `General` > `Editors` > `Text Editors` > `Spelling` > 取消勾选 `Enable spell checking`
 
-### 4.11. 去掉多余的启动项
+### 4.12. 去掉多余的启动项
 
  在 `Genaral` > `Startup and Shutdown`
 
-### 4.12. 打开过多自动关闭前面的页面
+### 4.13. 打开过多自动关闭前面的页面
 
  在 `General` > `Editors` > 勾选 `Close editors automatically`
 
