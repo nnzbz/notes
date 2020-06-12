@@ -160,7 +160,13 @@ git branch xxx
 git remote remove origin
 ```
 
-### 3.10. 撤销文件的修改
+### 3.10. 只回退某个文件或文件夹到指定版本
+
+```git
+git checkout <版本号> <文件或文件夹>
+```
+
+### 3.11. 撤销文件的修改
 
 其实， ```git status``` 提示了如何操作
 
@@ -168,7 +174,7 @@ git remote remove origin
 git checkout -- <file>
 ```
 
-### 3.11. .gitignore
+### 3.12. .gitignore
 
 ```sh
 target
