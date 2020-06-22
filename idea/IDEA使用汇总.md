@@ -8,6 +8,8 @@
 
 `[Settings...]` -> `[Editor]` -> `[Code Style]` -> `[java]` -> `[Wrapping and Braces]` -> `Hard wrap at`，设置 `180`
 
+`[Settings...]` -> `[Editor]` -> `[Code Style]` -> `[XML]` -> `[Other]` -> `Hard wrap at`，设置 `180`
+
 ## 2. 插件
 
 ### 2.1. Lombok
