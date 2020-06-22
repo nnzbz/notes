@@ -46,10 +46,9 @@
 
 ### 3.4. 编辑
 
+- `Ctrl + Alt + Y` 从磁盘重新加载文件
 - `Ctrl + Y` 删除一行
 - `Ctrl + D` 复制一行
 - `Ctrl + W` 扩大选择
 - `Ctrl + P` 显示参数信息
 - `Alt + Insert` 选择生成代码
-
-
