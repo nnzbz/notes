@@ -10,6 +10,14 @@
 
 `[Settings...]` -> `[Editor]` -> `[Code Style]` -> `[XML]` -> `[Other]` -> `Hard wrap at`，设置 `180`
 
+### 过滤不看一些无关文件
+
+`[Settings]` -> `[Editor]` -> `[File Types]` -> `Ignore files and folders` -> 添加如下内容:
+
+```ini
+*.iml;*.idea;.project;.settings;.classpath;
+```
+
 ## 2. 插件
 
 ### 2.1. Lombok
