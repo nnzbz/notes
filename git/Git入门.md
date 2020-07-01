@@ -315,7 +315,19 @@ git push origin_repo_b branch_a
 git reset --hard
 ```
 
-### 6.3. ~~push时报 ```rejected - non-fast-forward``` 错误~~
+### 6.3. git error：error: RPC failed
+
+git clone时出现 `error: RPC failed; curl 56 GnuTLS recv error (-54): Error in the pull function.` 错误
+
+我出现此问题时是在克隆github上的私有仓库，尝试了下面的方式不行，后来在github的账户设置中添加了 **SSH keys** 就没问题了
+
+~~这是由于git默认缓存大小不足导致的，使用下面的命令增加缓存大小~~
+
+```sh
+git config --global http.postBuffer 2000000000
+```
+
+### 6.4. ~~push时报 ```rejected - non-fast-forward``` 错误~~
 
 简单来说，就是 ```fetch``` -> ```merge``` -> ```push``` ，详细步骤如下：
 
