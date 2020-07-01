@@ -319,7 +319,22 @@ git reset --hard
 
 git clone时出现 `error: RPC failed; curl 56 GnuTLS recv error (-54): Error in the pull function.` 错误
 
-我出现此问题时是在克隆github上的私有仓库，尝试了下面的方式不行，后来在github的账户设置中添加了 **SSH keys** 就没问题了
+我出现此问题时是在克隆github上的私有仓库，尝试了后面的方式不行，后来手动编辑hosts解析了github就没问题了
+
+```sh
+13.229.188.59  github.com git
+151.101.109.194 github.global.ssl.fastly.net
+```
+
+- **附上找github的IP的办法**: <http://tool.chinaz.com/dns/>，反复查找 `github`，然后查找TTL值最小的
+
+~~在github的账户设置中添加了 **SSH keys**，并换成 **SSH** 的链接~~
+
+~~注意克隆 **SSH** 链接的命令如下~~
+
+```sh
+git clone git@github.com:username/repo.git
+```
 
 ~~这是由于git默认缓存大小不足导致的，使用下面的命令增加缓存大小~~
 
