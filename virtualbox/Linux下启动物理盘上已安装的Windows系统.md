@@ -54,3 +54,7 @@ else
     boot
 fi
 ```
+
+- 第一行不用改变gpt是几就是几，hd1是我当前linux的磁盘,hd0是win10磁盘
+- set root=(hd0,gpt2) 这行设置的是win10磁盘的EFI分区，根据具体情况而定
+- chainloader /efi/Microsoft/Boot/bootmgfw.efi 这行注意/efi/...，我开始的时候目录是EFI大写，后来不知怎么变成了小写，用大写启动不起来，卡了好久
