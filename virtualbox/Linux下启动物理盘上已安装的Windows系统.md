@@ -50,7 +50,7 @@ then
 else
     insmod chain
     set root=(hd0,gpt2)
-    chainloader /EFI/Microsoft/Boot/bootmgfw.efi
+    chainloader /efi/Microsoft/Boot/bootmgfw.efi
     boot
 fi
 ```
