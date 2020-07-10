@@ -6,9 +6,9 @@
 2. 通过命令行在创建的虚拟机目录下创建一个指向物理硬盘的虚拟硬盘
 
 ```sh
+sudo usermod -a -G disk $USER # 运行完此命令后，需要注销重新进来
 # 下面这句注意不要用sudo
 VBoxManage internalcommands createrawvmdk -filename /path/to/file.vmdk -rawdisk /dev/sda -partitions 1,2,3,4,5,8 -relative
-sudo usermod -a -G disk $USER # 运行完此命令后，需要注销重新进来
 ```
 
 - `/path/to/file.vmdk` 必须是绝对路径
