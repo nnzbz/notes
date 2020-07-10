@@ -64,7 +64,14 @@ sudo apt --fix-broken install -f
 
 ![修改后缀名](修改后缀名.png)
 
-## 6. 解决deepin中vim无法复制文本到系统剪切板的问题
+## 6. 让文件管理器有以管理员身份打开的功能
+
+下载 admin-file-manager.zip
+<https://bbs.deepin.org/forum.php?mod=attachment&aid=ODk2Njl8ZTU5NDkzNjd8MTU5NDM2NTUxMnwwfDE5MjA3MQ%3D%3D>
+
+将压缩包中的文件解压到 /usr/share/deepin/dde-file-manager/oem-menuextensions 目录下，重新打开文件管理器即可
+
+## 7. 解决deepin中vim无法复制文本到系统剪切板的问题
 
 ```sh
 sudo apt-get install vim-gtk
@@ -72,7 +79,7 @@ sudo apt-get install vim-gtk
 
 然后使用 `"+y` 三个键就可以复制了
 
-## 7. 添加ll命令
+## 8. 添加ll命令
 
 ```sh
 sudo vim ~/.bashrc
@@ -94,18 +101,18 @@ sudo vim ~/.bashrc
 . ~/.bashrc
 ```
 
-## 8. 字体
+## 9. 字体
 
-### 8.1. 更纱字体
+### 9.1. 更纱字体
 
 <https://github.com/be5invis/Sarasa-Gothic/releases>
 
-### 8.2. Deepin中使用Windows字体
+### 9.2. Deepin中使用Windows字体
 
 - 只需要把Windows下 `/Windows/Fonts` 文件夹复制到 Deepin下 `/usr/share/fonts/`，再把Fonts改名为winfonts 即可
 - 可以使用 `Gnome Tweak Tool` 来设置默认字体
 
-## 9. 利用Deepin Terminal上传下载服务器的文件
+## 10. 利用Deepin Terminal上传下载服务器的文件
 
 - 服务器端安装rz和lz
   - CentOS
@@ -120,7 +127,7 @@ sudo vim ~/.bashrc
   - 通过 `Remote management` 连接上服务器
   - 右键菜单: `上传文件` 、 `下载文件`
 
-## 10. 跳板配置
+## 11. 跳板配置
 
 配置 `~/.ssh/config` 文件
 
@@ -146,7 +153,7 @@ Host host-1-behind-Replay
 是等效的。
 其他可以看 ssh config 的文档 还有很多高级用法，比如用 ssh-agent 或这个 gpg 管理秘钥等
 
-## 11. 添加快捷方式
+## 12. 添加快捷方式
 
 ```sh
 sudo vi /usr/share/applications/{文件名}.desktop
@@ -176,7 +183,7 @@ Categories=Application;Development;
 - Categories
   决定创建出的起动器在应用程序菜单中的位置
 
-## 12. 微信不能打开
+## 13. 微信不能打开
 
 ```sh
 rm -rf ~/.deepinwine/Deepin-WeChat/*
