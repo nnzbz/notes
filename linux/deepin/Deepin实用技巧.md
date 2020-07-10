@@ -110,7 +110,7 @@ sudo vim ~/.bashrc
 ### 9.2. Deepin中使用Windows字体
 
 - 只需要把Windows下 `/Windows/Fonts` 文件夹复制到 Deepin下 `/usr/share/fonts/`，再把Fonts改名为winfonts 即可
-- 可以使用 `Gnome Tweak Tool` 来设置默认字体
+- 可以使用 `Gnome Tweak Tool` 来设置默认字体 `sudo apt-get install gnome-tweak-tool`
 
 ## 10. 利用Deepin Terminal上传下载服务器的文件
 
