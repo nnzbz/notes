@@ -51,7 +51,7 @@ docker run --name mysql -dp3306:3306 -p33060:33060 -e MYSQL_ROOT_PASSWORD=root -
   # 创建并运行MySQL的容器，注意1001为之前前一步
   docker run --name mysql -dp3306:3306 -p33060:33060 -e MYSQL_ROOT_PASSWORD=root -v /var/lib/mysql:/var/lib/mysql --user 1001:1001 --restart=always nnzbz/mysql
   ```
-#### 改变MySQL在宿主机中的路径
+#### 2.1.3. 改变MySQL在宿主机中的路径
 
 按上面的方式，MySQL映射到了 `/var/lib/mysql`，但是此路径一般没有分配太大的空间，所以需要更换到有足够容量的空间
 
