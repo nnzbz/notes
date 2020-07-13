@@ -32,27 +32,36 @@ deb [arch=amd64] https://download.docker.com/linux/debian buster stable
 
 <https://docs.docker.com/engine/install/linux-postinstall/>
 
-如果还没有 docker group 就添加一个
+- 如果还没有 docker group 就添加一个
 
 ```sh
 sudo groupadd docker
 ```
 
-将当前用户加入Docker组
+- 将当前用户加入Docker组
 
 ```sh
 sudo usermod -aG docker $USER
 ```
 
-设置开机启动
+- 改变docker安装的路径
+  docker一般安装在 `/var/lib/docker`，但是此路径一般没有分配太大的空间，所以需要更换到有足够容量的空间
+
+  ```sh
+  # 首先保证docker没有启动
+  service docker stop
+  # 然后移动整个/var/lib/docker目录到目的路径
+  sudo mv /var/lib/docker /usr/local/lib/docker
+  # 添加软链
+  sudo ln -s /usr/local/lib/docker /var/lib/docker
+  ```
+
+- 设置开机启动
 
 ```sh
+# 设置开机启动
 systemctl enable docker
-```
-
-启动
-
-```sh
+# 启动docker
 systemctl start docker
 ```
 

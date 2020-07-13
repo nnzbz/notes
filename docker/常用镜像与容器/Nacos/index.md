@@ -45,6 +45,8 @@ cd nacos-docker
     ```sh
     # 删除容器依赖而改为直接访问本地数据库的mysql
     vi example/standalone-mysql-5.7.yaml
+
+    
     # 1. 删除 mysql 节点
     ....
     # 2. 删除 nacos 节点下的 depenOn 节点
