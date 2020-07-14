@@ -48,7 +48,7 @@ sudo vi /etc/apt/sources.list
 
 # 在文末加入下面这行
 ...
-deb [arch=amd64] https://download.virtualbox.org/virtualbox/debian apricot contrib
+deb [arch=amd64] https://download.virtualbox.org/virtualbox/debian buster contrib
 ...
 
 wget -q https://www.virtualbox.org/download/oracle_vbox_2016.asc -O- | sudo apt-key add -
