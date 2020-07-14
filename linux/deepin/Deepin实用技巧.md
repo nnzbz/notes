@@ -2,19 +2,28 @@
 
 [TOC]
 
-## 1. 加入staff组
+## 1. 启用root
+
+```sh
+sudo passwd root
+```
+
+## 2. 加入staff组
 
 因为一般要将软件安装在 `/usr/local` 下并运行，所以要先将当前用户加入 `staff` 组。
 
 ```sh
 sudo usermod -a -G staff `whoami`
+sudo usermod -a -G disk `whoami`
+sudo usermod -a -G root `whoami`
+sudo usermod -a -G vboxusers `whoami`
 ```
 
-## 2. 自动登录
+## 3. 自动登录
 
 `Control Center` > `Accounts` > 点击账户右边的 `>` > 打开 `Auto Login` 开关
 
-## 3. 使用左手鼠标
+## 4. 使用左手鼠标
 
 1. `Control Center` > `Mouse` > 打开 `Left Hand`
 2. 下载左手光标
@@ -25,7 +34,7 @@ sudo usermod -a -G staff `whoami`
 4. 在Deepin的外观设置界面看到这个光标主题，切换过去
    `Control Center` > `Personalization` > `Theme` > 选择 `Obsidian`
 
-## 4. 安装五笔输入法
+## 5. 安装五笔输入法
 
 - 删除 `fcitx-table-wbpy` 的简繁转换快捷键
   `Fcitx Configuration` > 选择 `Addon` Tab页 > 双击 `Simplified Chiness To Tradiional Chinese` > 清空快捷键
@@ -56,7 +65,7 @@ sudo apt --fix-broken install -f
 
 最后注销再重新进来，配置输入法(`Fcitx Configuration`)即可
 
-## 5. 在文件管理器中修改后缀名
+## 6. 在文件管理器中修改后缀名
 
 菜单 -> Settings -> Basic -> Open behavior -> 不要勾选 "Hide file extension when rename"
 
@@ -64,14 +73,14 @@ sudo apt --fix-broken install -f
 
 ![修改后缀名](修改后缀名.png)
 
-## 6. 让文件管理器有以管理员身份打开的功能
+## 7. 让文件管理器有以管理员身份打开的功能
 
 下载 admin-file-manager.zip
 <https://bbs.deepin.org/forum.php?mod=attachment&aid=ODk2Njl8ZTU5NDkzNjd8MTU5NDM2NTUxMnwwfDE5MjA3MQ%3D%3D>
 
 将压缩包中的文件解压到 /usr/share/deepin/dde-file-manager/oem-menuextensions 目录下，重新打开文件管理器即可
 
-## 7. 解决deepin中vim无法复制文本到系统剪切板的问题
+## 8. 解决deepin中vim无法复制文本到系统剪切板的问题
 
 ```sh
 sudo apt-get install vim-gtk
@@ -79,7 +88,7 @@ sudo apt-get install vim-gtk
 
 然后使用 `"+y` 三个键就可以复制了
 
-## 8. 添加ll命令
+## 9. 添加ll命令
 
 ```sh
 sudo vim ~/.bashrc
@@ -101,18 +110,18 @@ sudo vim ~/.bashrc
 . ~/.bashrc
 ```
 
-## 9. 字体
+## 10. 字体
 
-### 9.1. 更纱字体
+### 10.1. 更纱字体
 
 <https://github.com/be5invis/Sarasa-Gothic/releases>
 
-### 9.2. Deepin中使用Windows字体
+### 10.2. Deepin中使用Windows字体
 
 - 只需要把Windows下 `/Windows/Fonts` 文件夹复制到 Deepin下 `/usr/share/fonts/`，再把Fonts改名为winfonts 即可
 - 可以使用 `Gnome Tweak Tool` 来设置默认字体 `sudo apt-get install gnome-tweak-tool`
 
-## 10. 利用Deepin Terminal上传下载服务器的文件
+## 11. 利用Deepin Terminal上传下载服务器的文件
 
 - 服务器端安装rz和lz
   - CentOS
@@ -127,7 +136,7 @@ sudo vim ~/.bashrc
   - 通过 `Remote management` 连接上服务器
   - 右键菜单: `上传文件` 、 `下载文件`
 
-## 11. 跳板配置
+## 12. 跳板配置
 
 配置 `~/.ssh/config` 文件
 
@@ -153,7 +162,7 @@ Host host-1-behind-Replay
 是等效的。
 其他可以看 ssh config 的文档 还有很多高级用法，比如用 ssh-agent 或这个 gpg 管理秘钥等
 
-## 12. 添加快捷方式
+## 13. 添加快捷方式
 
 ```sh
 sudo vi /usr/share/applications/{文件名}.desktop
@@ -183,7 +192,7 @@ Categories=Application;Development;
 - Categories
   决定创建出的起动器在应用程序菜单中的位置
 
-## 13. 微信不能打开
+## 14. 微信不能打开
 
 ```sh
 rm -rf ~/.deepinwine/Deepin-WeChat/*
