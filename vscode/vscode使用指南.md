@@ -16,7 +16,11 @@
 
 ## 2. 配置
 
-### 2.1. Markdown
+### 2.1. 换行符
+
+`[Settings]` -> 搜索 `eof` -> 设置 `"prettier.endOfLine": "lf"`
+
+### 2.2. Markdown
 
 - 对齐表格
   默认中英文混合是对不齐表格的，需设置 Mono 字体(推荐更纱字体<https://github.com/be5invis/Sarasa-Gothic>，下载 release 和 ttf 文件并解压到/usr/share/fonts/sarasa 目录下)
