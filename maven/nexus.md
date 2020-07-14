@@ -219,7 +219,12 @@ sudo launchctl load /Library/LaunchDaemons/com.sonatype.nexus.plist
 
 ## 6. 配置Maven的settings文件
 
-修改配置文件：../M2_HOME/conf/setttings.xml
+修改配置文件：
+
+```sh
+cp /usr/local/lib/apache-maven-3.6.3/conf/settings.xml ~/.m2/
+vi ~/.m2/settings.xml 
+```
 
 ```xml
 ....

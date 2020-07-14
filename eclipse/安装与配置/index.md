@@ -203,6 +203,12 @@ Location: /home/zbz/.gitconfig
 
  在 `General` > `Editors` > 勾选 `Close editors automatically`
 
+### 
+
+
+org.eclipse.epp.package.jee.product
+
+
 ## 5. 创建桌面快捷方式（Ubuntu）
 
 ```sh
@@ -283,6 +289,6 @@ sudo sed -i -e '/^assistive_technologies=/s/^/#/' /etc/java-*-openjdk/accessibil
 - 查看是否安装成功
   在 eclipse about 中看到文本最后一行有 Lombok.... 字样表示安装成功
 - 如果没有安装成功，可能是linux的文件权限问题，用chown和chmod设置一下eclipse的安装目录下lombok.jar文件的权限
-- 我碰到的启动不成功时，发现是用命令行运行eclipse后dock，以后运行时直接点dock了的图标运行，这里发现没有安装成功，后来直接用文件管理器跑到/use/local/bin/eclipse202003R目录下双击运行eclipse，再dock，又能成功了，非常奇怪，记录一下
+- **我碰到的启动不成功的情况，命令行直接在非eclipse目录下运行eclipse后dock，就没有安装成功，后来直接用文件管理器跑到eclipse目录下双击运行eclipse(或命令行下cd到eclipse目录，执行 `./eclipse`)，进入到eclipse主界面(非选择workspace的界面)再dock，又能成功了，非常奇怪，记录一下**
 
 ## 7. ~~配置Tomcat~~

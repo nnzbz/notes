@@ -18,7 +18,7 @@
 # 如果是重新安装，/var/lib/mysql目录已然有数据，那么这一段可不用执行，直接创建并运行容器就可以了，数据不会被覆盖
 mkdir /var/lib/mysql
 # 添加mysql用户并指定uid为999
-useradd mysql -u 999
+useradd mysql -u 999 --no-create-home
 chown -R mysql:mysql /var/lib/mysql/
 # 或直接
 chown -R 999:999 /var/lib/mysql/

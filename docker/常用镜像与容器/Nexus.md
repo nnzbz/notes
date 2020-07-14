@@ -19,8 +19,9 @@
 
     ```sh
     # 添加nexus用户并指定uid为200
-    useradd nexus -u 200
-    mkdir /var/lib/nexus && chown -R nexus:nexus /var/lib/nexus
+    useradd nexus -u 200 --no-create-home
+    mkdir /var/lib/nexus
+    chown -R nexus:nexus /var/lib/nexus
     docker run -dp 8081:8081 --name nexus -v /var/lib/nexus:/nexus-data --restart=always sonatype/nexus3
     ```
 
@@ -35,7 +36,19 @@
     docker run -dp 8081:8081 --name nexus -v /var/lib/nexus:/nexus-data --user 1001:1001 --restart=always sonatype/nexus3
     ```
 
-- ~~存放数据在数据卷~~(推荐使用上面的方式)
+  - 按上面的方式，Nexus映射到了 `/var/lib/nexus`，但是此路径一般没有分配太大的空间，所以需要更换到有足够容量的空间
+
+    ```sh
+    # 首先保证docker没有启动
+    sudo service docker stop
+    # 然后移动整个/var/lib/mysql目录到目的路径
+    sudo mv /var/lib/nexus /usr/local/lib/nexus
+    # 添加软链
+    sudo ln -s /usr/local/lib/nexus /var/lib/nexus
+    ```
+
+
+- ~~存放数据在数据卷~~(推荐使用上面宿主机的方式)
 
   ```sh
   docker run --name nexus-data sonatype/nexus3 echo "data-only container for Nexus"
