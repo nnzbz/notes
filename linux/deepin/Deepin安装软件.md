@@ -43,6 +43,21 @@ File-Preference-Settings-Window-Title Bar Style > “custom”
 
 ## 5. VirtualBox
 
+### 5.1. 下载deb文件安装
+
+- 下载debian 10的版本
+   <https://www.virtualbox.org/wiki/Linux_Downloads>
+- **注意: 一定要用root账户安装**
+
+  ```sh
+  sudo -i
+  apt install virtualbox-6.1_X.X.XX-XXXXXX_Debian_buster_amd64.deb
+  ```
+
+### 5.2. ~~通过apt安装~~(有问题)
+
+**此方法安装后，会发现重启系统启动不成功，报错找不到模块`vs_???`**
+
 ```sh
 sudo vi /etc/apt/sources.list
 
