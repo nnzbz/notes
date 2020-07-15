@@ -37,7 +37,8 @@ sudo vi /etc/profile
 
 ```sh
 ....
-export JAVA_HOME=/usr/local/lib/jdk1.8.0_144
+# 加入Java变量和路径
+export JAVA_HOME=/usr/local/lib/jdk1.8.0_251
 export PATH=$JAVA_HOME/bin:$PATH
 # export CLASSPATH=.:$JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tools.jar
 ```

@@ -13,9 +13,15 @@ git config --global credential.helper store
 
 在标题栏右键，去掉选择“Use system title bar and borders”。
 
+如果右键没有，`[Settings]` -> `[Appearance]` -> 去掉选择“Use system title bar and borders”。
+
 ## 3. 坚果云
 
-如果安装后启动没反应
+- 下载
+  <https://www.jianguoyun.com/s/downloads/linux>
+- 安装
+  参考 `How to install Nutstore for KDE/XFCE`
+- 如果安装后启动没反应
 
 ```sh
 vi ~/.nutstore/dist/bin/nutstore-pydaemon.py
