@@ -79,17 +79,33 @@ sudo apt-get update
 sudo apt-get install virtualbox-6.1
 ```
 
-## 6. electerm
+## 6. snap
+
+包管理器(安装postman需要使用)
+
+```sh
+sudo apt install snapd
+```
+
+## 7. postman
+
+```sh
+# 需安装snap
+snap install postman
+```
+
+
+## 8. electerm
 
 Terminal/ssh/sftp client(linux, mac, win) based on electron/ssh2/node-pty/xterm/antd/subx and other libs.
 
 不要从 Deepin 的 `App Store` 中安装，直接从下面的网址下载安装 <https://github.com/electerm/electerm/releases>
 
-## 7. Remmina
+## 9. Remmina
 
 从 Deepin 的 `App Store` 中安装，然后再更新
 
-## 8. dbeaver
+## 10. dbeaver
 
 Deepin中的MySQL Workbench使用有问题，可以用这个软件代替
 

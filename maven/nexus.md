@@ -1,10 +1,10 @@
-# Sonatype Nexus Repository OSS安装方法
+# Sonatype Nexus Repository OSS 安装方法
 
 [TOC]
 
-## 1. Nexus简介
+## 1. Nexus 简介
 
-### 1.1. Nexus是什么
+### 1.1. Nexus 是什么
 
 Sonatype Nexus Repository OSS 是 Apache Maven 私服仓库，永久免费。
 
@@ -22,7 +22,7 @@ Sonatype Nexus Repository OSS 是 Apache Maven 私服仓库，永久免费。
 /usr/local/maven/nexus-3.5.0-02-mac
 ```
 
-### 2.2. Linux下的配置
+### 2.2. Linux 下的配置
 
 - 创建用户及用户组，并设置密码
 
@@ -40,7 +40,7 @@ sudo chown -R nexus:nexus /usr/local/maven/nexus-3.6.0-02/ /usr/local/maven/sona
 sudo chmod -R 755 /usr/local/maven/nexus-3.6.0-02/ /usr/local/maven/sonatype-work/
 ```
 
-- 配置运行的nexus文件
+- 配置运行的 nexus 文件
 
 ```sh
 # 修改运行服务的用户为nexus
@@ -80,7 +80,7 @@ nexus.exe /run
 
 ## 4. 注册服务
 
-### 4.1. Linux下注册服务
+### 4.1. Linux 下注册服务
 
 - nexus.service
 
@@ -112,7 +112,7 @@ systemctl enable nexus
 systemctl start nexus
 ```
 
-### 4.2. Windows下注册服务
+### 4.2. Windows 下注册服务
 
 1、 使用**管理员权限**运行 cmd
 2、 进入解压目录：..%nexus-install-dir%\bin
@@ -120,9 +120,9 @@ systemctl start nexus
 4、 服务注册成功后，提示：“Installed service 'nexus'”
 5、 在 cmd 中执行命令，卸载服务：nexus.exe /uninstall
 
-### 4.3. Mac OS X下注册服务
+### 4.3. Mac OS X 下注册服务
 
-创建com.sonatype.nexus.plist文件，保存在/Library/LaunchDaemons/目录下
+创建 com.sonatype.nexus.plist 文件，保存在/Library/LaunchDaemons/目录下
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -161,69 +161,70 @@ sudo launchctl load /Library/LaunchDaemons/com.sonatype.nexus.plist
 1、 在 Windows 服务管理中，启动 名为 “nexus” 的服务，可设置为随操作系统自动启动
 2、 访问地址：<http://localhost:8081>，默认账号密码：admin / admin123
 
-## 5. 配置Nexus
+## 5. 配置 Nexus
 
 ### 5.1. 配置常用的仓库
 
-1、登录后，进入菜单：```Nexus Repository Manager``` > ```Repository``` > ```Repositories```
+1、登录后，进入菜单：`Nexus Repository Manager` > `Repository` > `Repositories`
 
 2、常用的代理仓库如下
-| name   | type  | url                                                    | remark                |
-| ------ | ----- | ------------------------------------------------------ | --------------------- |
-| aliyun | proxy | <http://maven.aliyun.com/nexus/content/groups/public/> | 阿里国内镜像          |
-| spring | proxy | <http://repo.spring.io/milestone/>                     | 有spring一些较新的jar |
+| name    | type  | url                                                    | remark                   |
+| ------- | ----- | ------------------------------------------------------ | ------------------------ |
+| aliyun  | proxy | <http://maven.aliyun.com/nexus/content/groups/public/> | 阿里国内镜像             |
+| spring  | proxy | <http://repo.spring.io/milestone/>                     | 有 spring 一些较新的 jar |
+| graphql | proxy | https://oss.jfrog.org/artifactory/oss-snapshot-local   | graphql较新的版本        |
 
-> 注意： ```Maven 2``` > ```Version policy``` > 选择 ```Mixed```
+> 注意： `Maven 2` > `Version policy` > 选择 `Mixed`
 
 ### 5.2. 创建自己的部署仓库
 
 创建**my-repository**或分别创建**my-releases**和**my-snapshots**仓库
 
 - 操作步骤：
-  - ```Create repository``` > ```maven2(hosted)```
+  - `Create repository` > `maven2(hosted)`
 - 填写的主要内容：
-  - name : ```my-repository``` 或 ```my-releases``` 或 ```my-snapshots```
-  - Version policy : ```Mixed``` 或 ```Release``` 或 ```Snapshot```
-  - Deployment policy : ```Allow redeploy```
+  - name : `my-repository` 或 `my-releases` 或 `my-snapshots`
+  - Version policy : `Mixed` 或 `Release` 或 `Snapshot`
+  - Deployment policy : `Allow redeploy`
 
 ### 5.3. 配置默认的仓库组：maven-public
 
-将上面添加的代理仓库及自己的仓库添加到 ```maven-public``` 组
+将上面添加的代理仓库及自己的仓库添加到 `maven-public` 组
 
 ### 5.4. 创建专门用于部署的角色
 
 - 操作步骤：
-  - ```Create role```
+  - `Create role`
 - 填写的主要内容：
-  - Role ID : ```nx-my-deployment```
-  - Role name : ```nx-my-deployment```
-  - Role description : ```My releases and snapshots and docker image deployment role```
+  - Role ID : `nx-my-deployment`
+  - Role name : `nx-my-deployment`
+  - Role description : `My releases and snapshots and docker image deployment role`
   - Privileges > Given :
-    - ```nx-repository-admin-maven2-my-repository-*```
-    - ```nx-repository-view-maven2-my-repository-*```
+    - `nx-repository-admin-maven2-my-repository-*`
+    - `nx-repository-view-maven2-my-repository-*`
     - 或
-    - ```nx-repository-admin-maven2-my-releases-*```
-    - ```nx-repository-admin-maven2-my-snapshots-*```
-    - ```nx-repository-view-maven2-my-releases-*```
-    - ```nx-repository-view-maven2-my-snapshots-*```
+    - `nx-repository-admin-maven2-my-releases-*`
+    - `nx-repository-admin-maven2-my-snapshots-*`
+    - `nx-repository-view-maven2-my-releases-*`
+    - `nx-repository-view-maven2-my-snapshots-*`
 
 ### 5.5. 新建专门用于部署的用户
 
 - 操作步骤：
-  - ```Create user```
+  - `Create user`
 - 填写的主要内容：
-  - ID : ```my-deployment```
-  - Password : ```deployment123```
-  - Status : ```Active```
-  - Roles > Granted : ```nx-my-deployment```
+  - ID : `my-deployment`
+  - Password : `deployment123`
+  - Status : `Active`
+  - Roles > Granted : `nx-my-deployment`
 
-## 6. 配置Maven的settings文件
+## 6. 配置 Maven 的 settings 文件
 
 修改配置文件：
 
 ```sh
 cp /usr/local/lib/apache-maven-3.6.3/conf/settings.xml ~/.m2/
-vi ~/.m2/settings.xml 
+vi ~/.m2/settings.xml
 ```
 
 ```xml
@@ -348,7 +349,7 @@ vi ~/.m2/settings.xml
 </activeProfiles>
 ```
 
-## 7. 配置pom.xml文件
+## 7. 配置 pom.xml 文件
 
 ```xml
 <project ....>
