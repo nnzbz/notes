@@ -22,6 +22,8 @@
 
 ### 2.1. Lombok
 
+<https://projectlombok.org/setup/intellij>
+
 ### 2.2. Maven Helper
 
 ## 3. 快捷键
@@ -56,7 +58,17 @@
 
 - `Ctrl + Alt + Y` 从磁盘重新加载文件
 - `Ctrl + Y` 删除一行
+- `Ctrl + X` 剪切（如果没有选择则剪切一行，所以删除一行用这个比较快捷）
 - `Ctrl + D` 复制一行
 - `Ctrl + W` 扩大选择
 - `Ctrl + P` 显示参数信息
 - `Alt + Insert` 选择生成代码
+- `Ctrl + Shift + 上下键`   上下移动代码
+- `Ctrl + Alt + 左右键` 回到上次/下次跳转的位置
+
+### 3.5. 代码
+
+- `Ctrl + Alt + L` 格式化
+- `Ctrl + Alt + Shift + L` 格式化...
+- `Ctrl + Alt + O` 优化import
+- `Ctrl + Alt + Shift + C` 复制类的命名
