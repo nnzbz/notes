@@ -18,6 +18,10 @@
 *.iml;*.idea;.project;.settings;.classpath;
 ```
 
+### 1.3. 热更新
+
+[Run] -> [Edit Configurations] -> Running Application Update Policies -> 两项全部选择 `Update classes and resources`
+
 ## 2. 插件
 
 ### 2.1. Lombok
