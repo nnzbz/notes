@@ -13,6 +13,9 @@
 | Markdown TOC              | 增强对 Markdown 中 TOC 语法的支持 |
 | markdownlint              | Markdown 语法检查                 |
 | Prettier                  | 格式化工具                        |
+| ESLint                    | 检查es代码                        |
+| Prettier ESLint           | 根据 prettier 定义的 eslint 规则  |
+| TSLint                    | 检查typescript代码                |
 
 ## 2. 配置
 
