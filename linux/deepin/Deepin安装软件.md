@@ -79,6 +79,36 @@ sudo apt-get update
 sudo apt-get install virtualbox-6.1
 ```
 
+### 5.3. 记录一次安装VirtualBox后重启进不了系统的问题
+
+- 安装VirtualBox后重启进不了系统，提示
+  
+  ```sh
+  FAT-fs(...): IO charset ascii not found
+  ....
+  Give root password for maintenance
+  (or press Control-D to continue):
+  ```
+
+- 原因
+  deepinV20用的5.3.0-3内核，安装VirtualBox6.1时居然自动安装了5.3.0-42内核
+
+- 解决方法
+  删除42内核即可
+- 步骤
+  
+  ```sh
+  # 先输入密码登录进来
+  ....
+  # 查询内核安装情况
+  dpkg --get-selections | grep linux
+  # 删除多余内核(两个42内核都要删)
+  apt-get remove linux-image-usigned-5.3.0-42-generic
+  apt-get remove linux-modules-5.3.0-42-greneric
+  # 重启系统
+  reboot
+  ```
+
 ## 6. snap
 
 包管理器(安装postman需要使用)
