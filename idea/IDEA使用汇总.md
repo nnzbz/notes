@@ -4,6 +4,12 @@
 
 ## 1. 设置
 
+### 隐藏文件/目录
+
+`[Settings...]` -> 输入 `file types` 搜索 -> `[File Types]` -> `[Ignore files and folders:]` -> 添加
+
+![隐藏文件](隐藏文件.png)
+
 ### 1.1. 格式化自动折行
 
 `[Settings...]` -> `[Editor]` -> `[Code Style]` -> `[java]` -> `[Wrapping and Braces]` -> `Hard wrap at`，设置 `180`

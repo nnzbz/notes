@@ -11,7 +11,7 @@
 - Mac
 <https://docs.docker.com/docker-for-mac/install/#what-to-know-before-you-install>
 - Deepin
-由于 Deepin 是基于 debian 的 unstable 版本开发的，通过 $(lsb_release -cs) 获取到的版本信息为 unstable，而 docker 官方源并没支持 debian 的 unstable 版本，因此使用 docker 官方教程是安装不成功的。
+由于 Deepin 是基于 debian 的 unstable 版本开发的，通过 `lsb_release -cs` 获取到的版本信息为 unstable，而 docker 官方源并没支持 debian 的 unstable 版本，因此使用 docker 官方教程是安装不成功的。
 安装请参考官方Debian的方案
 <https://docs.docker.com/engine/install/debian/>
 但是在 `SET UP THE REPOSITORY`的第 `3` 步时注意，修改为下面的命令
