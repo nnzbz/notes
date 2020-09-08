@@ -5,6 +5,7 @@
 ## 1. Git
 
 ```sh
+sudo apt install git
 # 不用每次 `push` 都要输入用户名和密码
 git config --global credential.helper store
 ```
@@ -108,6 +109,12 @@ sudo apt-get install virtualbox-6.1
   # 重启系统
   reboot
   ```
+
+## mysql-workbench
+
+```sh
+sudo apt install com.mysql.mysqlvworkbench
+```
 
 ## 6. snap
 
