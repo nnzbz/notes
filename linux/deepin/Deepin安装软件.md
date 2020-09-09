@@ -113,7 +113,7 @@ sudo apt-get install virtualbox-6.1
 ## mysql-workbench
 
 ```sh
-sudo apt install com.mysql.mysqlvworkbench
+sudo apt install com.mysql.workvbench
 ```
 
 ## 6. snap
