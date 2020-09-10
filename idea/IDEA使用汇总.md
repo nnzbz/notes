@@ -4,19 +4,23 @@
 
 ## 1. 设置
 
-### 隐藏文件/目录
+### 1.1. 隐藏文件/目录
 
 `[Settings...]` -> 输入 `file types` 搜索 -> `[File Types]` -> `[Ignore files and folders:]` -> 添加
 
 ![隐藏文件](隐藏文件.png)
 
-### 1.1. 格式化自动折行
+### 1.2. 竖向对齐
+
+`[Settings...]` -> `[Editor]` -> `[Code Style]` -> `[Java]` -> `[Wrapping and Braces]` -> `[Group declarations]` -> 勾选 `Align fields in columns` 和 `Align variables in columns` 
+
+### 1.3. 格式化自动折行
 
 `[Settings...]` -> `[Editor]` -> `[Code Style]` -> `[java]` -> `[Wrapping and Braces]` -> `Hard wrap at`，设置 `180`
 
 `[Settings...]` -> `[Editor]` -> `[Code Style]` -> `[XML]` -> `[Other]` -> `Hard wrap at`，设置 `180`
 
-### 1.2. 过滤不看一些无关文件
+### 1.4. 过滤不看一些无关文件
 
 `[Settings]` -> `[Editor]` -> `[File Types]` -> `Ignore files and folders` -> 在末尾添加如下内容:
 
@@ -24,7 +28,7 @@
 *.iml;*.idea;.project;.settings;.classpath;
 ```
 
-### 1.3. 热更新
+### 1.5. 热更新
 
 [Run] -> [Edit Configurations] -> Running Application Update Policies -> 两项全部选择 `Update classes and resources`
 
