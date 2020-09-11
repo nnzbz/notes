@@ -110,13 +110,13 @@ sudo apt-get install virtualbox-6.1
   reboot
   ```
 
-## mysql-workbench
+## 6. mysql-workbench
 
 ```sh
 sudo apt install com.mysql.workvbench
 ```
 
-## 6. snap
+## 7. snap
 
 包管理器(安装postman需要使用)
 
@@ -124,25 +124,31 @@ sudo apt install com.mysql.workvbench
 sudo apt install snapd
 ```
 
-## 7. postman
+## 8. postman
 
 ```sh
 # 需安装snap
 snap install postman
 ```
 
+## 9. PyCharm
 
-## 8. electerm
+```sh
+# 需安装snap
+snap install pycharm-community --classic
+```
+
+## 10. electerm
 
 Terminal/ssh/sftp client(linux, mac, win) based on electron/ssh2/node-pty/xterm/antd/subx and other libs.
 
 不要从 Deepin 的 `App Store` 中安装，直接从下面的网址下载安装 <https://github.com/electerm/electerm/releases>
 
-## 9. Remmina
+## 11. Remmina
 
 从 Deepin 的 `App Store` 中安装，然后再更新
 
-## 10. dbeaver
+## 12. dbeaver
 
 Deepin中的MySQL Workbench使用有问题，可以用这个软件代替
 
