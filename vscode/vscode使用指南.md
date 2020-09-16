@@ -16,6 +16,8 @@
 | ESLint                    | 检查 es 代码                      |
 | Prettier ESLint           | 根据 prettier 定义的 eslint 规则  |
 | TSLint                    | 检查 typescript 代码              |
+| Auto Close Tag            | 自动闭合标签                      |
+| Auto Rename Tag           | 自动对前后标签重命名              |
 
 ## 2. 配置
 
