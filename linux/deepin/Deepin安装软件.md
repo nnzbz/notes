@@ -131,24 +131,31 @@ sudo apt install snapd
 snap install postman
 ```
 
-## 9. PyCharm
+## 9. XMind
+
+```sh
+# 需安装snap
+snap install xmind
+```
+
+## 10. PyCharm
 
 ```sh
 # 需安装snap
 snap install pycharm-community --classic
 ```
 
-## 10. electerm
+## 11. electerm
 
 Terminal/ssh/sftp client(linux, mac, win) based on electron/ssh2/node-pty/xterm/antd/subx and other libs.
 
 不要从 Deepin 的 `App Store` 中安装，直接从下面的网址下载安装 <https://github.com/electerm/electerm/releases>
 
-## 11. Remmina
+## 12. Remmina
 
 从 Deepin 的 `App Store` 中安装，然后再更新
 
-## 12. dbeaver
+## 13. dbeaver
 
 Deepin中的MySQL Workbench使用有问题，可以用这个软件代替
 
