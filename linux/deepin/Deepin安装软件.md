@@ -133,10 +133,13 @@ snap install postman
 
 ## 9. XMind
 
-```sh
-# 需安装snap
-snap install xmind
-```
+1. 官网
+   https://www.xmind.cn/download/
+2. 下载deb的版本(不要用 **snap** 来安装，否则保存窗口会乱码)
+   https://www.xmind.cn/xmind/downloads/XMind-2020-for-Linux-amd-64bit-10.2.1-202008051959.deb
+3. 双击运行下载的文件进行安装
+
+
 
 ## 10. PyCharm
 
