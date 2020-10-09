@@ -317,9 +317,82 @@ git reset --hard
 
 ### 6.3. git error：error: RPC failed
 
-git clone时出现 `error: RPC failed; curl 56 GnuTLS recv error (-54): Error in the pull function.` 错误
+git clone时出现如下错误
 
-我出现此问题时是在克隆github上的私有仓库，尝试了后面的方式不行，后来手动编辑hosts解析了github就没问题了
+```ini
+error: RPC failed; curl 56 GnuTLS recv error (-54): Error in the pull function.
+fatal: the remote end hung up unexpectedly
+fatal: early EOF
+fatal: index-pack failed
+```
+
+#### 6.3.1. 文件内容太多
+
+##### 6.3.1.1. 修改压缩参数
+
+```sh
+git config --global --add core.compression -1
+```
+
+或
+
+```ini
+vi ~/.gitconfig 
+
+----------------------------------------------------
+
+....
+
+[core]
+    compression = -1
+
+....
+
+----------------------------------------------------
+```
+
+- compression 是压缩的意思，从 clone 的终端输出就知道，服务器会压缩目标文件，然后传输到客户端，客户端再解压。取值为 [-1, 9]，-1 以 zlib 为默认压缩库，0 表示不进行压缩，1..9 是压缩速度与最终获得文件大小的不同程度的权衡，数字越大，压缩越慢，当然得到的文件会越小。
+- 在实际测试中，将参数-1改为1才成功，也可尝试改为0(`git config --global core.compression 0`)
+
+##### 6.3.1.2. 修改git的内存限制
+
+```ini
+vi ~/.gitconfig 
+
+----------------------------------------------------
+
+....
+
+[core] 
+    packedGitLimit = 512m 
+    packedGitWindowSize = 512m 
+[pack] 
+    deltaCacheSize = 2047m 
+    packSizeLimit = 2047m 
+    windowMemory = 2047m
+
+....
+
+----------------------------------------------------
+```
+
+##### 6.3.1.3. 修改克隆的深度
+
+```sh
+git clone --depth 1 <repo_URI>
+
+# 克隆完成后再获取深度
+git fetch --unshallow
+# 或 alternately
+git fetch --depth=2147483647
+
+# 然后再正常pull
+git pull --all
+```
+
+##### 6.3.1.4. 私有仓库的问题
+
+我有几次出现此问题时是在克隆github上的私有仓库，尝试了后面的方式不行，后来手动编辑hosts解析了github就没问题了
 
 ```sh
 13.229.188.59  github.com git
