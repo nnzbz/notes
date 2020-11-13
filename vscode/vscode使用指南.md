@@ -4,20 +4,34 @@
 
 ## 1. 推荐插件列表
 
-| 插件名称                  | 插件说明                          |
-| ------------------------- | --------------------------------- |
-| Eclipse Keymap            | 让 vscode 和 Eclipse 的快捷键     |
-| GitLens                   | 增强对 GIT 的支持                 |
-| Markdown All in One       | 增强对 Markdown 的支持            |
-| Markdown Preview Enhanced | 可预览 Markdown 文件              |
-| Markdown TOC              | 增强对 Markdown 中 TOC 语法的支持 |
-| markdownlint              | Markdown 语法检查                 |
-| Prettier                  | 格式化工具                        |
-| ESLint                    | 检查 es 代码                      |
-| Prettier ESLint           | 根据 prettier 定义的 eslint 规则  |
-| TSLint                    | 检查 typescript 代码              |
-| Auto Close Tag            | 自动闭合标签                      |
-| Auto Rename Tag           | 自动对前后标签重命名              |
+| 插件名称                  | 插件说明                               |
+| ------------------------- | -------------------------------------- |
+| Eclipse Keymap            | 让 vscode 和 Eclipse 的快捷键          |
+| GitLens                   | 增强对 GIT 的支持                      |
+| Markdown All in One       | 增强对 Markdown 的支持                 |
+| Markdown Preview Enhanced | 可预览 Markdown 文件                   |
+| Markdown TOC              | 增强对 Markdown 中 TOC 语法的支持      |
+| markdownlint              | Markdown 语法检查                      |
+| Prettier                  | 格式化工具                             |
+| ESLint                    | 检查 es 代码                           |
+| Prettier ESLint           | 根据 prettier 定义的 eslint 规则       |
+| TSLint                    | 检查 typescript 代码                   |
+| Auto Close Tag            | 自动闭合标签                           |
+| Auto Rename Tag           | 自动对前后标签重命名                   |
+| Path Intellisense         | 可以让 Vue 智能支持@开头的路径(要配置) |
+
+* Path Intellisense配置让 Vue 智能支持@开头的路径(要配置)
+  在 settings.json 中加入
+  ```json
+  {
+    ....
+    "path-intellisense.mappings": {
+      "@": "${workspaceFolder}/src"
+    },
+    "path-intellisense.autoSlashAfterDirectory": true
+    ....
+  }
+  ```
 
 ## 2. 配置
 
