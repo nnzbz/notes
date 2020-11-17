@@ -129,15 +129,17 @@ Preferences -> 在左上角用于过滤关键字的输入框输入 `enc` -> 把�
  `Preferences` > `Java` > `Code Style` > `formatter` > `Edit...`
 
 - Tab用Space替换
- 在 `Indentation` > `Tab policy` > 勾选 `Spaces only`(201909版本的是下拉框选择)
+  在 `Indentation` > `Tab policy` > 勾选 `Spaces only`(201909版本的是下拉框选择)
 - 垂直对齐
   - 201909之前的版本是：`Indentation` > 勾选 `Indentation` 选项卡中的 `Align fields in columns` / `Blank lines separating independent groups`
   - 201909版本是： `Indentation` > `Align items in columns` > 勾选下面所有可勾选的选项
 - 注释不改变原本的格式
- 在 `Comments` > 取消勾选 `Formater line comments on first column`
- 在 `Comments` > 勾选 `Never join lines`
+  在 `Comments` > 取消勾选 `Formater line comments on first column`
+  在 `Comments` > 勾选 `Never join lines`
 - 写在语句后面的注释 `//` 对齐
- 在 `Comments` > 勾选 `Preserve white space between code and line comments`
+  在 `Comments` > 勾选 `Preserve white space between code and line comments`
+- 识别忽略格式化的标记
+  在 `Off/On Tags` > 勾选 `Enable Off/On tags`
 
 ### 4.8. 保存时自动系统化imports以及格式化代码(必须)
 

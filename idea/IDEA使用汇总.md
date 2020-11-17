@@ -20,7 +20,12 @@
 
 `[Settings...]` -> `[Editor]` -> `[Code Style]` -> `[XML]` -> `[Other]` -> `Hard wrap at`，设置 `180`
 
-### 1.4. 过滤不看一些无关文件
+### 1.4. 识别忽略格式化的标记
+
+`[Settings...]` -> `[Editor]` -> `[Code Style]` -> `Formatter Control` > 勾选 `Enable formatter markers in comments`
+
+
+### 1.5. 过滤不看一些无关文件
 
 `[Settings]` -> `[Editor]` -> `[File Types]` -> `Ignore files and folders` -> 在末尾添加如下内容:
 
@@ -28,7 +33,7 @@
 *.iml;*.idea;.project;.settings;.classpath;
 ```
 
-### 1.5. 热更新
+### 1.6. 热更新
 
 [Run] -> [Edit Configurations] -> Running Application Update Policies -> 两项全部选择 `Update classes and resources`
 
