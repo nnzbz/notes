@@ -126,20 +126,26 @@ Preferences -> 在左上角用于过滤关键字的输入框输入 `enc` -> 把�
 
 ### 4.7. java格式化代码(必须)
 
- `Preferences` > `Java` > `Code Style` > `formatter` > `Edit...`
+#### 4.7.1. 导入配置文件
+
+[格式化配置文件](eclipse-code-style-zbz.xml)
+
+#### 4.7.2. 配置详解
+
+`Preferences` > `Java` > `Code Style` > `formatter` > `Edit...`
 
 - Tab用Space替换
   在 `Indentation` > `Tab policy` > 勾选 `Spaces only`(201909版本的是下拉框选择)
 - 垂直对齐
   - 201909之前的版本是：`Indentation` > 勾选 `Indentation` 选项卡中的 `Align fields in columns` / `Blank lines separating independent groups`
   - 201909版本是： `Indentation` > `Align items in columns` > 勾选下面所有可勾选的选项
+- 保留长句手动换行原状
+  在 `Line Wrapping` > 勾选 `Never join already wrapped lines`
 - 注释不改变原本的格式
   在 `Comments` > 取消勾选 `Formater line comments on first column`
   在 `Comments` > 勾选 `Never join lines`
 - 优化注释
   在 `Comments` > 勾选 `Enable header comment formatting`
-  在 `Comments` > `Javadocs` > 勾选 `Remove blank lines`
-  在 `Comments` > `Block comments` > 勾选 `Remove blank lines`
 - 写在语句后面的注释 `//` 对齐
   在 `Comments` > 勾选 `Preserve white space between code and line comments`
 - 识别忽略格式化的标记
