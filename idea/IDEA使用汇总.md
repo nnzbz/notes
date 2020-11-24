@@ -39,11 +39,23 @@
 
 ## 2. 插件
 
-### 2.1. Lombok
+### 2.1. Eclipse Code Formatter
+
+- 插件地址:
+  <http://plugins.jetbrains.com/plugin/6546?pr=idea&offset=15&max=15#comments_pan>
+- 安装
+  [Setting] -> [Plugins] -> `Install plugin from disk`，选中下载好的安装包【EclipseFormatter.zip】安装，重启后生效
+- 配置
+  [Setting] -> [Eclipse Code Formatter]，勾选 `Use the Eclipse-code-formatter`，并在 `Eclipse Java Formatter config file` 选择Eclipse用的code-style.xml文件，这个选项会决定格式化代码的方式。
+  同时配置Import order的From File也为Eclipse用的code-style.xml文件，这个选项会决定组织import区域的方式。
+- 使用插件
+  使用Intellij的格式化快捷键”Ctrl+ALT+L”即可进行格式化。如果出错会输出提示到 **Event Log** 里，如果看到 `xxx formatted sucessfully by Eclipse code formatter` 则表示格式化成功！
+
+### 2.2. Lombok
 
 <https://projectlombok.org/setup/intellij>
 
-### 2.2. Maven Helper
+### 2.3. Maven Helper
 
 ## 3. 快捷键
 
