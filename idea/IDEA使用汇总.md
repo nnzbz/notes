@@ -87,13 +87,13 @@
 
 ### 3.4. 编辑
 
-- `Ctrl + Alt + Y` 从磁盘重新加载文件
-- `Ctrl + Y` 删除一行
-- `Ctrl + X` 剪切（如果没有选择则剪切一行，所以删除一行用这个比较快捷）
-- `Ctrl + D` 复制一行
-- `Ctrl + W` 扩大选择
-- `Ctrl + P` 显示参数信息
-- `Alt + Insert` 选择生成代码
+- `Ctrl + Alt + Y` / `Opt + Cmd + Y` 从磁盘重新加载文件(Windows/MacOS)
+- `Ctrl + Y` / `Cmd + del` 删除一行(Windows/MacOS)
+- `Cmd + X` 剪切（如果没有选择则剪切一行，所以删除一行用这个比较快捷）
+- `Cmd + D` 复制一行
+- `Cmd + W` 扩大选择
+- `Cmd + P` 显示参数信息
+- `Alt + Insert` / `Cmd + N` 选择生成代码(Windows/MacOS)
 - `Ctrl + Shift + 上下键`   上下移动代码
 - `Ctrl + Alt + 左右键` 回到上次/下次跳转的位置
 
