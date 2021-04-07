@@ -66,7 +66,7 @@ export PATH=$JAVA_HOME/bin:$PATH
 
 ### 3.3. 运行
 
-**注意，请不要在非eclipse目录运行eclipse，这样会导致一系列乱七八糟的问题，莫名的报错，安装lombok的时候会不成功等等。应该用文件管理器直接去到 `/usr/local/bin/eclipse202003R/` 双击eclipse来运行（或命令行中进入eclipse目录，执行 `./eclipse`），然后dock创建图标**
+**注意，请不要在文件管理器中双击运行eclipse，这样会导致一系列乱七八糟的问题，莫名的报错，安装lombok的时候会不成功等等。应该用命令行进入eclipse目录，执行 `./eclipse`），然后dock创建图标**
 
 ## 4. Preferences配置
 
