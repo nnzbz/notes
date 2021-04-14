@@ -8,7 +8,7 @@
 
 Sonatype官网: <http://www.sonatype.org/>
 issue地址: <https://issues.sonatype.org/>
-查询及管理地址: <https://oss.sonatype.org/>
+查询及管理地址: <https://oss.sonatype.org/>
 
 ## 2. 注册
 
