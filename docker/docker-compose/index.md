@@ -10,6 +10,21 @@
   apt install docker-compose
   ```
 
+- CentOS
+  
+  ```sh
+  # 安装额外依赖包
+  yum install epel-release
+  # 安装 python-pip:
+  yum install -y python-pip
+  # 安装 Docker Compose:
+  pip install docker-compose
+  # 升级 python 包：
+  yum upgrade python*
+  # 验证安装：
+  docker-compose version
+  ```
+
 ## 2. `docker-compose.yml`
 
 ### 2.1. version
