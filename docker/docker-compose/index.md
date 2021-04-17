@@ -4,23 +4,21 @@
 
 ## 1. 安装
 
+<https://docs.docker.com/compose/install/>
+
 - Deepin/Ubuntu
 
   ```sh
   apt install docker-compose
   ```
 
-- CentOS
+- Linux
   
   ```sh
-  # 安装额外依赖包
-  yum install epel-release
-  # 安装 python-pip:
-  yum install -y python-pip
   # 安装 Docker Compose:
-  pip install docker-compose
-  # 升级 python 包：
-  yum upgrade python*
+  curl -L "https://github.com/docker/compose/releases/download/1.29.1/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+  # 添加执行的权限
+  chmod +x /usr/local/bin/docker-compose
   # 验证安装：
   docker-compose version
   ```
