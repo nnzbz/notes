@@ -148,17 +148,58 @@ snap install postman
 snap install pycharm-community --classic
 ```
 
-## 11. electerm
+## 11. SCVPN
+
+1. 下载地址: <http://swupdate.hillstonenet.com:1337/sslvpn/download?os=linux>
+2. 备份Deepin系统信息
+
+   ```sh
+   # /etc/os-release其实是/usr/lib/os-release的软链接
+   sudo cp /usr/lib/os-release /usr/lib/os-release.bak
+   ```
+
+2. 修改为Ubuntu系统信息
+   ```sudo vi /etc/os-release```，替换为Ubuntu14.04的信息
+
+   ```ini
+   NAME="Ubuntu"
+   VERSION="14.04 LTS (Bionic Beaver)"
+   ID=ubuntu
+   ID_LIKE=debian
+   PRETTY_NAME="Ubuntu 14.04 LTS"
+   VERSION_ID="14.04"
+   HOME_URL="https://www.ubuntu.com/"
+   SUPPORT_URL="https://help.ubuntu.com/"
+   BUG_REPORT_URL="https://bugs.launchpad.net/ubuntu/"
+   PRIVACY_POLICY_URL="https://www.ubuntu.com/legal/terms-and-policies/privacy-policy"
+   VERSION_CODENAME=bionic
+   UBUNTU_CODENAME=bionic
+   ```
+
+3. 安装 SCVPN
+4. 安装完后把系统信息改回来
+
+   ```sh
+   sudo cp /usr/lib/os-release.bak /usr/lib/os-release
+   ```
+
+5. 运行 SCVPN
+
+   ```sh
+   sudo ~/SCVPN/bin/SCVPN 
+   ```
+
+## 12. electerm
 
 Terminal/ssh/sftp client(linux, mac, win) based on electron/ssh2/node-pty/xterm/antd/subx and other libs.
 
 不要从 Deepin 的 `App Store` 中安装，直接从下面的网址下载安装 <https://github.com/electerm/electerm/releases>
 
-## 12. Remmina
+## 13. Remmina
 
 从 Deepin 的 `App Store` 中安装，然后再更新
 
-## 13. dbeaver
+## 14. dbeaver
 
 Deepin中的MySQL Workbench使用有问题，可以用这个软件代替
 

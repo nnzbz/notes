@@ -55,7 +55,7 @@ scp ~/.ssh/id_rsa.pub root@主机IP:/root/.ssh/authorized_keys
 在未重装的一端运行
 
 ```sh
-vim ~/.ssh/known_hosts
+vi ~/.ssh/known_hosts
 ```
 
 删除另一端的授信，否则连接报错。
