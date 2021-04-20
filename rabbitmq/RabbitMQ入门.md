@@ -124,7 +124,7 @@ sudo rabbitmqctl set_permissions -p "/" admin ".*" ".*" ".*"
 ## 2. 配置环境变量(rabbitmq-env.conf)
 
 文件路径是/etc/rabbitmq/rabbitmq-env.conf（这个文件的位置是确定和不能改变的，目录需要自己创建）。
-环境变量有统一的前缀RABBITMQ_，具体的列表见：http://www.rabbitmq.com/configure.html#define-environment-variables
+环境变量有统一的前缀RABBITMQ_，具体的列表见：<http://www.rabbitmq.com/configure.html#define-environment-variables>
 ……
 RABBITMQ_CONFIG_FILE=/etc/rabbitmq/rabbitmq.config
 RABBITMQ_NODE_PORT=5672                            //AMQP监听端口号
@@ -143,7 +143,7 @@ RABBITMQ_PLUGINS_DIR=/app/rabbitmq/plugins         //插件的路径
 
 默认路径是/etc/rabbitmq/rabbitmq.config，也可由上面的环境变量配置。示例配置文件默认安装在/usr/share/doc/rabbitmq-server-3.5.4/rabbitmq.config.example
 
-## 4. 四、	
+## 4. 四、详解
 
 1. channel.basicConsume(QUEUE_NAME, true, consumer)方法调用后，服务器端开始向消费者投递消息，投递消息是个异步过程，因此消费者需要提供一个回调临时队列，用于缓存消息，临时队列封装在QueueingConsumer对象中，以LinkedBlockingQueue类型存在，因此，如果不注意，服务器端会源源不断向消费者投递消息，直到挤爆内存。
 
@@ -172,4 +172,4 @@ channel.basicConsume(QUEUE_NAME, false, consumer);
 - 消息发送到Exchange后，如果没有找到匹配的Queue，则会被丢弃
 - 如果尝试创建一个已经存在的Queue，RabbitMQ不会做任何事情，并返回创建成功
 - 如果多个消费者订阅同一个Queue，则Queue中的消息会被平摊给多个消费者。
-- 如上的情况，为了避免各消费者出现工作不均衡的情况，可以通过设置prefetchCount来限制Queue每次发送给每个消费者的消息数
+- 如上的情况，为了避免各消费者出现工作不均衡的情况，可以通过设置prefetchCount来限制Queue每次发送给每个消费者的消息数
