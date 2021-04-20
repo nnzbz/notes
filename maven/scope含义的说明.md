@@ -40,4 +40,6 @@ scope决定依赖的包是否加入本工程的classpath下
 
 ## 3. optional
 
-与scope区别在于：仅限制依赖包的传递性，不影响依赖包的classpath
+- 如果optional设置为true，表示依赖它的项目引用这个依赖是可选的，不会自动引入这个依赖，如果要引入，必须要显示的写依赖
+- 默认optional为false，如果依赖它的项目不想引用这个依赖，可以使用 `exclusion`
+- 与scope区别在于：仅限制依赖包的传递性，不影响依赖包的classpath

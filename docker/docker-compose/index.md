@@ -4,10 +4,23 @@
 
 ## 1. 安装
 
+<https://docs.docker.com/compose/install/>
+
 - Deepin/Ubuntu
 
   ```sh
   apt install docker-compose
+  ```
+
+- Linux
+  
+  ```sh
+  # 安装 Docker Compose:
+  curl -L "https://github.com/docker/compose/releases/download/1.29.1/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+  # 添加执行的权限
+  chmod +x /usr/local/bin/docker-compose
+  # 验证安装：
+  docker-compose version
   ```
 
 ## 2. `docker-compose.yml`
