@@ -239,25 +239,25 @@ git push origin_repo_b branch_a
 
 ### 4.5. 作者请你帮助修改代码 ```Welcome PR```
 
-帮助他人的GitHub项目修改代码
+帮助他人的GitHub项目修改代码
 
 如何 **PR(Pull Request)** ?
 
 1. Fork
  fork他人的项目到自己Github的仓库
-2. Clone
+2. Clone
  将fork到自己仓库中的项目Clone到本地
 3. 与原项目建立连接
  用 ```git remote -v``` 命令检查已有链接
  用 ```git remote add upstream https://github.com/他人仓库/原项目名称.git``` 与原项目建立连接
- 再用先前命令检查与原项目是否建立连接成功
+ 再用先前命令检查与原项目是否建立连接成功
 4. 新建分支并Checkout
  用 ```git checkout -b 分支名称```
 5. 修改
 6. Add -> Commit -> Push
  注意Push的是自己的仓库
 7. 发起PR
- 在自己仓库Fork的项目中，点击 ```Pull Requests``` 页面 -> 点击 ```New pull requests``` 按钮 -> 进入 ```Comparing changes```
+ 在自己仓库Fork的项目中，点击 ```Pull Requests``` 页面 -> 点击 ```New pull requests``` 按钮 -> 进入 ```Comparing changes```
  ![ComparingChanges](ComparingChanges.png)
 8. 建立PR
  点击 ```Create pull request``` 按钮 -> 填写相关信息 -> 点击 ```Create pull request``` 按钮
