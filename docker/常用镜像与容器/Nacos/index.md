@@ -112,6 +112,12 @@ cd nacos-docker
     ```sh
     # 配置mysql参数
     vi env/nacos-standlone-mysql.env
+
+    修改下列参数
+      MYSQL_SERVICE_DB_NAME=nacos(数据库名称)
+      MYSQL_SERVICE_PORT=3306
+      MYSQL_SERVICE_USER=nacos(用户名)
+      MYSQL_SERVICE_PASSWORD=nacos(密码)
     ....
     ```
 
