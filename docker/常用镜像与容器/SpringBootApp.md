@@ -3,7 +3,7 @@
 ## 1. 准备服务的文件
 
 ```sh
-mkdir -p /usr/local/luban-captcha-svr/9101
+mkdir -p /usr/local/luban-captcha-svr/a
 cd ~/workspaces/02/luban/luban-captcha/luban-captcha-svr
 cp target/luban-captcha-svr-0.0.1-SNAPSHOT.jar /usr/local/luban-captcha-svr/
 cp -r src/main/resources/. /usr/local/luban-captcha-svr/9101
