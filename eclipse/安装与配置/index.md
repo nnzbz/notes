@@ -224,11 +224,9 @@ Location: /home/zbz/.gitconfig
 
  在 `General` > `Editors` > 勾选 `Close editors automatically`
 
-### 4.15.  
+### 4.15. 解决控制台的输出内容太少
 
-
-org.eclipse.epp.package.jee.product
-
+`Preferences`-〉`Run/Debug` 〉`Console` 里边，去掉对 `Limit console output` 的选择，或者选择之，设置一下 `Console buffer size(characters)` 的设定值
 
 ## 5. 创建桌面快捷方式（Ubuntu）
 
