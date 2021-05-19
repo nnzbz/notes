@@ -108,5 +108,5 @@
 3. 改变命令
 
    ```sh
-   git remote set-url origin ssh://git@github.com/REPOSITORY.git
+   git remote set-url origin ssh://git@github.com:REPOSITORY.git
    ```
