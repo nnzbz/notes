@@ -2,6 +2,10 @@
 
 [TOC]
 
+## 参考资料
+
+<https://yeasy.gitbook.io/docker_practice/>
+
 ## 1. 安装
 
 - CentOS
