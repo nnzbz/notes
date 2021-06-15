@@ -116,7 +116,13 @@ sudo apt-get install virtualbox-6.1
 sudo apt install com.mysql.workvbench
 ```
 
-## 7. snap
+## 7. wine64
+
+```sh
+sudo apt install wine64
+```
+
+## 8. snap
 
 包管理器(安装postman需要使用)
 
@@ -124,14 +130,14 @@ sudo apt install com.mysql.workvbench
 sudo apt install snapd
 ```
 
-## 8. postman
+## 9. postman
 
 ```sh
 # 需安装snap
 snap install postman
 ```
 
-## 9. XMind
+## 10. XMind
 
 1. 官网
    https://www.xmind.cn/download/
@@ -141,14 +147,14 @@ snap install postman
 
 
 
-## 10. PyCharm
+## 11. PyCharm
 
 ```sh
 # 需安装snap
 snap install pycharm-community --classic
 ```
 
-## 11. SCVPN
+## 12. SCVPN
 
 1. 下载地址: <http://swupdate.hillstonenet.com:1337/sslvpn/download?os=linux>
 2. 备份Deepin系统信息
@@ -189,17 +195,17 @@ snap install pycharm-community --classic
    sudo ~/SCVPN/bin/SCVPN 
    ```
 
-## 12. electerm
+## 13. electerm
 
 Terminal/ssh/sftp client(linux, mac, win) based on electron/ssh2/node-pty/xterm/antd/subx and other libs.
 
 不要从 Deepin 的 `App Store` 中安装，直接从下面的网址下载安装 <https://github.com/electerm/electerm/releases>
 
-## 13. Remmina
+## 14. Remmina
 
 从 Deepin 的 `App Store` 中安装，然后再更新
 
-## 14. dbeaver
+## 15. dbeaver
 
 Deepin中的MySQL Workbench使用有问题，可以用这个软件代替
 
