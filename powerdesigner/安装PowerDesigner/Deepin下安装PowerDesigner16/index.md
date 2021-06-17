@@ -81,7 +81,7 @@ WINEPREFIX=~/.deepinwine/PowerDesigner wine64 regedit font.reg
 WINEPREFIX=~/.deepinwine/PowerDesigner wine64 ~/.deepinwine/pd/pd.exe
 ```
 
-## 11. 复制 crack 文件到 PowerDesigner 的安装目录
+## 11. 复制 crack 文件到 PowerDesigner 的安装目录(略)
 
 ## 12. 运行 PowerDesigner16
 
