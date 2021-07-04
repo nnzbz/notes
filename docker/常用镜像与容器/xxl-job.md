@@ -17,7 +17,7 @@ SQL脚本在github项目中的位置为:
 <https://github.com/xuxueli/xxl-job/blob/master/doc/db/tables_xxl_job.sql>
 
 
-## 准备好配置文件
+## 3. 准备好配置文件
 
 /usr/local/xxl-job-admin/application.yml
 
@@ -45,10 +45,16 @@ spring:
 
 其它默认配置在 [application.properties](https://github.com/xuxueli/xxl-job/blob/master/xxl-job-admin/src/main/resources/application.properties)，可参考进行配置
 
-## 3. 创建并运行容器
+## 4. 创建并运行容器
 
 ```sh
 docker run --name xxl-job-admin -dp <宿主机端口号>:8080 -v /usr/local/xxl-job-admin/application.yml:/application.yml -v /var/log/xxl-job:/data/applogs --restart=always xuxueli/xxl-job-admin:<指定版本>
+```
+
+Mac用下面的命令（因为Mac下只能映射 `~/` 下的文件）
+
+```sh
+docker run --name xxl-job-admin -dp <宿主机端口号>:8080 -v ~/docker/xxl-job-admin/application.yml:/application.yml --restart=always xuxueli/xxl-job-admin:2.3.0
 ```
 
 - -v
@@ -61,7 +67,7 @@ docker run --name xxl-job-admin -dp <宿主机端口号>:8080 -v /usr/local/xxl-
 - JAVA_OPTS
   如需自定义 JVM内存参数 等配置，可通过 "-e JAVA_OPTS" 指定，参数格式 JAVA_OPTS="-Xmx512m"
 
-## 4. 网页管理地址
+## 5. 网页管理地址
 
 `http://<IP>:<port>/xxl-job-admin`
 
