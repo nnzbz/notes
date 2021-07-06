@@ -39,7 +39,7 @@ spring:
     port: 25
     # 发件人邮箱
     username: xxx@qq.com
-    # 这里的密码是授权码，可以通过网页登录邮箱设置和查看
+    # 这里的密码是授权码，可以通过网页登录邮箱设置
     password: xxx
 ```
 
@@ -55,7 +55,7 @@ docker run --name xxl-job-admin -dp <宿主机端口号>:8080 -v /usr/local/xxl-
   - 第一个: 将配置文件映射到容器中
   - 第二个: 将容器中/data/applogs目录中的日志输出到主机/var/log/xxl-job目录下，输出目录可根据自己的需要调整
 - <宿主机端口号>
-  暴露出来可供网页访问的端口
+  暴露出来可供网页访问的端口，我们默认设置为6060
 - <指定版本>
   必须填，因为目前 xxl_job 没有 latest 的 tag，目前最新的版本是 `2.3.0`
 - JAVA_OPTS
