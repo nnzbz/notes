@@ -55,6 +55,16 @@
   docker run -dp8081:8081 -p8082:8082 --restart=always --name nexus --volumes-from nexus-data sonatype/nexus3
   ```
 
+- 在Swarm中
+  
+  ```sh
+  docker service create \
+        --name nexus \
+        -p 8081:8081  \
+        --mount type=volume,source=nexusdata,destination=/nexus-data \
+        sonatype/nexus3
+  ```
+
 ### 1.2. 浏览器访问
 
 <http://127.0.0.1:8081>

@@ -67,7 +67,9 @@ docker swarm join-token manager
 docker node ls
 ```
 
-## 3. 部署服务
+## 3. 服务管理
+
+### 3.1. 部署服务
 
 在集群中创建并运行一个名为 nginx 服务
 
@@ -77,7 +79,7 @@ docker service create --replicas 3 -p 80:80 --name nginx nginx:1.13.7-alpine
 
 现在我们使用浏览器，输入任意节点 IP ，即可看到 nginx 默认页面。
 
-## 4. 查看服务
+### 3.2. 查看服务
 
 - 查看服务列表
 
@@ -97,7 +99,7 @@ docker service create --replicas 3 -p 80:80 --name nginx nginx:1.13.7-alpine
   docker service logs nginx
   ```
 
-## 5. 服务伸缩
+### 3.3. 服务伸缩
 
 根据数字可伸可缩
 
@@ -105,8 +107,55 @@ docker service create --replicas 3 -p 80:80 --name nginx nginx:1.13.7-alpine
 docker service scale nginx=5
 ```
 
-## 6. 删除服务
+### 3.4. 强制重启服务
+
+一般可以通过更新服务配置来重启服务，但是有时候配置没有改变，也要重启，就用下面的命令
+
+```sh
+docker service update --force xxx
+```
+
+### 3.5. 删除服务
 
 ```sh
 docker service rm nginx
+```
+
+## 4. config
+
+### 4.1. 添加 config
+
+```sh
+docker config create nginx.conf /usr/local/nginx/nginx.conf
+```
+
+### 4.2. 查看 config
+
+```sh
+docker config ls
+```
+
+### 4.3. 删除 config
+
+```sh
+docker config rm nginx.conf
+```
+
+### 4.4. 创建服务时使用 config
+
+```sh
+docker service create \
+    --name nginx \
+    -p 80:80 \
+    --config source=nginx.conf,target=/etc/nginx/nginx.conf \
+    nginx
+```
+
+### 4.5. 更新 config
+
+更新 config 不能直接删除 config，应该先更新服务，然后才可以删除旧 config
+
+```sh
+docker config create nginx1.conf /usr/local/nginx/nginx.conf
+docker service update --config-rm nginx.conf --config-add src=nginx1.conf,target=/etc/nginx/nginx.conf nginx 
 ```

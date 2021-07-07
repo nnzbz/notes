@@ -76,20 +76,14 @@ docker run -dp3306:3306 --restart=always --name mysql -e MYSQL_ROOT_PASSWORD=roo
 
 ### 2.3. 在Swarm中安装MySQL
 
-1. 创建宿主机上的目录准备将MySQL的目录映射出来
-
-```sh
-mkdir /var/lib/mysql
-```
-
-2. 创建 secret
+1. 创建 secret
 
 ```sh
 # 创建 secret
 openssl rand -base64 20 | docker secret create mysql_root_password -
 ```
 
-3. 创建MySQL服务
+2. 创建MySQL服务
 
 ```sh
 docker service create \
@@ -98,11 +92,11 @@ docker service create \
      -p 33060:33060 \
      --secret source=mysql_root_password,target=mysql_root_password \
      -e MYSQL_ROOT_PASSWORD_FILE="/run/secrets/mysql_root_password" \
-     --mount type=volume,source=/var/lib/mysql,destination=/var/lib/mysql \
+     --mount type=volume,source=mysqldata,destination=/var/lib/mysql \
      nnzbz/mysql
 ```
 
-4. 查看密钥
+3. 查看密钥
 
 ```sh
 # 进入容器

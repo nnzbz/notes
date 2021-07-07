@@ -2,26 +2,20 @@
 
 [TOC]
 
-## 1. 创建目录
+## 1. 准备nginx的配置文件
 
 ```sh
-mkdir ~/nginx
-mkdir ~/nginx/mynginx
-mkdir ~/nginx/mynginx/conf
-mkdir ~/nginx/mynginx/logs
+mkdir /usr/local/nginx
+vi /usr/local/nginx/nginx.conf
 ```
 
-## 2. 创建配置文件nginx.conf
+内容如下(从容器中/etc/nginx/nginx.conf复制出来):
 
-```sh
-vi ~/nginx/mynginx/conf/nginx.conf
-```
-
-```text
+```js
 user  nginx;
-worker_processes 1;
+worker_processes  auto;
 
-error_log  /var/log/nginx/error.log warn;
+error_log  /var/log/nginx/error.log notice;
 pid        /var/run/nginx.pid;
 
 
@@ -51,13 +45,44 @@ http {
 }
 ```
 
-## 3. 创建并运行容器
+## 2. 单机
+
+### 2.1. 创建目录
 
 ```sh
-docker run -p80:80 --name mynginx -v ~/nginx/mynginx/html:/usr/share/nginx/html:ro -v ~/nginx/mynginx/conf/nginx.conf:/etc/nginx/nginx.conf:ro -v ~/nginx/mynginx/logs:/var/log/nginx -d nginx
+mkdir -p /usr/local/nginx/conf
+mkdir -p /usr/local/nginx/logs
+```
+
+### 2.2. 创建并运行容器
+
+```sh
+docker run -p80:80 --name nginx -v /usr/local/nginx/html:/usr/share/nginx/html:ro -v /usr/local/nginx/conf/nginx.conf:/etc/nginx/nginx.conf:ro -v /usr/local/nginx/logs:/var/log/nginx -d nginx
 ```
 
 - p
-  如果要建立自定义的端口号，请修改“:”前面的80
+  如果要建立自定义的端口号，请修改“:”前面的80
 - :ro
   在容器内只读
+
+## 3. Swarm
+
+### 3.1. 创建docker config
+
+```sh
+docker config create nginx-proxy.conf /usr/local/nginx/nginx.conf
+```
+
+### 3.2. 创建服务
+
+```sh
+docker service create \
+    --name nginx \
+    --replicas 3 \
+    -p 80:80 \
+    --config source=nginx-proxy.conf,target=/etc/nginx/conf.d/proxy.conf \
+    nginx
+```
+
+- p
+  如果要建立自定义的端口号，请修改“:”前面的80

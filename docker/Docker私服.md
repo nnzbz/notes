@@ -13,7 +13,7 @@
   - HTTP : ```8082```
   - Enable Docker V1 API : 打勾
 
-## 3. 修改本机Docker的连接安全配置（重要）
+## 3. 修改本机(客户端)Docker的连接安全配置（使用HTTP而非HTTPS）
 
 ### 3.1. 方案一
 
@@ -21,20 +21,17 @@
 
  右上角系统任务栏Docker图标 -> Preferences... -> Daemon -> Insecure registries -> + -> hub.docker.com
 
-- Ubuntu
+- Deepin/Ubuntu
 
 ```sh
-sudo vi /etc/default/docker
+sudo vi /etc/docker/daemon.json
 ```
 
-```text
-....
-DOCKER_OPTS="--insecure-registry 192.168.1.201:8082"
-....
-DOCKER_OPTS="--insecure-registry 127.0.0.1:8082"
-....
-DOCKER_OPTS="--insecure-registry hub.docker.com"
-....
+```json
+{
+  "registry-mirrors": ["https://xxxxxxxx.mirror.aliyuncs.com"],
+  "insecure-registries": ["xx.xx.xx.xx:8082"]   // 新增
+}
 ```
 
 - CentOS
