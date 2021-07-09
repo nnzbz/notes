@@ -79,11 +79,76 @@ docker run -dp3306:3306 --restart=always --name mysql -e MYSQL_ROOT_PASSWORD=roo
 1. 创建 secret
 
 ```sh
-# 创建 secret
+# 创建 secret(20位随机密码)
 openssl rand -base64 20 | docker secret create mysql_root_password -
+# 创建 secret(自定义密码)
+echo "xxxxxxx" | docker secret create mysql_root_password -
 ```
 
-2. 创建MySQL服务
+2. Docker Compose
+
+```sh
+version: "3.9"
+services:
+  mysql1:
+    image: mysql:5
+      ports:
+        - 3306:3306
+        - 33060:33060
+      secrets:
+        mysql_root_password
+      volumes:
+        - type: volume
+          source: mysqldata
+          target: /var/lib/mysql
+      environment:
+        # 最好使用此设定时区，其它镜像也可以使用
+        - TZ=CST-8
+        - MYSQL_ROOT_PASSWORD_FILE="/run/secrets/mysql_root_password"
+      command: --default-time-zone='+8:00'设定时区
+              --default-character-set=utf8mb4
+              --character-set-client-handshake=FALSE
+              --character-set-server=utf8mb4
+              --collation-server=utf8mb4_general_ci
+#      deploy:
+#        placement:
+#          constraints:
+#            #该hostname为指定容器在哪个主机启动
+#            - node.hostname == ecs2d8ed9c368b9
+  mysql2:
+    image: mysql:5
+      ports:
+        - 3306:3306
+        - 33060:33060
+      secrets:
+        mysql_root_password
+      volumes:
+        - type: volume
+          source: mysqldata
+          target: /var/lib/mysql
+      environment:
+        # 最好使用此设定时区，其它镜像也可以使用
+        - TZ=CST-8
+        - MYSQL_ROOT_PASSWORD_FILE="/run/secrets/mysql_root_password"
+      command: --default-time-zone='+8:00'设定时区
+              --default-character-set=utf8mb4
+              --character-set-client-handshake=FALSE
+              --character-set-server=utf8mb4
+              --collation-server=utf8mb4_general_ci
+#      deploy:
+#        placement:
+#          constraints:
+#            #该hostname为指定容器在哪个主机启动
+#            - node.hostname == ecseafe0d11214a
+
+secrets:
+  mysql_root_password:
+    external: true
+volumes:
+  mysqldata:
+```
+
+1. 创建MySQL服务
 
 ```sh
 docker service create \
@@ -95,6 +160,8 @@ docker service create \
      --mount type=volume,source=mysqldata,destination=/var/lib/mysql \
      nnzbz/mysql
 ```
+
+
 
 3. 查看密钥
 

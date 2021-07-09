@@ -70,10 +70,10 @@ docker run -p80:80 --name nginx -v /usr/local/nginx/html:/usr/share/nginx/html:r
 ### 3.1. 创建docker config
 
 ```sh
-docker config create nginx-proxy.conf /usr/local/nginx/nginx.conf
+docker config create nginx-proxy.conf /usr/local/nginx/proxy.conf
 ```
 
-### 3.2. 创建服务
+### 3.2. 命令行方式
 
 ```sh
 docker service create \
@@ -84,5 +84,38 @@ docker service create \
     nginx
 ```
 
-- p
-  如果要建立自定义的端口号，请修改“:”前面的80
+- `-p`
+  如果要建立自定义的端口号，请修改 `:` 前面的80
+
+### 3.3. Docker Compose 方式
+
+- yaml
+
+```sh
+vi /usr/local/nginx/stack.yml
+```
+
+如果要建立自定义的端口号，请修改 `ports` 部分 `:` 前面的80
+
+```yaml
+version: "3.9"
+services:
+  nginx:
+    image: nginx
+    ports:
+      - 80:80
+    deploy:
+      replicas: 3
+    configs:
+      - source: nginx-proxy.conf
+        target: /etc/nginx/conf.d/proxy.conf
+configs:
+  nginx-proxy.conf:
+    file: /usr/local/nginx/proxy.conf
+```
+
+- 部署
+
+```sh
+docker stack deploy -c /usr/local/zookeeper/stack.yml zookeeper
+```

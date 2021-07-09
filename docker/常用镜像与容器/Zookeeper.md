@@ -33,7 +33,7 @@ vi /usr/local/zookeeper/stack.yml
 ```
 
 ```sh
-version: '3.1'
+version: '3.9'
 
 services:
   zoo1:

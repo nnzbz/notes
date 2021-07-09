@@ -128,7 +128,9 @@ cd nacos-docker
     docker-compose -f example/standalone-mysql-5.7.yaml up -d
     ```
 
-## 3. Nacos 控制台
+## 3. Swarm
+
+## 4. Nacos 控制台
 
 link：<http://127.0.0.1:8848/nacos/>
 
