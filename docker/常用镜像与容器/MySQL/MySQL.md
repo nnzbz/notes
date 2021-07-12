@@ -109,14 +109,12 @@ vi /usr/local/mysql/mysql1-my.cnf
 server_id=1
 # 打开Mysql 日志，日志格式为二进制
 log-bin=mysql-bin
-# 可选项Mixed,Statement,Row，默认格式是 Statement，mixed混合Satement，ROW两种模式
-binlog_format=mixed
 #当启用时，服务器通过只允许执行可以使用GTID安全地记录的语句来强制GTID一致性。
-enforce-gtid-consistency=true
+enforce-gtid-consistency=on
 #启用基于GTID的复制，启用之前必须保证enforce-gtid-consistency=true
-gtid_mode=ON
+gtid_mode=on
 #该选项让从库写入哪些来自于主库的更新，并把这些更新写入bin-log文件，一台服务器即做主库又做从库必须开启
-log-slave-updates=true
+log-slave-updates=on
 
 replicate-ignore-db=mysql
 replicate-ignore-db=sys
@@ -136,14 +134,12 @@ vi /usr/local/mysql/mysql2-my.cnf
 server_id=2
 # 打开Mysql 日志，日志格式为二进制
 log-bin=mysql-bin
-# 可选项Mixed,Statement,Row，默认格式是 Statement，mixed混合Satement，ROW两种模式
-binlog_format=mixed
 #当启用时，服务器通过只允许执行可以使用GTID安全地记录的语句来强制GTID一致性。
-enforce-gtid-consistency=true
+enforce-gtid-consistency=on
 #启用基于GTID的复制，启用之前必须保证enforce-gtid-consistency=true
-gtid_mode=ON
+gtid_mode=on
 #该选项让从库写入哪些来自于主库的更新，并把这些更新写入bin-log文件，一台服务器即做主库又做从库必须开启
-log-slave-updates=true
+log-slave-updates=on
 
 replicate-ignore-db=mysql
 replicate-ignore-db=sys
