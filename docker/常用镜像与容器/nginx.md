@@ -107,11 +107,11 @@ services:
     deploy:
       replicas: 3
     configs:
-      - source: nginx-proxy.conf
-        target: /etc/nginx/conf.d/proxy.conf
+      - source: nginx.conf
+        target: /etc/nginx/conf.d/default.conf
 configs:
-  nginx-proxy.conf:
-    file: /usr/local/nginx/proxy.conf
+  nginx.conf:
+    file: /usr/local/nginx/nginx.conf
 ```
 
 - 部署

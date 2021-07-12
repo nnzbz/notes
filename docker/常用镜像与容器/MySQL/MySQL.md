@@ -147,7 +147,41 @@ replicate-ignore-db=information_schema
 replicate-ignore-db=performance_schema
 ```
 
-#### 2.3.3. `Docker Compose`
+#### 2.3.3. nginx反向代理的配置文件
+
+```sh
+vi /usr/local/mysql/nginx.conf
+```
+
+```ini{.line-numbers}
+user  nginx;
+worker_processes  auto;
+
+error_log  /var/log/nginx/error.log notice;
+pid        /var/run/nginx.pid;
+
+
+events {
+    worker_connections  1024;
+}
+
+stream {
+  upstream mysql {
+    # backup为备用mysql，当mysql1故障后自动切换mysql2，达到主备效果
+    server mysql1:3306 max_fails=3 fail_timeout=30s;
+    server mysql2:3306 backup;
+  }
+
+  server {
+    listen                80;
+    proxy_connect_timeout 3s;
+    proxy_timeout         6s;
+    proxy_pass            mysql;
+  }
+}
+```
+
+#### 2.3.4. `Docker Compose`
 
 ```sh
 vi /usr/local/mysql/stack.yml
@@ -158,18 +192,16 @@ version: "3.9"
 services:
   mysql1:
     image: mysql:5
-    ports:
-      - 3306:3306
-      - 33060:33060
+#    ports:
+#      - 3306:3306
+#      - 33060:33060
     secrets:
       - mysql_root_password
     configs:
       - source: mysql1-my.cnf
         target: /etc/mysql/my.cnf
     volumes:
-      - type: volume
-        source: mysql1data
-        target: /var/lib/mysql
+      - mysql1data:/var/lib/mysql
     environment:
       # 最好使用此设定时区，其它镜像也可以使用
       - TZ=CST-8
@@ -185,18 +217,16 @@ services:
 #            - node.hostname == ecs2d8ed9c368b9
   mysql2:
     image: mysql:5
-    ports:
-      - 3307:3306
-      - 33061:33060
+#    ports:
+#      - 3307:3306
+#      - 33061:33060
     secrets:
       - mysql_root_password
     configs:
       - source: mysql2-my.cnf
         target: /etc/mysql/my.cnf
     volumes:
-      - type: volume
-        source: mysql2data
-        target: /var/lib/mysql
+      - mysql2data:/var/lib/mysql
     environment:
       # 最好使用此设定时区，其它镜像也可以使用
       - TZ=CST-8
@@ -210,6 +240,16 @@ services:
 #          constraints:
 #            #该hostname为指定容器在哪个主机启动
 #            - node.hostname == ecseafe0d11214a
+  nginx:
+    image: nginx
+    ports:
+      - 3306:80
+    deploy:
+      replicas: 3
+    configs:
+      - source: nginx.conf
+        target: /etc/nginx/nginx.conf
+configs:
 
 secrets:
   mysql_root_password:
@@ -219,20 +259,22 @@ configs:
     file: /usr/local/mysql/mysql1-my.cnf
   mysql2-my.cnf:
     file: /usr/local/mysql/mysql2-my.cnf
+  nginx.conf:
+    file: /usr/local/mysql/nginx.conf
 volumes:
   mysql1data:
   mysql2data:
 ```
 
-#### 2.3.4. 部署
+#### 2.3.5. 部署
 
 ```sh
 docker stack deploy -c /usr/local/mysql/stack.yml mysql
 ```
 
-#### 2.3.5. 开启主主同步
+#### 2.3.6. 开启主主同步
 
-- 分别对 mysql1 和 mysql2 执行下面命令
+1. 分别对 mysql1 和 mysql2 执行下面命令
 
 ```sh
 # 查看mysql的容器id
@@ -243,37 +285,22 @@ docker exec -it <容器id> /bin/sh
 cat /run/secrets/mysql_root_password
 # 进入 mysql
 mysql -u root -p
-# 创建用户
-create user 'slave'@'%' identified by '密码';
-# 授权
+# 创建用户并授权
 GRANT REPLICATION SLAVE ON *.* to 'slave'@'%' identified by '密码';
 ```
 
-- 在 mysql1 中执行下面的命令，并记录同步的binlog文件状态
+2. 在 mysql2 中执行下面的命令
 
-```sh
-show master status;
-```
-
-如图，记录下 **mysql-bin.000001** 和 **779**
-
-![记录同步的binlog文件状态](记录同步的binlog文件状态.png)
-
-- 在 mysql2 中执行下面的命令
-  **注意:** **mysql-bin.000001** 和 **779** 的地方替换为上一步实际记录下来的值
+**注意：** 如果是重新部署的，需要先执行这个命令 `reset slave;`
 
 ```sh
 # 开启IO线程监听mysql-1的binlog文件
 change master to master_host='mysql1',master_user='slave',master_password='密码',master_port=3306,MASTER_AUTO_POSITION=1;
 # 开启同步
 start slave;
-# 记录同步的binlog文件状态
-show master status;
-# 记录下 **mysql-bin.000001** 和 **438**
 ```
 
-- 在 mysql1 中执行下面的命令
-  **注意:** **mysql-bin.000001** 和 **438** 的地方替换为上一步实际记录下来的值
+3. 在 mysql1 中执行下面的命令
 
 ```sh
 # 开启IO线程监听mysql-1的binlog文件
@@ -282,11 +309,15 @@ change master to master_host='mysql2',master_user='slave',master_password='密�
 start slave;
 ```
 
-- 分别在 mysql1 和 mysql2 中执行下面命令查看是否开启成功
+4. 分别在 mysql1 和 mysql2 中执行下面命令查看是否开启成功
 
 ```sh
 show slave status\G;
 ```
+
+- 如果开启成功，返回结果如下图:
+
+![主主开启成功](主主开启成功.png)
 
 ## 3. 其它容器连接MySQL容器
 
