@@ -50,8 +50,7 @@ http {
 ### 2.1. 创建目录
 
 ```sh
-mkdir -p /usr/local/nginx/conf
-mkdir -p /usr/local/nginx/logs
+mkdir -p /usr/local/nginx/{conf,logs}
 ```
 
 ### 2.2. 创建并运行容器
