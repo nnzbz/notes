@@ -244,11 +244,14 @@ services:
     image: nginx
     ports:
       - 3306:80
-    deploy:
-      replicas: 3
+    environment:
+      # 最好使用此设定时区，其它镜像也可以使用
+      - TZ=CST-8
     configs:
       - source: nginx.conf
         target: /etc/nginx/nginx.conf
+    deploy:
+      replicas: 3
 configs:
 
 secrets:

@@ -34,29 +34,34 @@ docker run -dp6379:6379 --privileged=true -v /usr/local/redis/redis.conf:/data/r
 - master
 
 ```sh
-mkdir -p /usr/local/redis
-vi /usr/local/redis/master.conf
+mkdir -p /usr/local/redis/{master,slave,sentinel1,sentinel2,sentinel3}
+vi /usr/local/redis/master/redis.conf
 ```
 
 ```ini
+# 绑定服务器的所有IP地址
+bind 0.0.0.0
 # AOF持久化
 appendonly yes
-requirepass <本实例密码>
+# 本实例密码
+requirepass xxxxxx
 ```
 
 - slave
 
 ```sh
-vi /usr/local/redis/slave.conf
+vi /usr/local/redis/slave/redis.conf
 ```
 
 ```ini
+# 绑定服务器的所有IP地址
+bind 0.0.0.0
 # AOF持久化
 appendonly yes
 # 本实例密码
 requirepass xxxxxx
 # 主机的地址和端口号
-replicaof redis_master:6379
+replicaof redis_master 6379
 # 主机密码
 masterauth xxxxxx
 ```
@@ -64,24 +69,28 @@ masterauth xxxxxx
 - sentinel
 
 ```sh
-vi /usr/local/redis/sentinel.conf
+vi /usr/local/redis/sentinel1/sentinel.conf
 ```
 
 ```ini{.line-numbers}
-port 26379
-dir "/tmp"
-
+# 解析主机名，没有此行，下面命令就不能用主机名，而只能用IP
+sentinel resolve-hostnames yes
 # Sentine监听的master地址
 sentinel monitor mymaster redis_master 6379 2
 # 配置连接master的密码
 sentinel auth-pass mymaster xxxxxx
 ```
 
-- sentinel monitor ....
+```sh
+cp /usr/local/redis/sentinel1/sentinel.conf /usr/local/redis/sentinel2/
+cp /usr/local/redis/sentinel1/sentinel.conf /usr/local/redis/sentinel3/
+```
+
+- `sentinel monitor ....`
   - 第一个参数是给master起的名字
   - 第二个参数为master IP
   - 第三个为master端口
-  - 第四个为当该master挂了的时候，若想将该master判为失效，在Sentine集群中必须至少2个Sentine同意才行，只要该数量不达标，则就不会发生故障迁移。
+  - 第四个为当该master挂了的时候，若想将该master判为失效，在Sentinel集群中必须至少2个Sentinel同意才行，只要该数量不达标，则就不会发生故障迁移。
     也就是说只要有2个sentinel认为master下线，就认为该master客观下线，启动failover并选举产生新的master
     通常最后一个参数不能多于启动的sentinel实例数。
 
@@ -96,52 +105,76 @@ version: "3.9"
 services:
   master:
     image: redis
+    environment:
+      # 最好使用此设定时区，其它镜像也可以使用
+      - TZ=CST-8
     configs:
       - source: master.conf
-        target: /data/redis.conf    
-    command: redis-server /data/redis.conf
+        # 不要放在/data/目录下，否则启动报错: Read-only file system，/data/目录是存放数据的目录
+        target: /usr/local/redis/redis.conf
+    command: redis-server /usr/local/redis/redis.conf
   slave1:
     image: redis
     depends_on:
       - master
+    environment:
+      # 最好使用此设定时区，其它镜像也可以使用
+      - TZ=CST-8
     configs:
       - source: slave.conf
-        target: /data/redis.conf    
-    command: redis-server /data/redis.conf
+        # 不要放在/data/目录下，否则启动报错: Read-only file system，/data/目录是存放数据的目录
+        target: /usr/local/redis/redis.conf    
+    command: redis-server /usr/local/redis/redis.conf
+  slave2:
+    image: redis
+    depends_on:
+      - master
+    environment:
+      # 最好使用此设定时区，其它镜像也可以使用
+      - TZ=CST-8
+    configs:
+      - source: slave.conf
+        # 不要放在/data/目录下，否则启动报错: Read-only file system，/data/目录是存放数据的目录
+        target: /usr/local/redis/redis.conf    
+    command: redis-server /usr/local/redis/redis.conf
   sentinel1:
     image: redis
-    configs:
-      - source: sentinel.conf
-        target: /usr/local/redis/sentinel.conf    
-    command: redis-sentinel /usr/local/redis/sentinel.conf
+    environment:
+      # 最好使用此设定时区，其它镜像也可以使用
+      - TZ=CST-8
+    volumes:
+      - /usr/local/redis/sentinel1/:/tmp/sentinel/
+    command: redis-sentinel /tmp/sentinel/sentinel.conf
     depends_on:
       - master
       - slave1
   sentinel2:
     image: redis
-    configs:
-      - source: sentinel.conf
-        target: /usr/local/redis/sentinel.conf    
-    command: redis-sentinel /usr/local/redis/sentinel.conf
+    environment:
+      # 最好使用此设定时区，其它镜像也可以使用
+      - TZ=CST-8
+    volumes:
+      - /usr/local/redis/sentinel2/:/tmp/sentinel/
+    command: redis-sentinel /tmp/sentinel/sentinel.conf
     depends_on:
       - master
       - slave1
   sentinel3:
     image: redis
-    configs:
-      - source: sentinel.conf
-        target: /usr/local/redis/sentinel.conf    
-    command: redis-sentinel /usr/local/redis/sentinel.conf
+    environment:
+      # 最好使用此设定时区，其它镜像也可以使用
+      - TZ=CST-8
+    volumes:
+      - /usr/local/redis/sentinel3/:/tmp/sentinel/
+    command: redis-sentinel /tmp/sentinel/sentinel.conf
     depends_on:
       - master
       - slave1
 configs:
   master.conf:
-    file: /usr/local/redis/master.conf
+    file: /usr/local/redis/master/redis.conf
   slave.conf:
-    file: /usr/local/redis/slave.conf
-  sentinel.conf:
-    file: /usr/local/redis/sentinel.conf
+    file: /usr/local/redis/slave/redis.conf
 ```
 
 ### 2.3. 部署
