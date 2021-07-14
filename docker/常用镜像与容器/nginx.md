@@ -2,61 +2,18 @@
 
 [TOC]
 
-## 1. 准备nginx的配置文件
+## 1. 单机
+
+### 1.1. 创建目录
 
 ```sh
-mkdir /usr/local/nginx
-vi /usr/local/nginx/nginx.conf
+mkdir -p /usr/local/nginx/{html,conf,logs}
 ```
 
-内容如下(从容器中/etc/nginx/nginx.conf复制出来):
-
-```js
-user  nginx;
-worker_processes  auto;
-
-error_log  /var/log/nginx/error.log notice;
-pid        /var/run/nginx.pid;
-
-
-events {
-    worker_connections  1024;
-}
-
-
-http {
-    include       /etc/nginx/mime.types;
-    default_type  application/octet-stream;
-
-    log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
-                      '$status $body_bytes_sent "$http_referer" '
-                      '"$http_user_agent" "$http_x_forwarded_for"';
-
-    access_log  /var/log/nginx/access.log  main;
-
-    sendfile        on;
-    #tcp_nopush     on;
-
-    keepalive_timeout  65;
-
-    #gzip  on;
-
-    include /etc/nginx/conf.d/*.conf;
-}
-```
-
-## 2. 单机
-
-### 2.1. 创建目录
+### 1.2. 创建并运行容器
 
 ```sh
-mkdir -p /usr/local/nginx/{conf,logs}
-```
-
-### 2.2. 创建并运行容器
-
-```sh
-docker run -p80:80 --name nginx -v /usr/local/nginx/html:/usr/share/nginx/html:ro -v /usr/local/nginx/conf/nginx.conf:/etc/nginx/nginx.conf:ro -v /usr/local/nginx/logs:/var/log/nginx -d nginx
+docker run -p80:80 --name nginx -v /usr/local/nginx/html:/usr/share/nginx/html:ro -v /usr/local/nginx/conf:/etc/nginx/nginx.conf:ro -v /usr/local/nginx/logs:/var/log/nginx -d nginx
 ```
 
 - p
@@ -64,29 +21,16 @@ docker run -p80:80 --name nginx -v /usr/local/nginx/html:/usr/share/nginx/html:r
 - :ro
   在容器内只读
 
-## 3. Swarm
+## 2. Swarm
 
-### 3.1. 创建docker config
-
-```sh
-docker config create nginx-proxy.conf /usr/local/nginx/proxy.conf
-```
-
-### 3.2. 命令行方式
+### 2.1. 准备配置文件的目录
 
 ```sh
-docker service create \
-    --name nginx \
-    --replicas 3 \
-    -p 80:80 \
-    --config source=nginx-proxy.conf,target=/etc/nginx/conf.d/proxy.conf \
-    nginx
+mkdir -p /usr/local/nginx/conf
+# 在此目录下放入配置文件，配置文件参考最后一节
 ```
 
-- `-p`
-  如果要建立自定义的端口号，请修改 `:` 前面的80
-
-### 3.3. Docker Compose 方式
+### 2.2. Docker Compose
 
 - yaml
 
@@ -103,18 +47,51 @@ services:
     image: nginx
     ports:
       - 80:80
+      - 443:443
+    environment:
+      # 最好使用此设定时区，其它镜像也可以使用
+      - TZ=CST-8
+    volumes:
+      # 配置文件目录
+      - /usr/local/nginx/conf/:/etc/nginx/conf.d/
+      # 数字证书目录
+      # - /usr/local/nginx/cert/:/etc/nginx/cert/
     deploy:
       replicas: 3
-    configs:
-      - source: nginx.conf
-        target: /etc/nginx/conf.d/default.conf
-configs:
-  nginx.conf:
-    file: /usr/local/nginx/nginx.conf
 ```
 
 - 部署
 
 ```sh
-docker stack deploy -c /usr/local/zookeeper/stack.yml zookeeper
+docker stack deploy -c /usr/local/nginx/stack.yml nginx
+```
+
+## 3. 参考nginx的配置
+
+```sh
+vi /usr/local/nginx/conf/default.conf
+```
+
+```ini
+server {
+    listen       80;
+    listen  [::]:80;
+    listen       443 ssl;
+    server_name kh3.cocmis.cn;
+
+    # 注意文件位置，是从/etc/nginx/下开始算起的
+    ssl_certificate cert/5914365_kh3.cocmis.cn.pem;
+    ssl_certificate_key cert/5914365_kh3.cocmis.cn.key;
+    ssl_session_timeout 5m;
+    ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
+    ssl_ciphers ECDHE-RSA-AES128-GCM-SHA256:HIGH:!aNULL:!MD5:!RC4:!DHE;
+    ssl_prefer_server_ciphers on;
+
+    location ^~/rabbitmq/ {
+        proxy_pass http://rabbitmq_rabbitmq:15672/;
+    }
+    location ^~/nexus/ {
+        proxy_pass http://nexus_nexus:8082/;
+    }
+}
 ```
