@@ -45,7 +45,7 @@
 
 ## 2. Swarm
 
-### 3.1. Docker Compose
+### 2.1. `Docker Compose`
 
 ```sh
 mkdir -p /usr/local/nexus
@@ -69,6 +69,8 @@ services:
 volumes:
   nexusdata:
 ```
+
+### 2.2. 部署
 
 ```sh
 docker stack deploy -c /usr/local/nexus/stack.yml nexus

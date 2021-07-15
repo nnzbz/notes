@@ -130,6 +130,98 @@ cd nacos-docker
 
 ## 3. Swarm
 
+### 3.1. 创建数据库
+
+数据库名称/用户名/密码分别是nacos/nacos/nacos(这个可以根据需要改动，但注意后面要对应 `env/nacos-hostname.env` 文件里的参数)
+
+### 3.2. 创建数据库表及索引结构的脚本
+
+执行 [nacos-mysql.sql](https://github.com/alibaba/nacos/blob/master/distribution/conf/nacos-mysql.sql) 里面的内容
+
+### 3.3. 修改 yaml 文件内容
+
+```sh
+# 删除容器依赖而改为直接访问本地数据库的mysql
+vi /usr/local/nacos-docker/example/cluster-hostname.yaml
+```
+
+- `version` 改为 `"3.9"`
+- 删除 `hostname` 和 `container_name` 节点
+- 删除 `image` 的 `:${NACOS_VERSION}`
+- 删除 `mysql` 节点
+- 删除 `depenOn` 节点
+- 删除 `volumes` 节点
+- 删除 `restart: always`
+- 每个服务添加
+  
+  ```yml
+  environment:
+    # 最好使用此设定时区，其它镜像也可以使用
+    - TZ=CST-8
+  ```
+
+- 最终结果如下:
+
+```ini
+version: "3.9"
+services:
+  nacos1:
+    image: nacos/nacos-server
+    ports:
+      - "8848:8848"
+      - "9848:9848"
+      - "9555:9555"
+    environment:
+      # 最好使用此设定时区，其它镜像也可以使用
+      - TZ=CST-8
+    env_file:
+      - ../env/nacos-hostname.env
+  nacos2:
+    image: nacos/nacos-server
+    ports:
+      - "8849:8848"
+      - "9849:9848"
+    environment:
+      # 最好使用此设定时区，其它镜像也可以使用
+      - TZ=CST-8
+    env_file:
+      - ../env/nacos-hostname.env
+  nacos3:
+    image: nacos/nacos-server
+    ports:
+      - "8850:8848"
+      - "9850:9848"
+    environment:
+      # 最好使用此设定时区，其它镜像也可以使用
+      - TZ=CST-8
+    env_file:
+      - ../env/nacos-hostname.env
+```
+
+### 3.4. 配置数据库连接参数(与上面创建数据库时的参数要一致)
+
+```sh
+# 配置mysql参数
+vi /usr/local/nacos-docker/env/nacos-hostname.env
+```
+
+修改下列参数:
+
+- NACOS_SERVERS=nacos_nacos1:8848 nacos_nacos2:8848 nacos_nacos3:8848
+- MYSQL_SERVICE_HOST=mysql_nginx
+- MYSQL_SERVICE_DB_NAME=nacos
+- MYSQL_SERVICE_PORT=80
+- MYSQL_SERVICE_USER=nacos
+- MYSQL_SERVICE_PASSWORD=nacos
+
+
+### 3.5. 部署
+
+```sh
+cd /usr/local/nacos-docker/
+docker-compose -f example/standalone-mysql-5.7.yaml up -d
+```
+
 ## 4. Nacos 控制台
 
 link：<http://127.0.0.1:8848/nacos/>

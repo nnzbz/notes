@@ -6,16 +6,27 @@
 
 ## 2. 创建docker的仓库
 
-- 操作步骤：
-  - ```Create repository``` > ```docker(hosted)```
-- 填写的主要内容：
-  - Name : ```my-docker```
-  - HTTP : ```8082```
-  - Enable Docker V1 API : 打勾
+1. `Create repository` -> `docker(hosted)`
+2. 填写的主要内容，并保存
 
-## 3. 修改本机(客户端)Docker的连接安全配置（使用HTTP而非HTTPS）
+- Name : `my-docker`
+- HTTP : `8082`
+- ~~HTTPS : `8083`~~
+- 打勾 `Allow anonymous docker pull ( Docker Bearer Token Realm required )`
 
-### 3.1. 方案一
+## 3. 添加 `Docker Bearer Token Realm`
+
+`Security` -> `Realms` -> 双击 `Docker Bearer Token Realm` -> `save`
+
+## 4. 禁用 `Outreach: Management`
+
+`System` -> `Capabilities` -> 选择 `Outreach: Management` -> `Disable`
+
+- 不禁用在上传的时候会报错 `Could not download page bundle` `Connection reset`
+
+## 5. 修改本机(客户端)Docker的连接安全配置（使用HTTP而非HTTPS）
+
+### 5.1. 方案一
 
 - Mac
 
@@ -55,18 +66,18 @@ sudo systemctl daemon-reload
 sudo systemctl restart docker
 ```
 
-### 3.2. 方案二(未验证)
+### 5.2. 方案二(未验证)
 
 > 正确的方式在报错信息里已经有提示了：
 In the case of HTTPS, if you have access to the registry's CA certificate, no need for the flag; simply place the CA certificate at /etc/docker/certs.d/10.0.1.44:5000/ca.crt
 
 首先，你不要直接使用docker-registry，你在registry前面套一层nginx代理，在nginx里自己签一组证书，把ca.crt拷贝到 /etc/docker/certs.d/10.0.1.44:5000/ca.crt 就可以了。
 
-## 4. 打开防火墙的8082端口(略)
+## 6. 打开防火墙的8082/8083端口(略)
 
-## 5. 创建上传的角色和用户
+## 7. 创建上传及下载的角色和用户
 
-### 5.1. 创建专门用于上传的角色
+### 7.1. 创建专门用于上传的角色
 
 - 操作步骤：
   - ```Create role```
@@ -78,7 +89,7 @@ In the case of HTTPS, if you have access to the registry's CA certificate, no ne
     - ```nx-repository-admin-maven2-my-docker-*```
     - ```nx-repository-view-maven2-my-docker-*```
 
-### 5.2. 新建专门用于上传的用户
+### 7.2. 新建专门用于上传的用户
 
 - 操作步骤：
   - ```Create user```
@@ -89,9 +100,9 @@ In the case of HTTPS, if you have access to the registry's CA certificate, no ne
   - Roles > Granted : ```nx-my-deployment```
 
 
-## 6. 上传镜像
+## 8. 上传镜像
 
-### 6.1. 登录私服
+### 8.1. 登录私服
 
 ```sh
 docker login 127.0.0.1:8082 -umy-deployment -pdeployment123
@@ -99,7 +110,7 @@ docker login 127.0.0.1:8082 -umy-deployment -pdeployment123
 
 > 注意：如果要登录 **docker hub**，请不要输入主机地址
 
-### 6.2. 打标记
+### 8.2. 打标记
 
 格式：
 
@@ -113,7 +124,7 @@ docker tag <imageId or imageName> <nexus-hostname>:<repository-port>/<image>:<ta
 docker tag nnzbz/debian-jre:8 192.168.1.201:8082/nnzbz/debian-jre:8
 ```
 
-### 6.3. 上传镜像
+### 8.3. 上传镜像
 
 上传镜像：
 
@@ -121,7 +132,7 @@ docker tag nnzbz/debian-jre:8 192.168.1.201:8082/nnzbz/debian-jre:8
 docker push 192.168.1.201:8082/nnzbz/debian-jre:8
 ```
 
-## 7. 拉取镜像
+## 9. 拉取镜像
 
 ```sh
 docker pull 127.0.0.1:8082/nnzbz/debian-jre:8

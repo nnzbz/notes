@@ -121,27 +121,59 @@ docker service update --force xxx
 docker service rm nginx
 ```
 
-## 4. config
+## 4. Secrets
 
-### 4.1. 添加 config
+### 4.1. 创建 secret
+
+```sh
+# 创建 secret(20位随机密码)
+openssl rand -base64 20 | docker secret create mysql_root_password -
+# 创建 secret(自定义密码)
+echo "xxxxxxx" | docker secret create mysql_root_password -
+```
+
+### 4.2. 查看密钥(在创建容器后)
+
+```sh
+# 进入容器
+docker exec -it <容器id> /bin/sh
+# 在容器中查看密钥
+cat /run/secrets/mysql_root_password
+```
+
+### 4.3. 更新 Secret
+
+```sh
+docker service update \
+     --secret-rm mysql_password mysql
+
+docker service update \
+     --secret-add source=mysql_password,target=old_mysql_password \
+     --secret-add source=mysql_password_v2,target=mysql_password \
+     mysql
+```
+
+## 5. Configs
+
+### 5.1. 添加 config
 
 ```sh
 docker config create nginx.conf /usr/local/nginx/nginx.conf
 ```
 
-### 4.2. 查看 config
+### 5.2. 查看 config
 
 ```sh
 docker config ls
 ```
 
-### 4.3. 删除 config
+### 5.3. 删除 config
 
 ```sh
 docker config rm nginx.conf
 ```
 
-### 4.4. 创建服务时使用 config
+### 5.4. 创建服务时使用 config
 
 ```sh
 docker service create \
@@ -151,7 +183,7 @@ docker service create \
     nginx
 ```
 
-### 4.5. 更新 config
+### 5.5. 更新 config
 
 更新 config 不能直接删除 config，应该先更新服务，然后才可以删除旧 config
 

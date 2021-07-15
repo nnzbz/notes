@@ -45,7 +45,7 @@ spring:
 
 其它默认配置在 [application.properties](https://github.com/xuxueli/xxl-job/blob/master/xxl-job-admin/src/main/resources/application.properties)，可参考进行配置
 
-## 4. 创建并运行容器
+## 4. 单机
 
 ```sh
 docker run --name xxl-job-admin -dp <宿主机端口号>:8080 -v /usr/local/xxl-job-admin/application.yml:/application.yml -v /var/log/xxl-job:/data/applogs --restart=always xuxueli/xxl-job-admin:<指定版本>
@@ -67,7 +67,34 @@ docker run --name xxl-job-admin -dp <宿主机端口号>:8080 -v ~/docker/xxl-jo
 - JAVA_OPTS
   如需自定义 JVM内存参数 等配置，可通过 "-e JAVA_OPTS" 指定，参数格式 JAVA_OPTS="-Xmx512m"
 
-## 5. 网页管理地址
+## 5. Swarm
+
+### 5.1. `Docker Compose`
+
+```sh
+mkdir -p /usr/local/xxl-job-admin
+vi /usr/local/xxl-job-admin/stack.yml
+```
+
+```yml{.line-numbers}
+version: "3.9"
+services:
+  xxl-job-admin:
+    image: xuxueli/xxl-job-admin:2.3.0
+    environment:
+      # 最好使用此设定时区，其它镜像也可以使用
+      - TZ=CST-8
+    volumes:
+      - /usr/local/xxl-job-admin/application.yml:/application.yml
+```
+
+### 5.2. 部署
+
+```sh
+docker stack deploy -c /usr/local/xxl-job-admin/stack.yml xxl-job-admin
+```
+
+## 6. 网页管理地址
 
 `http://<IP>:<port>/xxl-job-admin`
 
