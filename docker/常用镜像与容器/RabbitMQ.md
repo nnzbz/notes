@@ -16,11 +16,6 @@
 docker run -d --name rabbitmq -p5671:5671 -p5672:5672 -p4369:4369 -p25672:25672 -p15671:15671 -p15672:15672 --restart=always rabbitmq:management
 ```
 
-- 访问
-  容器启动之后就可以访问web 管理端了 <http://127.0.0.1:15672> ，默认创建了一个 guest 用户，密码也是 guest。
-- 修改密码
-  登录后，点击右上角 `guest`，页面下方找到 `Update this user`，填写 `Password` 并 `confirm`，然后 `Update user`
-
 ## 3. Swarm
 
 ### 3.1. Docker Compose
@@ -35,6 +30,7 @@ version: "3.9"
 services:
   rabbitmq:
     image: rabbitmq:management
+    hostname: rabbitmq
     ports:
       - 5672:5672
       - 15672:15672
@@ -48,3 +44,11 @@ services:
 ```sh
 docker stack deploy -c /usr/local/rabbitmq/stack.yml rabbitmq
 ```
+
+## 4. 访问
+
+容器启动之后就可以访问web 管理端了 <http://127.0.0.1:15672> ，默认创建了一个 guest 用户，密码也是 guest。
+
+- 修改密码
+  登录后，点击右上角 `guest`，页面下方找到 `Update this user`，填写 `Password` 并 `confirm`，然后 `Update user`
+

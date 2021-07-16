@@ -26,7 +26,7 @@ docker run -p80:80 --name nginx -v /usr/local/nginx/html:/usr/share/nginx/html:r
 ### 2.1. 准备配置文件的目录
 
 ```sh
-mkdir -p /usr/local/nginx/conf
+mkdir -p /usr/local/nginx/{conf,cert}
 # 在此目录下放入配置文件，配置文件参考最后一节
 ```
 
@@ -80,8 +80,8 @@ server {
     server_name kh3.cocmis.cn;
 
     # 注意文件位置，是从/etc/nginx/下开始算起的
-    ssl_certificate cert/5914365_kh3.cocmis.cn.pem;
-    ssl_certificate_key cert/5914365_kh3.cocmis.cn.key;
+    ssl_certificate cert/**.*.pem;
+    ssl_certificate_key cert/**.*.key;
     ssl_session_timeout 5m;
     ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
     ssl_ciphers ECDHE-RSA-AES128-GCM-SHA256:HIGH:!aNULL:!MD5:!RC4:!DHE;
@@ -89,9 +89,6 @@ server {
 
     location ^~/rabbitmq/ {
         proxy_pass http://rabbitmq_rabbitmq:15672/;
-    }
-    location ^~/nexus/ {
-        proxy_pass http://nexus_nexus:8082/;
     }
 }
 ```

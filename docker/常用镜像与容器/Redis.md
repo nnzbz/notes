@@ -183,11 +183,21 @@ configs:
 docker stack deploy -c /usr/local/redis/stack.yml redis
 ```
 
-## 3. ~~安装redis5集群~~
+## 3. Redis Web
 
-### 3.1. 拉取redis镜像(同上)
+<https://github.com/ErikDubbelboer/phpRedisAdmin>
 
-### 3.2. 准备redis源文件
+- 临时运行
+
+```sh
+docker run --rm --name redisweb --network=rebue -it -e REDIS_1_HOST=redis_master -e REDIS_1_NAME=redis_master -e REDIS_1_PORT=6379 -e REDIS_1_AUTH=******** erikdubbelboer/phpredisadmin
+```
+
+## 4. ~~安装redis5集群~~
+
+### 4.1. 拉取redis镜像(同上)
+
+### 4.2. 准备redis源文件
 
 从官网下载redis软件包
 
@@ -209,14 +219,14 @@ mkdir -p /usr/local/redis-cluster/conf
 cp /tmp/redis-5.0.5/redis.conf /usr/local/redis-cluster/conf
 ```
 
-### 3.3. 修改配置文件
+### 4.3. 修改配置文件
 
 ```sh
 sed -i 's/^bind 127.0.0.1$/bind 0.0.0.0/' /usr/local/redis-cluster/conf/redis.conf
 sed -i '/# cluster-enabled yes/acluster-enabled yes' /usr/local/redis-cluster/conf/redis.conf
 ```
 
-### 3.4. 准备集群中每个节点的配置文件
+### 4.4. 准备集群中每个节点的配置文件
 
 ```sh
 cd /usr/local/redis-cluster/conf/
@@ -240,7 +250,7 @@ sed -i 's/^port 6379$/port 7101/' 7101/redis.conf
 sed -i 's/^port 6379$/port 7102/' 7102/redis.conf
 ```
 
-### 3.5. 创建并运行容器
+### 4.5. 创建并运行容器
 
 **注：目前latest的版本是5.0.5**
 
@@ -256,7 +266,7 @@ docker run -d --net=host --name redis-b1 --restart=always -v /usr/local/redis-cl
 docker run -d --net=host --name redis-c1 --restart=always -v /usr/local/redis-cluster/conf/7102:/usr/local/etc/redis redis redis-server /usr/local/etc/redis/redis.conf
 ```
 
-### 3.6. 打开防火墙端口
+### 4.6. 打开防火墙端口
 
 ```sh
 firewall-cmd --zone=dmz --permanent --add-port=7000/tcp
@@ -267,7 +277,7 @@ firewall-cmd --zone=dmz --permanent --add-port=7101/tcp
 firewall-cmd --zone=dmz --permanent --add-port=7102/tcp
 ```
 
-### 3.7. 创建集群
+### 4.7. 创建集群
 
 - 进入任一个容器
 
@@ -282,7 +292,7 @@ redis-cli --cluster create --cluster-replicas 1 192.168.1.201:7000 192.168.1.201
 > replicas的参数 ```1``` ，表示每个master就有一个从节点
 > **注意:这里IP不能是 ```127.0.0.1``` ，而是局域网所能访问的IP**
 
-### 3.8. 检查集群是否安装成功
+### 4.8. 检查集群是否安装成功
 
 在宿主机上执行如下：
 
@@ -296,11 +306,11 @@ polkitd  28578  0.1  0.0  43252 10372 ?        Ssl  16:02   0:01 redis-server 0.
 polkitd  28704  0.1  0.0  43252 10368 ?        Ssl  16:02   0:01 redis-server 0.0.0.0:7102 [cluster]
 ```
 
-## 4. ~~安装redis4集群~~
+## 5. ~~安装redis4集群~~
 
-### 4.1. ~~拉取redis镜像(同上)~~
+### 5.1. ~~拉取redis镜像(同上)~~
 
-### 4.2. ~~准备redis源文件~~
+### 5.2. ~~准备redis源文件~~
 
 从官网下载redis软件包
 
@@ -323,14 +333,14 @@ mkdir -p /usr/local/redis-cluster/conf
 cp /tmp/redis-4.0.2/redis.conf /usr/local/redis-cluster/conf
 ```
 
-### 4.3. ~~修改配置文件~~
+### 5.3. ~~修改配置文件~~
 
 ```sh
 sed -i 's/^bind 127.0.0.1$/bind 0.0.0.0/' /usr/local/redis-cluster/conf/redis.conf
 sed -i '/# cluster-enabled yes/acluster-enabled yes' /usr/local/redis-cluster/conf/redis.conf
 ```
 
-### 4.4. ~~准备集群中每个节点的配置文件~~
+### 5.4. ~~准备集群中每个节点的配置文件~~
 
 ```sh
 cd /usr/local/redis-cluster/conf/
@@ -354,7 +364,7 @@ sed -i 's/^port 6379$/port 7101/' 7101/redis.conf
 sed -i 's/^port 6379$/port 7102/' 7102/redis.conf
 ```
 
-### 4.5. ~~制作集群管理的镜像~~
+### 5.5. ~~制作集群管理的镜像~~
 
 > **注意：其实可以不用制作镜像，直接用现成的，用类似下面这条命令**
 
@@ -362,7 +372,7 @@ sed -i 's/^port 6379$/port 7102/' 7102/redis.conf
 docker run -it --rm zvelo/redis-trib create --replicas 1 192.168.1.201:7000 192.168.1.201:7001 192.168.1.201:7002 192.168.1.201:7100 192.168.1.201:7101 192.168.1.201:7102
 ```
 
-#### 4.5.1. ~~创建集群管理的容器~~
+#### 5.5.1. ~~创建集群管理的容器~~
 
 ```sh
 docker run --net=host -it --name redis-trib centos /bin/bash
@@ -448,7 +458,7 @@ ruby --version
 gem install redis
 ```
 
-#### 4.5.2. ~~复制redis-trib.rb到容器~~
+#### 5.5.2. ~~复制redis-trib.rb到容器~~
 
 在主机中将 redis-trib.rb 文件复制到redis-trib容器中的 /usr/local/bin/ 目录下
 
@@ -456,13 +466,13 @@ gem install redis
 docker cp /tmp/redis-4.0.2/src/redis-trib.rb redis-trib:/usr/local/bin/
 ```
 
-#### 4.5.3. ~~提交修改生成新镜像~~
+#### 5.5.3. ~~提交修改生成新镜像~~
 
 ```sh
 docker commit -m "redis trib" -a "zbz" redis-trib zboss/redis-trib:v1.0.0
 ```
 
-### 4.6. ~~创建并运行容器~~
+### 5.6. ~~创建并运行容器~~
 
 ```sh
 # master
@@ -476,7 +486,7 @@ docker run -d --net=host --name redis-b1 --restart=always -v /usr/local/redis-cl
 docker run -d --net=host --name redis-c1 --restart=always -v /usr/local/redis-cluster/conf/7102:/usr/local/redis/conf redis /usr/local/redis/conf/redis.conf
 ```
 
-### 4.7. ~~打开防火墙端口~~
+### 5.7. ~~打开防火墙端口~~
 
 ```sh
 firewall-cmd --zone=dmz --permanent --add-port=7000/tcp
@@ -487,7 +497,7 @@ firewall-cmd --zone=dmz --permanent --add-port=7101/tcp
 firewall-cmd --zone=dmz --permanent --add-port=7102/tcp
 ```
 
-### 4.8. ~~创建集群~~
+### 5.8. ~~创建集群~~
 
 启动redis-trib容器
 
