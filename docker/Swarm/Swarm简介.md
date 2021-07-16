@@ -107,7 +107,15 @@ docker service create --replicas 3 -p 80:80 --name nginx nginx:1.13.7-alpine
 docker service scale nginx=5
 ```
 
-### 3.4. 强制重启服务
+### 3.4. 更新镜像并重启
+
+```sh
+docker service update \
+    --image nginx:1.13.12-alpine \
+    nginx
+```
+
+### 3.5. 强制更新并重启
 
 一般可以通过更新服务配置来重启服务，但是有时候配置没有改变，也要重启，就用下面的命令
 
@@ -115,7 +123,7 @@ docker service scale nginx=5
 docker service update --force xxx
 ```
 
-### 3.5. 删除服务
+### 3.6. 删除服务
 
 ```sh
 docker service rm nginx

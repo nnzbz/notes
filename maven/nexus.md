@@ -248,6 +248,12 @@ vi ~/.m2/settings.xml
         <username>Username Of User Token</username>
         <password>Password Of User Token</password>
     </server> -->
+    <!-- Docker私服 -->
+    <server>
+        <id>kh3.cocmis.cn:18082</id>
+        <username></username>
+        <password></password>
+    </server>
     <!-- Docker官方仓库 -->
     <!-- <server>
         <id>docker.io</id>

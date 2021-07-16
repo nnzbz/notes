@@ -59,8 +59,10 @@ services:
     image: sonatype/nexus3
     ports:
       - 8081:8081
-      # docker私服的接口
-      # - 8082:8082
+      # docker私服HTTP的接口
+      - 8082:8082
+      # docker私服HTTPS的接口
+      # - 8083:8083
     environment:
       # 最好使用此设定时区，其它镜像也可以使用
       - TZ=CST-8
