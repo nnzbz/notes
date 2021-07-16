@@ -6,7 +6,7 @@
 
 ```js
 upstream my_server {                                                         
-    server xxxxx:8080;                                                
+    server 10.0.0.2:8080;                                                
     keepalive 2000;
 }
 server {
@@ -27,6 +27,7 @@ server {
     ssl_ciphers ECDHE-RSA-AES128-GCM-SHA256:HIGH:!aNULL:!MD5:!RC4:!DHE;
     ssl_prefer_server_ciphers on;
 
+    # 处理 http(s)://xxx.xxx.xxx.xxx:80(443)/my 的请求
     location /my/ {
         proxy_pass http://my_server/;
         proxy_set_header Host $host:$expose_port;
@@ -41,4 +42,6 @@ server {
 
 - 在http节点下，upstream配置服务地址，server的location配置代理映射
 - expose_port 因为nginx如果安装在docker容器内部的话，只知道自己内部端口
-- 
+- proxy_pass
+  - 如果末尾有 `/`，请求会被转发到 `my_server` 的服务地址 <http://10.0.0.2:8080/>
+  - 如果末尾没有 `/`，则请求会转发到 `my_server` 的 <http://10.0.0.2:8080/my>
