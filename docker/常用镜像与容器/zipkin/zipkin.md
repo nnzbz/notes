@@ -2,6 +2,8 @@
 
 [TOC]
 
+## 1. 单机
+
 - Zipkin
 
 ```sh
@@ -14,4 +16,30 @@ docker run --name zipkin --restart=always -dp 9411:9411 openzipkin/zipkin
 
 ```sh
 docker run -dp 9411:9411 --name zipkin --restart=always openzipkin/zipkin-slim
+```
+
+## 2. Swarm 部署
+
+1. Docker Compose
+
+```sh
+mkdir -p /usr/local/zipkin
+vi /usr/local/zipkin/stack.yml
+```
+
+```yml{.line-numbers}
+version: "3.9"
+services:
+  zipkin:
+    image: openzipkin/zipkin
+    hostname: zipkin
+    environment:
+      # 最好使用此设定时区，其它镜像也可以使用
+      - TZ=CST-8
+```
+
+2. 部署
+
+```sh
+docker stack deploy -c /usr/local/zipkin/stack.yml zipkin
 ```
