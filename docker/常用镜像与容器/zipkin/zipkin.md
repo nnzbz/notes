@@ -43,3 +43,8 @@ services:
 ```sh
 docker stack deploy -c /usr/local/zipkin/stack.yml zipkin
 ```
+
+
+## 浏览
+
+<http://127.0.0.1:9411/zipkin>
