@@ -153,12 +153,9 @@ cat /run/secrets/mysql_root_password
 
 ```sh
 docker service update \
-     --secret-rm mysql_password mysql
-
-docker service update \
-     --secret-add source=mysql_password,target=old_mysql_password \
-     --secret-add source=mysql_password_v2,target=mysql_password \
-     mysql
+    --secret-add source=mysql_root_password_v2,target=mysql_root_password \
+    --secret-rm mysql_root_password \
+    mysql
 ```
 
 ## 5. Configs
