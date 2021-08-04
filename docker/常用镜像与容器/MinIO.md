@@ -60,6 +60,8 @@ services:
         target: access_key
       - source: minio_secret_key
         target: secret_key
+    volumes:
+      - miniodata:/data
     environment:
       # 最好使用此设定时区，其它镜像也可以使用
       - TZ=CST-8
@@ -70,6 +72,9 @@ secrets:
     external: true
   minio_secret_key:
     external: true
+
+volumes:
+  miniodata:
 ```
 
 4. 部署
@@ -77,11 +82,6 @@ secrets:
 ```sh
 docker stack deploy -c /usr/local/minio/stack.yml minio
 ```
-
-
-  ```sh
-  docker service create --name="minio-service" -p 9000:9000 --secret="access_key" --secret="secret_key" minio/minio server /data
-  ```
 
 - 访问
   - 地址

@@ -8,6 +8,8 @@
 
 ## 2. 根据SQL脚本创建数据库
 
+在数据库中创建名为 `xxl_job` 的schema，账户名称为 xxl_job，密码自定义
+
 SQL脚本在github项目中的位置为:
 
 `/xxl-job/doc/db/tables_xxl_job.sql`

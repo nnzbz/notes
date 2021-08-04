@@ -322,6 +322,23 @@ show slave status\G;
 
 ![主主开启成功](主主开启成功.png)
 
+#### 2.3.7. 在主主环境中创建账户并授权
+
+分别对 mysql1 和 mysql2 执行下面命令
+
+```sh
+# 查看mysql的容器id
+docker ps | grep mysql
+# 进入mysql容器
+docker exec -it <容器id> /bin/sh
+# 查看密码
+cat /run/secrets/mysql_root_password
+# 进入 mysql
+mysql -u root -p
+# 创建用户并授权(xxx是账户名)
+GRANT ALL ON xxx.* to 'xxx'@'%' identified by '密码';
+```
+
 ## 3. 其它容器连接MySQL容器
 
 ```sh
