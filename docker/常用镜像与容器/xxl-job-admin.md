@@ -21,7 +21,10 @@ SQL脚本在github项目中的位置为:
 
 ## 3. 准备好配置文件
 
-/usr/local/xxl-job-admin/application.yml
+```sh
+mkdir -p /usr/local/xxl-job-admin
+vi /usr/local/xxl-job-admin/application.yml
+```
 
 ```yml
 spring:
