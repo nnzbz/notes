@@ -15,7 +15,11 @@ docker run --name nacos-standalone -e MODE=standalone -dp 8848:8848 --restart=al
 ### 2.1. 从github下载nacos示例
 
 ```sh
-git clone --depth 1 https://github.com/nacos-group/nacos-docker.git
+cd /usr/local/
+# git clone --depth 1 https://github.com/nacos-group/nacos-docker.git
+# 国内镜像
+git clone --depth 1 https://gitee.com/mirrors/Nacos.git
+mv Nacos nacos-docker
 cd nacos-docker
 ```
 
