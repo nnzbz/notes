@@ -18,8 +18,7 @@ docker run --name nacos-standalone -e MODE=standalone -dp 8848:8848 --restart=al
 cd /usr/local/
 # git clone --depth 1 https://github.com/nacos-group/nacos-docker.git
 # 国内镜像
-git clone --depth 1 https://gitee.com/mirrors/Nacos.git
-mv Nacos nacos-docker
+git clone --depth 1 https://gitee.com/nnzbz/nacos-docker.git
 cd nacos-docker
 ```
 
@@ -150,10 +149,10 @@ vi /usr/local/nacos-docker/example/cluster-hostname.yaml
 ```
 
 - `version` 改为 `"3.9"`
-- 删除 `hostname` 和 `container_name` 节点
-- 删除 `image` 的 `:${NACOS_VERSION}`
+- ~~删除 `hostname` 和 `container_name` 节点~~
+- 删除 nacos1/nacos2/nacos3 下 `image` 的 `:${NACOS_VERSION}`
+- 删除 nacos1/nacos2/nacos3 下 `depenOn` 节点
 - 删除 `mysql` 节点
-- 删除 `depenOn` 节点
 - 删除 `volumes` 节点
 - 删除 `restart: always`
 - 每个服务添加
@@ -211,19 +210,19 @@ vi /usr/local/nacos-docker/env/nacos-hostname.env
 
 修改下列参数:
 
-- NACOS_SERVERS=nacos_nacos1:8848 nacos_nacos2:8848 nacos_nacos3:8848
+- ~~NACOS_SERVERS=nacos_nacos1:8848 nacos_nacos2:8848 nacos_nacos3:8848~~
 - MYSQL_SERVICE_HOST=mysql_nginx
 - MYSQL_SERVICE_DB_NAME=nacos
 - MYSQL_SERVICE_PORT=80
 - MYSQL_SERVICE_USER=nacos
-- MYSQL_SERVICE_PASSWORD=nacos
+- MYSQL_SERVICE_PASSWORD=********
 
+**注意上面的密码改为实际的密码**
 
 ### 3.5. 部署
 
 ```sh
-cd /usr/local/nacos-docker/
-docker-compose -f example/standalone-mysql-5.7.yaml up -d
+docker stack deploy -c /usr/local/nacos-docker/example/cluster-hostname.yaml nacos
 ```
 
 ## 4. Nacos 控制台
