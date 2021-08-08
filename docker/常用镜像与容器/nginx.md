@@ -77,7 +77,7 @@ server {
     listen       80;
     listen  [::]:80;
     listen       443 ssl;
-    server_name kh3.cocmis.cn;
+    server_name 域名;
 
     # 注意文件位置，是从/etc/nginx/下开始算起的
     ssl_certificate cert/**.*.pem;

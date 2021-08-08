@@ -242,6 +242,7 @@ services:
 #            - node.hostname == ecseafe0d11214a
   nginx:
     image: nginx
+    hostname: mysql
     ports:
       - 3306:80
     environment:
@@ -337,6 +338,29 @@ cat /run/secrets/mysql_root_password
 mysql -u root -p
 # 创建用户并授权(xxx是账户名)
 GRANT ALL ON xxx.* to 'xxx'@'%' identified by '密码';
+```
+
+#### 2.3.8. 在主主环境中修改账户密码
+
+分别对 mysql1 和 mysql2 执行下面命令
+
+```sh
+# 查看mysql的容器id
+docker ps | grep mysql
+# 进入mysql容器
+docker exec -it <容器id> /bin/sh
+# 查看密码
+cat /run/secrets/mysql_root_password
+# 进入 mysql
+mysql -u root -p
+# 选择数据库
+use mysql;
+# 查看账户密码(密码是经过杂凑算法显示出来的)
+select host,user,authentication_string from user;
+# 修改账户密码(xxx是账户名)
+update user set authentication_string=password('密码') where user='xxx' and host='%';
+# 刷新缓存
+FLUSH PRIVILEGES;
 ```
 
 ## 3. 其它容器连接MySQL容器
