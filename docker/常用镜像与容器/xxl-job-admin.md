@@ -30,8 +30,7 @@ vi /usr/local/xxl-job-admin/application.yml
 spring:
   # 数据库连接
   datasource:
-    # 172.17.0.1是容器内连接其它容器内MySQL数据库所需要设置的docker0的地址，可根据实际调整
-    url: jdbc:mysql://172.17.0.1:3306/xxl_job?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true&serverTimezone=Asia/Shanghai
+    url: jdbc:mysql://myslq:3306/xxl_job?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true&serverTimezone=Asia/Shanghai
     # 连接数据库的用户，可根据实际情况设置
     username: xxl_job
     # 连接数据库的密码，可根据实际情况设置

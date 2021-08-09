@@ -52,3 +52,11 @@ docker stack deploy -c /usr/local/rabbitmq/stack.yml rabbitmq
 - 修改密码
   登录后，点击右上角 `guest`，页面下方找到 `Update this user`，填写 `Password` 并 `confirm`，然后 `Update user`
 
+**注意:** 新版本的guest只允许在localhost本地访问，须注册一个新的账户，这里示例添加 admin 账户
+
+```sh
+docker exec -it '容器ID' /bin/sh
+rabbitmqctl add_user admin '密码'
+rabbitmqctl set_user_tags admin administrator
+rabbitmqctl set_permissions -p / admin ".*" ".*" ".*"
+```

@@ -24,7 +24,7 @@ vi /usr/local/torna/config/application.properties
 server.port=7700
 
 # MySQL
-mysql.host=127.0.0.1:3306
+mysql.host=mysql:3306
 mysql.schema=torna
 mysql.username=torna
 mysql.password=********
@@ -34,7 +34,7 @@ mysql.password=********
 
 **注意:** 注意设置host和password
 
-### 3.1. 创建并运行 `norta` 容器
+### 3.1. 创建并运行 `torna` 容器
 
 ```sh
 docker run --name torna -dp 7700:7700 -v /usr/local/torna/config:/torna/config --restart=always tanghc2020/torna
@@ -58,12 +58,8 @@ services:
     environment:
       # 最好使用此设定时区，其它镜像也可以使用
       - TZ=CST-8
-    configs:
-      - source: application.properties
-        target: /torna/config/application.properties
-configs:
-  application.properties:
-    file: /usr/local/torna/config/application.properties
+    volumes:
+      - /usr/local/torna/config/application.properties:/torna/config/application.properties
 ```
 
 ### 4.2. 部署

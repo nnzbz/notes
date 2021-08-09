@@ -211,9 +211,9 @@ vi /usr/local/nacos-docker/env/nacos-hostname.env
 修改下列参数:
 
 - ~~NACOS_SERVERS=nacos_nacos1:8848 nacos_nacos2:8848 nacos_nacos3:8848~~
-- MYSQL_SERVICE_HOST=mysql_nginx
+- MYSQL_SERVICE_HOST=mysql
 - MYSQL_SERVICE_DB_NAME=nacos
-- MYSQL_SERVICE_PORT=80
+- MYSQL_SERVICE_PORT=3306
 - MYSQL_SERVICE_USER=nacos
 - MYSQL_SERVICE_PASSWORD=********
 

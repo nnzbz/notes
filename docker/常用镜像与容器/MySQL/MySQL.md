@@ -173,7 +173,7 @@ stream {
   }
 
   server {
-    listen                80;
+    listen                3306;
     proxy_connect_timeout 3s;
     proxy_timeout         6s;
     proxy_pass            mysql;
@@ -244,7 +244,7 @@ services:
     image: nginx
     hostname: mysql
     ports:
-      - 3306:80
+      - 3306:3306
     environment:
       # 最好使用此设定时区，其它镜像也可以使用
       - TZ=CST-8
@@ -253,7 +253,6 @@ services:
         target: /etc/nginx/nginx.conf
     deploy:
       replicas: 3
-configs:
 
 secrets:
   mysql_root_password:
