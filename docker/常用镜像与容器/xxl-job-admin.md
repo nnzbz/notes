@@ -30,11 +30,11 @@ vi /usr/local/xxl-job-admin/application.yml
 spring:
   # 数据库连接
   datasource:
-    url: jdbc:mysql://myslq:3306/xxl_job?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true&serverTimezone=Asia/Shanghai
+    url: jdbc:mysql://mysql:3306/xxl_job?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true&serverTimezone=Asia/Shanghai
     # 连接数据库的用户，可根据实际情况设置
     username: xxl_job
     # 连接数据库的密码，可根据实际情况设置
-    password: xxl_job
+    password: xxxxxxxx
   # 报警发件人邮箱
   mail:
     # 发件邮箱服务器，具体可以通过网页登录邮箱查看
@@ -44,7 +44,7 @@ spring:
     # 发件人邮箱
     username: xxx@qq.com
     # 这里的密码是授权码，可以通过网页登录邮箱设置
-    password: xxx
+    password: xxxxxxxx
 ```
 
 其它默认配置在 [application.properties](https://github.com/xuxueli/xxl-job/blob/master/xxl-job-admin/src/main/resources/application.properties)，可参考进行配置
@@ -85,6 +85,8 @@ version: "3.9"
 services:
   xxl-job-admin:
     image: xuxueli/xxl-job-admin:2.3.0
+    ports:
+        11080:8080
     environment:
       # 最好使用此设定时区，其它镜像也可以使用
       - TZ=CST-8

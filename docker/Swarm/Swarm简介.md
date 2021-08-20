@@ -55,6 +55,12 @@ docker swarm init --advertise-addr <IP>
 docker swarm join --token xxxxx <集群节点IP>:<PORT>
 ```
 
+- 通过在manage节点执行下面命令，可以查看加入节点的命令，可以直接复制到worker节点执行
+
+```sh
+docker swarm join-token worker
+```
+
 ### 2.3. 添加管理
 
 ```sh

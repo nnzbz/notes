@@ -33,6 +33,8 @@ services:
   zipkin:
     image: openzipkin/zipkin
     hostname: zipkin
+    ports:
+      - 9411:9411
     environment:
       # 最好使用此设定时区，其它镜像也可以使用
       - TZ=CST-8

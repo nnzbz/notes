@@ -26,7 +26,7 @@ docker run -p80:80 --name nginx -v /usr/local/nginx/html:/usr/share/nginx/html:r
 ### 2.1. 准备配置文件的目录
 
 ```sh
-mkdir -p /usr/local/nginx/{conf,cert}
+mkdir -p /usr/local/nginx/{html,conf,cert}
 # 在此目录下放入配置文件，配置文件参考最后一节
 ```
 
@@ -56,6 +56,8 @@ services:
       - /usr/local/nginx/conf/:/etc/nginx/conf.d/
       # 数字证书目录
       # - /usr/local/nginx/cert/:/etc/nginx/cert/
+      # 网页存放目录
+      - /usr/local/nginx/html:/usr/share/nginx/html
     deploy:
       replicas: 3
 ```
@@ -73,6 +75,11 @@ vi /usr/local/nginx/conf/default.conf
 ```
 
 ```ini
+upstream gateway {
+    server gateway-server:80;
+    keepalive 2000;
+}
+
 server {
     listen       80;
     listen  [::]:80;
@@ -87,8 +94,11 @@ server {
     ssl_ciphers ECDHE-RSA-AES128-GCM-SHA256:HIGH:!aNULL:!MD5:!RC4:!DHE;
     ssl_prefer_server_ciphers on;
 
-    location ^~/rabbitmq/ {
-        proxy_pass http://rabbitmq_rabbitmq:15672/;
+    location /admin-web/ {
+        root /usr/share/nginx/html/;
+    }
+    location / {
+        proxy_pass http://gateway/;
     }
 }
 ```

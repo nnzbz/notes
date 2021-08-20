@@ -44,7 +44,7 @@ bind 0.0.0.0
 # AOF持久化
 appendonly yes
 # 本实例密码
-requirepass xxxxxx
+requirepass xxxxxxxx
 ```
 
 - slave
@@ -59,11 +59,11 @@ bind 0.0.0.0
 # AOF持久化
 appendonly yes
 # 本实例密码
-requirepass xxxxxx
+requirepass xxxxxxxx
 # 主机的地址和端口号
 replicaof redis_master 6379
 # 主机密码
-masterauth xxxxxx
+masterauth xxxxxxxx
 ```
 
 - sentinel
@@ -78,7 +78,7 @@ sentinel resolve-hostnames yes
 # Sentine监听的master地址
 sentinel monitor mymaster redis_master 6379 2
 # 配置连接master的密码
-sentinel auth-pass mymaster xxxxxx
+sentinel auth-pass mymaster xxxxxxxx
 ```
 
 ```sh

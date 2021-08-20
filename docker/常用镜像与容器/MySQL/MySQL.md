@@ -79,10 +79,11 @@ docker run -dp3306:3306 --restart=always --name mysql -e MYSQL_ROOT_PASSWORD=roo
 #### 2.3.1. 创建 secret
 
 ```sh
+# 两种方式
 # 创建 secret(20位随机密码)
 openssl rand -base64 20 | docker secret create mysql_root_password -
 # 创建 secret(自定义密码)
-echo "xxxxxxx" | docker secret create mysql_root_password -
+echo "xxxxxxxx" | docker secret create mysql_root_password -
 ```
 
 - 查看密钥(在创建容器后)
