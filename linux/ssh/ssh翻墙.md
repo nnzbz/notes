@@ -22,3 +22,24 @@ SSH会建立一个socket，去监听本地的12345端口。一旦有数据传向
 ```sh
 netstat -Plant | grep <remote port>
 ```
+
+## 4.ssh全局代理设置
+
+因为第二步翻墙时，创建的是socket连接，所以需要在无法连接网络的机器上设置socket全局代理，把所有外网请求都发到12345端口，实现代理设置
+
+```ssh
+vi /etc/profile
+```
+
+在最后一行添加全局的代码配置
+
+```
+export http_proxy=socks5://127.0.0.1:12345 #代理程序地址
+export https_proxy=socks5://127.0.0.1:12345
+```
+
+重载设置
+
+```
+. /etc/profile
+```

@@ -59,6 +59,20 @@ ExecStart=/usr/bin/dockerd-current \
 ....
 ```
 
+如果上述操作无效，使用下面的配置（同Deepin/Ubuntu系统的配置）
+
+```
+vi /etc/docker/daemon.json
+```
+
+写入以下配置
+
+```
+{
+    "insecure-registries":["172.20.14.237:8082"]
+}
+```
+
 - 重启docker
 
 ```sh
