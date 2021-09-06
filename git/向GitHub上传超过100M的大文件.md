@@ -29,6 +29,14 @@ Git LFS 是 Github 开发的一个 Git 的扩展，用于实现 Git 对大文件
     brew install git-lfs
     ```
 
+- CentOS
+  
+  ```sh
+  curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.rpm.sh | sudo bash
+  sudo yum install git-lfs -y
+  git lfs install
+  ```
+
 ## 2. 开启lfs功能
 
 ```sh
