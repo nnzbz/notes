@@ -73,9 +73,39 @@ docker swarm join-token manager
 docker node ls
 ```
 
-## 3. 服务管理
+## 3.开通通信端口
 
-### 3.1. 部署服务
+默认情况下，防火墙拦截了docker创建的虚拟网络链接，需要开通以下通信端口，使各节点能够正常通信
+
+```
+firewall-cmd --zone=public --add-port=22/tcp --permanent
+firewall-cmd --zone=public --add-port=2376/tcp --permanent
+firewall-cmd --zone=public --add-port=2377/tcp --permanent
+firewall-cmd --zone=public --add-port=7946/tcp --permanent
+firewall-cmd --zone=public --add-port=7946/udp --permanent
+firewall-cmd --zone=public --add-port=4789/tcp --permanent
+firewall-cmd --zone=public --add-port=4789/udp --permanent
+```
+
+集群节点之间保证TCP 2377、TCP/UDP 7946和UDP 4789端口通信
+
+用于Docker客户端安全通信的TCP端口2376，Docker Machine工作需要这个端口，Docker Machine用于对Docker主机进行编排
+
+TCP端口2377集群管理端口
+
+TCP与UDP端口7946节点之间通讯端口
+
+TCP与UDP端口4789 overlay网络通讯端口
+
+刷新防火墙
+
+```
+firewall-cmd --reload
+```
+
+## 4. 服务管理
+
+### 4.1. 部署服务
 
 在集群中创建并运行一个名为 nginx 服务
 
@@ -85,7 +115,7 @@ docker service create --replicas 3 -p 80:80 --name nginx nginx:1.13.7-alpine
 
 现在我们使用浏览器，输入任意节点 IP ，即可看到 nginx 默认页面。
 
-### 3.2. 查看服务
+### 4.2. 查看服务
 
 - 查看服务列表
 
@@ -105,7 +135,7 @@ docker service create --replicas 3 -p 80:80 --name nginx nginx:1.13.7-alpine
   docker service logs nginx
   ```
 
-### 3.3. 服务伸缩
+### 4.3. 服务伸缩
 
 根据数字可伸可缩
 
@@ -113,7 +143,7 @@ docker service create --replicas 3 -p 80:80 --name nginx nginx:1.13.7-alpine
 docker service scale nginx=5
 ```
 
-### 3.4. 更新镜像并重启
+### 4.4. 更新镜像并重启
 
 ```sh
 docker service update \
@@ -121,7 +151,7 @@ docker service update \
     nginx
 ```
 
-### 3.5. 强制更新并重启
+### 4.5. 强制更新并重启
 
 一般可以通过更新服务配置来重启服务，但是有时候配置没有改变，也要重启，就用下面的命令
 
@@ -129,15 +159,15 @@ docker service update \
 docker service update --force xxx
 ```
 
-### 3.6. 删除服务
+### 4.6. 删除服务
 
 ```sh
 docker service rm nginx
 ```
 
-## 4. Secrets
+## 5. Secrets
 
-### 4.1. 创建 secret
+### 5.1. 创建 secret
 
 ```sh
 # 创建 secret(20位随机密码)
@@ -146,7 +176,7 @@ openssl rand -base64 20 | docker secret create mysql_root_password -
 echo "xxxxxxx" | docker secret create mysql_root_password -
 ```
 
-### 4.2. 查看密钥(在创建容器后)
+### 5.2. 查看密钥(在创建容器后)
 
 ```sh
 # 进入容器
@@ -155,7 +185,7 @@ docker exec -it <容器id> /bin/sh
 cat /run/secrets/mysql_root_password
 ```
 
-### 4.3. 更新 Secret
+### 5.3. 更新 Secret
 
 ```sh
 docker service update \
@@ -164,27 +194,27 @@ docker service update \
     mysql
 ```
 
-## 5. Configs
+## 6. Configs
 
-### 5.1. 添加 config
+### 6.1. 添加 config
 
 ```sh
 docker config create nginx.conf /usr/local/nginx/nginx.conf
 ```
 
-### 5.2. 查看 config
+### 6.2. 查看 config
 
 ```sh
 docker config ls
 ```
 
-### 5.3. 删除 config
+### 6.3. 删除 config
 
 ```sh
 docker config rm nginx.conf
 ```
 
-### 5.4. 创建服务时使用 config
+### 6.4. 创建服务时使用 config
 
 ```sh
 docker service create \
@@ -194,7 +224,7 @@ docker service create \
     nginx
 ```
 
-### 5.5. 更新 config
+### 6.5. 更新 config
 
 更新 config 不能直接删除 config，应该先更新服务，然后才可以删除旧 config
 

@@ -86,7 +86,7 @@ services:
   xxl-job-admin:
     image: xuxueli/xxl-job-admin:2.3.0
     ports:
-        11080:8080
+      - 11080:8080
     environment:
       # 最好使用此设定时区，其它镜像也可以使用
       - TZ=CST-8

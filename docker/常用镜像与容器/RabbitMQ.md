@@ -29,7 +29,7 @@ vi /usr/local/rabbitmq/stack.yml
 version: "3.9"
 services:
   rabbitmq:
-    image: rabbitmq:management
+    image: rabbitmq:3-management
     hostname: rabbitmq
     ports:
       - 5672:5672

@@ -9,16 +9,29 @@
 ## 1. 安装
 
 - CentOS
-<https://docs.docker.com/engine/install/centos/>
+  <https://docs.docker.com/engine/install/centos/>
+
+  当服务器连接docker官方网站速度非常缓慢，可以参考以下地址，更换docker-ce.repo为国内源
+
+  https://mirror.tuna.tsinghua.edu.cn/help/docker-ce/
+
+  国内源更换完成后，安装还是使用官网上的命令操作：
+
+  ```
+  sudo yum install docker-ce docker-ce-cli containerd.io
+  ```
+
 - Ubuntu
-<https://docs.docker.com/install/linux/docker-ce/ubuntu/#install-docker-ce>
+  <https://docs.docker.com/install/linux/docker-ce/ubuntu/#install-docker-ce>
+
 - Mac
-<https://docs.docker.com/docker-for-mac/install/#what-to-know-before-you-install>
+  <https://docs.docker.com/docker-for-mac/install/#what-to-know-before-you-install>
+
 - Deepin
-由于 Deepin 是基于 debian 的 unstable 版本开发的，通过 `lsb_release -cs` 获取到的版本信息为 unstable，而 docker 官方源并没支持 debian 的 unstable 版本，因此使用 docker 官方教程是安装不成功的。
-安装请参考官方Debian的方案
-<https://docs.docker.com/engine/install/debian/>
-但是在 `SET UP THE REPOSITORY`的第 `3` 步时注意，修改为下面的命令
+  由于 Deepin 是基于 debian 的 unstable 版本开发的，通过 `lsb_release -cs` 获取到的版本信息为 unstable，而 docker 官方源并没支持 debian 的 unstable 版本，因此使用 docker 官方教程是安装不成功的。
+  安装请参考官方Debian的方案
+  <https://docs.docker.com/engine/install/debian/>
+  但是在 `SET UP THE REPOSITORY`的第 `3` 步时注意，修改为下面的命令
 
 ```sh
 sudo vi /etc/apt/sources.list.d/docker.list
@@ -206,7 +219,7 @@ docker run --name redis-temp redis echo "no run"
 ```sh
 docker run -d -it <容器ID> /bin/sh
 ```
-　　
+
 - 在镜像里面配置启动脚本里面增加一个执行进程
 
 Dockerfile文件

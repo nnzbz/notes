@@ -45,6 +45,7 @@ docker run --name torna -dp 7700:7700 -v /usr/local/torna/config:/torna/config -
 ### 4.1. `Docker Compose`
 
 ```sh
+mkdir -p /usr/local/torna/
 vi /usr/local/torna/stack.yml
 ```
 
