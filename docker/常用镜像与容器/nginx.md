@@ -93,6 +93,16 @@ server {
     ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
     ssl_ciphers ECDHE-RSA-AES128-GCM-SHA256:HIGH:!aNULL:!MD5:!RC4:!DHE;
     ssl_prefer_server_ciphers on;
+    # 对于只支持HTTP协议里的GET和POST请求，不支持PUT/DELETE请求的
+    # 所有的PUT请求，要携带Header：X-HTTP-Method-Override: PUT　　
+    # 所有的DELETE请求，要携带Header：X-HTTP-Method-Override: DELETE
+    # 可以在nginx层修改和转发
+    # 添加下面5行，记得执行 nginx -s reload 重新加载
+    set $method $request_method;
+    if ($http_X_HTTP_Method_Override ~* 'PUT|DELETE') {
+        set $method $http_X_HTTP_Method_Override;
+    }
+    proxy_method $method;
 
     location /admin-web/ {
         root /usr/share/nginx/html/;
