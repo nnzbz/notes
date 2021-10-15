@@ -104,8 +104,13 @@ server {
     }
     proxy_method $method;
 
-    location /admin-web/ {
-        root /usr/share/nginx/html/;
+    #location /admin-web/ {
+    #    root /usr/share/nginx/html/;
+    #}
+    location /admin-web {
+        root /usr/share/nginx/html;
+        index           index.html; 
+        try_files       $uri $uri/ /admin-web/index.html; 
     }
     location / {
         proxy_pass http://gateway/;
