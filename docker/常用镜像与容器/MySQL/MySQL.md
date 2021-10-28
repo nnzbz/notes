@@ -8,9 +8,24 @@
 
 ## 2. 创建并运行MySQL容器
 
-### 2.1. 将数据映射到宿主机路径中保存
+### 2.1. 用于开发
 
-#### 2.1.1. 宿主机没有UID为999的用户
+```sh
+docker run --name mysql -dp3306:3306 -p33060:33060 \
+    -e TZ=CST-8 \
+    -e MYSQL_ROOT_PASSWORD=root \
+    -v mysqldata:/var/lib/mysql \
+    --restart=always \
+    mysql:5 \
+        --default-time-zone='+8:00' \
+        --character-set-client-handshake=FALSE \
+        --character-set-server=utf8mb4 \
+        --collation-server=utf8mb4_general_ci
+```
+
+### 2.2. 将数据映射到宿主机路径中保存
+
+#### 2.2.1. 宿主机没有UID为999的用户
 
 在宿主机中执行以下命令
 
@@ -37,7 +52,7 @@ docker run --name mysql -dp3306:3306 -p33060:33060 -e MYSQL_ROOT_PASSWORD=root -
 
 - -v 冒号前一个 `/var/lib/mysql` 是宿主机的路径
 
-#### 2.1.2. 宿主机已经有UID为999的用户
+#### 2.2.2. 宿主机已经有UID为999的用户
 
 999的用户是容器中使用的用户，如果在宿主机中添加999的UID会有冲突，可添加另一个没有冲突的，然后在创建容器时使用 `--user` 参数
 
@@ -52,7 +67,7 @@ chown -R mysql:mysql /var/lib/mysql/
 docker run --name mysql -dp3306:3306 -p33060:33060 -e MYSQL_ROOT_PASSWORD=root -v /var/lib/mysql:/var/lib/mysql --user 1001:1001 --restart=always nnzbz/mysql
 ```
 
-#### 2.1.3. 改变MySQL在宿主机中的路径
+#### 2.2.3. 改变MySQL在宿主机中的路径
 
 按上面的方式，MySQL映射到了 `/var/lib/mysql`，但是此路径一般没有分配太大的空间，所以需要更换到有足够容量的空间
 
@@ -65,7 +80,7 @@ sudo mv /var/lib/mysql /usr/local/lib/mysql
 sudo ln -s /usr/local/lib/mysql /var/lib/mysql
 ```
 
-### 2.2. ~~将数据映射到数据卷中保存~~(推荐使用上面映射到宿主机中的方式)
+### 2.3. ~~将数据映射到数据卷中保存~~(推荐使用上面映射到宿主机中的方式)
 
 ```sh
 # 创建MySQL的数据卷
@@ -74,9 +89,9 @@ docker run --name mysql-data nnzbz/mysql echo "data-only container for MySQL"
 docker run -dp3306:3306 --restart=always --name mysql -e MYSQL_ROOT_PASSWORD=root --volumes-from mysql-data nnzbz/mysql
 ```
 
-### 2.3. 在Swarm中安装MySQL
+### 2.4. 在Swarm中安装MySQL
 
-#### 2.3.1. 创建 secret
+#### 2.4.1. 创建 secret
 
 ```sh
 # 两种方式
@@ -95,7 +110,7 @@ docker exec -it <容器id> /bin/sh
 cat /run/secrets/mysql_root_password
 ```
 
-#### 2.3.2. 准备 `my.cnf` 文件
+#### 2.4.2. 准备 `my.cnf` 文件
 
 - mysql1的 `my.cnf`
 
@@ -148,7 +163,7 @@ replicate-ignore-db=information_schema
 replicate-ignore-db=performance_schema
 ```
 
-#### 2.3.3. nginx反向代理的配置文件
+#### 2.4.3. nginx反向代理的配置文件
 
 ```sh
 vi /usr/local/mysql/nginx.conf
@@ -182,7 +197,7 @@ stream {
 }
 ```
 
-#### 2.3.4. `Docker Compose`
+#### 2.4.4. `Docker Compose`
 
 ```sh
 vi /usr/local/mysql/stack.yml
@@ -270,13 +285,13 @@ volumes:
   mysql2data:
 ```
 
-#### 2.3.5. 部署
+#### 2.4.5. 部署
 
 ```sh
 docker stack deploy -c /usr/local/mysql/stack.yml mysql
 ```
 
-#### 2.3.6. 开启主主同步
+#### 2.4.6. 开启主主同步
 
 1. 分别对 mysql1 和 mysql2 执行下面命令
 
@@ -323,7 +338,7 @@ show slave status\G;
 
 ![主主开启成功](主主开启成功.png)
 
-#### 2.3.7. 在主主环境中创建账户并授权
+#### 2.4.7. 在主主环境中创建账户并授权
 
 分别对 mysql1 和 mysql2 执行下面命令
 
@@ -340,7 +355,7 @@ mysql -u root -p
 GRANT ALL ON xxx.* to 'xxx'@'%' identified by '密码';
 ```
 
-#### 2.3.8. 在主主环境中修改账户密码
+#### 2.4.8. 在主主环境中修改账户密码
 
 分别对 mysql1 和 mysql2 执行下面命令
 

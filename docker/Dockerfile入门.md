@@ -39,7 +39,8 @@ $ANOTHER_KEY
 
 ### 2.4. 注意事项
 
-- 通过ENV定义的环境变量，不能被 ```CMD``` 指令使用，但可以在 ```ENTRYPOINT``` 中使用
+- 通过ENV定义的环境变量，如果使用 `RUN` 指令，那么在创建容器的启动容器的命令中，`docker run ....`，设置 `-e XXX=xxx` 将不会生效，要想生效，须放在 `CMD` 或 `ENTRYPOINT` 指令中执行
+- 通过ENV定义的环境变量，在 `CMD` 指令中不能用 `CMD [xxx xxx]` 的方式，而要用 `CMD xxx xxx` 的方式
 
 ## 3. ARG
 
