@@ -121,21 +121,24 @@ vi /usr/local/mysql/mysql1-my.cnf
 
 ```ini
 [mysqld]
-#为服务器分配id，可以自定义，不区分大小，起标识作用。不同数据库节点分配不同的id
+# 为服务器分配id，可以自定义，不区分大小，起标识作用。不同数据库节点分配不同的id
 server_id=1
 # 打开Mysql 日志，日志格式为二进制
 log-bin=mysql-bin
-#当启用时，服务器通过只允许执行可以使用GTID安全地记录的语句来强制GTID一致性。
+# 每1次在事务提交前会将二进制日志同步到磁盘上，保证在服务器崩溃时不会丢失事件
+# 默认是0，为性能考虑，也可以改为100
+sync_binlog=1
+# 当启用时，服务器通过只允许执行可以使用GTID安全地记录的语句来强制GTID一致性。
 enforce-gtid-consistency=on
-#启用基于GTID的复制，启用之前必须保证enforce-gtid-consistency=true
+# 启用基于GTID的复制，启用之前必须保证enforce-gtid-consistency=true
 gtid_mode=on
-#该选项让从库写入哪些来自于主库的更新，并把这些更新写入bin-log文件，一台服务器即做主库又做从库必须开启
-log-slave-updates=on
+# 默认为mixed混合模式，为了数据一致性，可以更改成row，但是效率和空间消耗会较大
+binlog_format=mixed
 
-replicate-ignore-db=mysql
-replicate-ignore-db=sys
-replicate-ignore-db=information_schema
-replicate-ignore-db=performance_schema
+#replicate-ignore-db=mysql
+#replicate-ignore-db=sys
+#replicate-ignore-db=information_schema
+#replicate-ignore-db=performance_schema
 ```
 
 - mysql2的 `my.cnf`
@@ -150,20 +153,37 @@ vi /usr/local/mysql/mysql2-my.cnf
 server_id=2
 # 打开Mysql 日志，日志格式为二进制
 log-bin=mysql-bin
-#当启用时，服务器通过只允许执行可以使用GTID安全地记录的语句来强制GTID一致性。
+# 当启用时，服务器通过只允许执行可以使用GTID安全地记录的语句来强制GTID一致性。
 enforce-gtid-consistency=on
-#启用基于GTID的复制，启用之前必须保证enforce-gtid-consistency=true
+# 启用基于GTID的复制，启用之前必须保证enforce-gtid-consistency=true
 gtid_mode=on
-#该选项让从库写入哪些来自于主库的更新，并把这些更新写入bin-log文件，一台服务器即做主库又做从库必须开启
-log-slave-updates=on
+# 默认为mixed混合模式，为了数据一致性，可以更改成row，但是效率和空间消耗会较大
+binlog_format=mixed
 
-replicate-ignore-db=mysql
-replicate-ignore-db=sys
-replicate-ignore-db=information_schema
-replicate-ignore-db=performance_schema
+# Slave的binlog默认不写入来自于Master的更新，这样如果此Slave还有Slave就无法同步Master的更新
+# 开启 log-slave-updates 选项，Slave将来自Master更新写入到binlog中
+# 一台服务器即做主库又做从库必须开启，例如 A -> B -> C 中的B，或者双主中的主，都需要开启
+log-slave-updates=on
+# 避免启动后还是使用老的复制协议
+skip_slave_start=on
+# 即使开启了skip_slave_start，从库仍然可能在崩溃后被中断
+# 因为master.info和中级日志文件都不是崩溃安全的，所以建议开启以下3个选项：
+sync_master_info=on
+sync_relay_log=on
+sync_relay_log_info=on
+
+# 不能执行写操作(root用户依旧可以)
+read_only=on
+# root用户也不能执行写操作
+super_read_only=on
+
+#replicate-ignore-db=mysql
+#replicate-ignore-db=sys
+#replicate-ignore-db=information_schema
+#replicate-ignore-db=performance_schema
 ```
 
-#### 2.4.3. nginx反向代理的配置文件
+#### 2.4.3. ~~nginx反向代理的配置文件~~
 
 ```sh
 vi /usr/local/mysql/nginx.conf
@@ -208,15 +228,14 @@ version: "3.9"
 services:
   mysql1:
     image: mysql:5
-#    ports:
-#      - 3306:3306
-#      - 33060:33060
+    hostname: mysql1
+    ports:
+      - 3316:3306
+      - 33160:33060
     secrets:
       - mysql_root_password
-    configs:
-      - source: mysql1-my.cnf
-        target: /etc/mysql/my.cnf
     volumes:
+      - /usr/local/mysql/mysql1-my.cnf:/etc/mysql/my.cnf
       - mysql1data:/var/lib/mysql
     environment:
       # 最好使用此设定时区，其它镜像也可以使用
@@ -226,22 +245,21 @@ services:
             --character-set-client-handshake=FALSE
             --character-set-server=utf8mb4
             --collation-server=utf8mb4_general_ci
-#      deploy:
-#        placement:
-#          constraints:
-#            #该hostname为指定容器在哪个主机启动
-#            - node.hostname == ecs2d8ed9c368b9
+    # deploy:
+    #   placement:
+    #     constraints:
+    #       #该hostname为指定容器在哪个主机启动
+    #       - node.hostname == ecs2d8ed9c368b9
   mysql2:
     image: mysql:5
-#    ports:
-#      - 3307:3306
-#      - 33061:33060
+    hostname: mysql2
+    ports:
+      - 3326:3306
+      - 33260:33060
     secrets:
       - mysql_root_password
-    configs:
-      - source: mysql2-my.cnf
-        target: /etc/mysql/my.cnf
     volumes:
+      - /usr/local/mysql/mysql2-my.cnf:/etc/mysql/my.cnf
       - mysql2data:/var/lib/mysql
     environment:
       # 最好使用此设定时区，其它镜像也可以使用
@@ -251,38 +269,23 @@ services:
             --character-set-client-handshake=FALSE
             --character-set-server=utf8mb4
             --collation-server=utf8mb4_general_ci
-#      deploy:
-#        placement:
-#          constraints:
-#            #该hostname为指定容器在哪个主机启动
-#            - node.hostname == ecseafe0d11214a
-  nginx:
-    image: nginx
-    hostname: mysql
-    ports:
-      - 3306:3306
-    environment:
-      # 最好使用此设定时区，其它镜像也可以使用
-      - TZ=CST-8
-    configs:
-      - source: nginx.conf
-        target: /etc/nginx/nginx.conf
-    deploy:
-      replicas: 3
+    # deploy:
+    #   placement:
+    #     constraints:
+    #       #该hostname为指定容器在哪个主机启动
+    #       - node.hostname == ecseafe0d11214a
 
 secrets:
   mysql_root_password:
     external: true
-configs:
-  mysql1-my.cnf:
-    file: /usr/local/mysql/mysql1-my.cnf
-  mysql2-my.cnf:
-    file: /usr/local/mysql/mysql2-my.cnf
-  nginx.conf:
-    file: /usr/local/mysql/nginx.conf
 volumes:
   mysql1data:
   mysql2data:
+
+networks:
+  default:
+    external: true
+    name: rebue
 ```
 
 #### 2.4.5. 部署
@@ -291,7 +294,86 @@ volumes:
 docker stack deploy -c /usr/local/mysql/stack.yml mysql
 ```
 
-#### 2.4.6. 开启主主同步
+#### 2.4.6. 开启主从同步
+
+1. 分别对 mysql1 和 mysql2 执行下面命令
+
+```sh
+# 查看mysql的容器id
+docker ps | grep mysql
+# 进入mysql容器
+docker exec -it <容器id> bash
+# 查看密码
+cat /run/secrets/mysql_root_password
+# 进入 mysql
+mysql -u root -p
+```
+
+2. 在 mysql1 中执行下面的命令
+
+```sh
+# 创建用户并授权
+GRANT REPLICATION SLAVE ON *.* to 'slave'@'%' identified by '密码';
+```
+
+3. 在 mysql2 中执行下面的命令
+
+**注意：** 如果是重新部署的，需要先执行这个命令 `reset slave;`
+
+```sh
+# 开启IO线程监听mysql-1的binlog文件
+change master to master_host='mysql1',master_user='slave',master_password='密码',master_port=3306,MASTER_AUTO_POSITION=1;
+# 开启同步
+start slave;
+# 查看是否开启成功
+show slave status\G;
+```
+
+- 如果开启成功，返回结果如下图:
+
+![主从开启成功](主从开启成功.png)
+
+#### 2.4.7. 在主从环境中创建账户并授权
+
+分别对 mysql1 和 mysql2 执行下面命令
+
+```sh
+# 查看mysql的容器id
+docker ps | grep mysql
+# 进入mysql容器
+docker exec -it <容器id> /bin/sh
+# 查看密码
+cat /run/secrets/mysql_root_password
+# 进入 mysql
+mysql -u root -p
+# 创建用户并授权(xxx是账户名)
+GRANT ALL ON xxx.* to 'xxx'@'%' identified by '密码';
+```
+
+#### 2.4.8. 在主从环境中修改账户密码
+
+分别对 mysql1 和 mysql2 执行下面命令
+
+```sh
+# 查看mysql的容器id
+docker ps | grep mysql
+# 进入mysql容器
+docker exec -it <容器id> /bin/sh
+# 查看密码
+cat /run/secrets/mysql_root_password
+# 进入 mysql
+mysql -u root -p
+# 选择数据库
+use mysql;
+# 查看账户密码(密码是经过杂凑算法显示出来的)
+select host,user,authentication_string from user;
+# 修改账户密码(xxx是账户名)
+update user set authentication_string=password('密码') where user='xxx' and host='%';
+# 刷新缓存
+FLUSH PRIVILEGES;
+```
+
+#### 2.4.9. ~~开启主主同步~~
 
 1. 分别对 mysql1 和 mysql2 执行下面命令
 
@@ -336,9 +418,9 @@ show slave status\G;
 
 - 如果开启成功，返回结果如下图:
 
-![主主开启成功](主主开启成功.png)
+![主从开启成功](主从开启成功.png)
 
-#### 2.4.7. 在主主环境中创建账户并授权
+#### 2.4.10. ~~在主主环境中创建账户并授权~~
 
 分别对 mysql1 和 mysql2 执行下面命令
 
@@ -355,7 +437,7 @@ mysql -u root -p
 GRANT ALL ON xxx.* to 'xxx'@'%' identified by '密码';
 ```
 
-#### 2.4.8. 在主主环境中修改账户密码
+#### 2.4.11. ~~在主主环境中修改账户密码~~
 
 分别对 mysql1 和 mysql2 执行下面命令
 
