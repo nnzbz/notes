@@ -99,7 +99,7 @@ TCP与UDP端口4789 overlay网络通讯端口
 
 刷新防火墙
 
-```
+```sh
 firewall-cmd --reload
 ```
 
