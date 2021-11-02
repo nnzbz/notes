@@ -175,7 +175,7 @@ sync_relay_log_info=on
 # 不能执行写操作(root用户依旧可以)
 read_only=on
 # root用户也不能执行写操作
-super_read_only=on
+#super_read_only=on
 
 #replicate-ignore-db=mysql
 #replicate-ignore-db=sys
@@ -256,6 +256,8 @@ services:
     ports:
       - 3326:3306
       - 33260:33060
+    depends_on:
+      - mysql1
     secrets:
       - mysql_root_password
     volumes:
@@ -341,7 +343,7 @@ show slave status\G;
 # 查看mysql的容器id
 docker ps | grep mysql
 # 进入mysql容器
-docker exec -it <容器id> /bin/sh
+docker exec -it <容器id> bash
 # 查看密码
 cat /run/secrets/mysql_root_password
 # 进入 mysql
@@ -358,7 +360,7 @@ GRANT ALL ON xxx.* to 'xxx'@'%' identified by '密码';
 # 查看mysql的容器id
 docker ps | grep mysql
 # 进入mysql容器
-docker exec -it <容器id> /bin/sh
+docker exec -it <容器id> bash
 # 查看密码
 cat /run/secrets/mysql_root_password
 # 进入 mysql
