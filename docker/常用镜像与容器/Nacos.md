@@ -42,6 +42,7 @@ docker-compose -f example/standalone-derby.yaml up -d
 - 创建数据库表及索引结构的脚本
   执行 [nacos-mysql.sql](https://github.com/alibaba/nacos/blob/master/distribution/conf/nacos-mysql.sql) 里面的内容
 - 修改 yaml 文件内容
+  - `version` 改为 `"3.9"`
   - 取消示例 yaml 中关联mysql容器的地方
     因为示例中是要关联一个自己定义的mysql容器，一般开发环境都会有mysql，不用再独立弄一个出来，所以要取消掉，然后关联自己的mysql即可
 
@@ -57,56 +58,38 @@ docker-compose -f example/standalone-derby.yaml up -d
     ```
 
   - 修改示例 yaml 中映射卷的地方
-    - `- ./standalone-logs/:/home/nacos/logs` 中的后面的路径改为 `/var/log/nacos`，并且创建此路径
-    - 删除 `- ./init.d/custom.properties:/home/nacos/init.d/custom.properties` 行(因为目前没什么要自定义的)  
-  - 删除示例 yaml 中 `prometheus` 与 `grafana` 的节点(可选)
+    删除 `nacos` 下的 `volumes` 节点
+  - 删除示例 yaml 中 `prometheus` 与 `grafana` 的节点
   - 修改 yaml 中 `restart` 的值为 `always`
+  - 添加 `networks`
+
+    ```yaml
+    networks:
+      default:
+        external: true
+        name: rebue
+    ```
+
   - 最终结果如下:
 
-    ```ini
-    version: "2"
+    ```yaml
+    version: "3.9"
     services:
       nacos:
         image: nacos/nacos-server:${NACOS_VERSION}
+        hostname: nacos
         container_name: nacos-standalone-mysql
         env_file:
           - ../env/nacos-standlone-mysql.env
-        volumes:
-          - ./standalone-logs/:/var/log/nacos
-    #      - ./init.d/custom.properties:/home/nacos/init.d/custom.properties
         ports:
           - "8848:8848"
           - "9848:9848"
           - "9555:9555"
-    #    depends_on:
-    #      - mysql
-    #    restart: on-failure
         restart: always
-    #  mysql:
-    #    container_name: mysql
-    #    image: nacos/nacos-mysql:5.7
-    #    env_file:
-    #      - ../env/mysql.env
-    #    volumes:
-    #      - ./mysql:/var/lib/mysql
-    #    ports:
-    #      - "3306:3306"
-    #  prometheus:
-    #    container_name: prometheus
-    #    image: prom/prometheus:latest
-    #    volumes:
-    #      - ./prometheus/prometheus-standalone.yaml:/etc/prometheus/prometheus.yml
-    #    ports:
-    #      - "9090:9090"
-    #    depends_on:
-    #      - nacos
-    #    restart: on-failure
-    #  grafana:
-    #    container_name: grafana
-    #    image: grafana/grafana:latest
-    #    ports:
-    #      - 3000:3000
-    #    restart: on-failure
+    networks:
+      default:
+        external: true
+        name: rebue
     ```
 
 - 配置数据库连接参数(与上面创建数据库时的参数要一致)
@@ -116,14 +99,14 @@ docker-compose -f example/standalone-derby.yaml up -d
   vi env/nacos-standlone-mysql.env
 
   修改下列参数
-    MYSQL_SERVICE_DB_NAME=nacos(数据库名称)
+    MYSQL_SERVICE_HOST=mysql(MySQL主机名)
     MYSQL_SERVICE_PORT=3306
+    MYSQL_SERVICE_DB_NAME=nacos(数据库名称)
     MYSQL_SERVICE_USER=nacos(用户名)
     MYSQL_SERVICE_PASSWORD=nacos(密码)
   ....
   ```
 
-  **注意**，如果是容器内要连接宿主机上的MySQL，查询docker0的IP是什么(我这里是172.17.0.1)，然后修改 `MYSQL_SERVICE_HOST` 项的值
 - 创建并运行容器
 
   ```sh

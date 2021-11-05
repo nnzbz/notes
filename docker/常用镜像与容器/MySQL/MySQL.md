@@ -12,6 +12,8 @@
 
 ```sh
 docker run --name mysql -dp3306:3306 -p33060:33060 \
+    --network rebue \
+    -h mysql \
     -e TZ=CST-8 \
     -e MYSQL_ROOT_PASSWORD=root \
     -v mysqldata:/var/lib/mysql \

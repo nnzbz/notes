@@ -7,7 +7,9 @@
 ### 1.1. 创建并运行容器
 
 ```sh
-docker run --name zookeeper \
+docker run --name zoo \
+    --network rebue \
+    -h zoo \
     -dp2181:2181 -p2888:2888 -p3888:3888 \
     -e ZOO_ADMINSERVER_ENABLED=false \
     -e ZOO_4LW_COMMANDS_WHITELIST=* \
