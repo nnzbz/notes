@@ -2,20 +2,18 @@
 
 [TOC]
 
-## 1. 制作单机版redis
+## 1. 单机版redis
 
-### 1.1. 拉取redis镜像
-
-```sh
-docker pull redis
-```
-
-### 1.2. 创建容器并运行redis
-
-- 无密码（不推荐）
+- 无密码（开发环境，线上环境不推荐）
 
 ```sh
-docker run -dp6379:6379 --name redis --restart=always redis
+docker run -dp6379:6379 \
+  --name redis \
+  -h redis \
+  --network rebue \
+  -e TZ=CST-8 \
+  --restart=always \
+  redis
 ```
 
 - 配置密码
@@ -24,7 +22,16 @@ docker run -dp6379:6379 --name redis --restart=always redis
 # 准备配置文件
 echo requirepass b4903e4939f55c329abeb0861a107ecb327fa2baace95b489bf94b36f0c501f71e07e93d22b25f17bd63abb5c69b1a6318cf834f0ec4511595deaa6d52986288 >> /usr/local/redis/redis.conf
 # 创建并运行容器
-docker run -dp6379:6379 --privileged=true -v /usr/local/redis/redis.conf:/data/redis.conf --name redis --restart=always redis redis-server /data/redis.conf --appendonly yes
+docker run -dp6379:6379 \
+  --privileged=true \
+  -v /usr/local/redis/redis.conf:/data/redis.conf \
+  --name redis \
+  -h redis \
+  --network rebue \
+  -e TZ=CST-8 \
+  --restart=always \
+  redis \
+  redis-server /data/redis.conf --appendonly yes
 ```
 
 ## 2. Swarm(一主多从多哨兵)

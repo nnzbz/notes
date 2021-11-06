@@ -13,7 +13,16 @@
 - 创建并运行容器
 
 ```sh
-docker run -d --name rabbitmq -p5671:5671 -p5672:5672 -p4369:4369 -p25672:25672 -p15671:15671 -p15672:15672 --restart=always rabbitmq:management
+docker run -d \
+  --name rabbitmq \
+  -h rabbitmq \
+  --network rebue \
+  -e TZ=CST-8 \
+  -p5671:5671 -p5672:5672 \
+  -p4369:4369 -p25672:25672 \
+  -p15671:15671 -p15672:15672 \
+  --restart=always \
+  rabbitmq:management
 ```
 
 ## 3. Swarm
