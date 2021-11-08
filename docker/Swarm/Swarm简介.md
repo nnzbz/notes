@@ -88,21 +88,11 @@ firewall-cmd --zone=public --add-port=4789/udp --permanent
 firewall-cmd --reload
 ```
 
-集群节点之间保证TCP 2377、TCP/UDP 7946和UDP 4789端口通信
-
-用于Docker客户端安全通信的TCP端口2376，Docker Machine工作需要这个端口，Docker Machine用于对Docker主机进行编排
-
-TCP端口2377集群管理端口
-
-TCP与UDP端口7946节点之间通讯端口
-
-TCP与UDP端口4789 overlay网络通讯端口
-
-刷新防火墙
-
-```sh
-firewall-cmd --reload
-```
+- 集群节点之间保证TCP 2377、TCP/UDP 7946和UDP 4789端口通信
+  - 用于Docker客户端安全通信的TCP端口2376，Docker Machine工作需要这个端口，Docker Machine用于对Docker主机进行编排
+  - TCP端口2377集群管理端口
+  - TCP与UDP端口7946节点之间通讯端口
+  - TCP与UDP端口4789 overlay网络通讯端口
 
 ## 4. 服务管理
 
@@ -258,7 +248,18 @@ systemctl start nfs
 - 工作节点上启动nfs客户端
 
 ```sh
+systemctl enable rpcbind
 systemctl start rpcbind
+```
+
+### 打开防火墙
+
+```sh
+firewall-cmd --zone=public --add-port=111/tcp --permanent
+firewall-cmd --zone=public --add-port=111/udp --permanent
+firewall-cmd --zone=public --add-port=2049/tcp --permanent
+firewall-cmd --zone=public --add-port=2049/udp --permanent
+firewall-cmd --reload
 ```
 
 ### 7.3. 配置
@@ -291,6 +292,8 @@ systemctl restart nfs
 ```
 
 - worker节点挂载nfs共享目录
+  
+  172.16.0.75 是manager节点的IP地址
 
 ```sh
 mount -t nfs 172.16.0.75:/usr/local /usr/local
@@ -308,7 +311,9 @@ ls -al /usr/local
 echo 'mount -t nfs 172.16.0.75:/usr/local /usr/local' >> /etc/rc.d/rc.local
 ```
 
-```Dockerfile
+- Dockerfile
+
+```yml
 ...
 volumes:
   nfs-data:
