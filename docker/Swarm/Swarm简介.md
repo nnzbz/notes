@@ -85,6 +85,7 @@ firewall-cmd --zone=public --add-port=7946/tcp --permanent
 firewall-cmd --zone=public --add-port=7946/udp --permanent
 firewall-cmd --zone=public --add-port=4789/tcp --permanent
 firewall-cmd --zone=public --add-port=4789/udp --permanent
+firewall-cmd --reload
 ```
 
 集群节点之间保证TCP 2377、TCP/UDP 7946和UDP 4789端口通信
