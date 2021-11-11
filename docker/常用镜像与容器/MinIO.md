@@ -75,6 +75,11 @@ secrets:
 
 volumes:
   miniodata:
+
+networks:
+  default:
+    external: true
+    name: rebue
 ```
 
 4. 部署

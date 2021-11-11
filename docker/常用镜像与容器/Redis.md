@@ -88,18 +88,21 @@ sentinel monitor mymaster redis_master 6379 2
 sentinel auth-pass mymaster xxxxxxxx
 ```
 
+`sentinel monitor ....`
+
+- 第一个参数是给master起的名字
+- 第二个参数为master IP
+- 第三个为master端口
+- 第四个为当该master挂了的时候，若想将该master判为失效，在Sentinel集群中必须至少2个Sentinel同意才行，只要该数量不达标，则就不会发生故障迁移。
+  也就是说只要有2个sentinel认为master下线，就认为该master客观下线，启动failover并选举产生新的master
+  通常最后一个参数不能多于启动的sentinel实例数。
+
+复制到2和3
+
 ```sh
 cp /usr/local/redis/sentinel1/sentinel.conf /usr/local/redis/sentinel2/
 cp /usr/local/redis/sentinel1/sentinel.conf /usr/local/redis/sentinel3/
 ```
-
-- `sentinel monitor ....`
-  - 第一个参数是给master起的名字
-  - 第二个参数为master IP
-  - 第三个为master端口
-  - 第四个为当该master挂了的时候，若想将该master判为失效，在Sentinel集群中必须至少2个Sentinel同意才行，只要该数量不达标，则就不会发生故障迁移。
-    也就是说只要有2个sentinel认为master下线，就认为该master客观下线，启动failover并选举产生新的master
-    通常最后一个参数不能多于启动的sentinel实例数。
 
 ### 2.2. Docker Compose
 
@@ -182,6 +185,10 @@ configs:
     file: /usr/local/redis/master/redis.conf
   slave.conf:
     file: /usr/local/redis/slave/redis.conf
+networks:
+  default:
+    external: true
+    name: rebue
 ```
 
 ### 2.3. 部署
@@ -197,7 +204,7 @@ docker stack deploy -c /usr/local/redis/stack.yml redis
 - 临时运行
 
 ```sh
-docker run --rm --name redisweb --network=rebue -it -e REDIS_1_HOST=redis_master -e REDIS_1_NAME=redis_master -e REDIS_1_PORT=6379 -e REDIS_1_AUTH=******** erikdubbelboer/phpredisadmin
+docker run -p15080:80 --rm --name redisweb --network=rebue -it -e REDIS_1_HOST=redis_master -e REDIS_1_NAME=redis_master -e REDIS_1_PORT=6379 -e REDIS_1_AUTH=xxxxxxxx erikdubbelboer/phpredisadmin
 ```
 
 ## 4. ~~安装redis5集群~~

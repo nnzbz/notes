@@ -145,14 +145,25 @@ vi /usr/local/nacos-docker/example/cluster-hostname.yaml
 - 每个服务添加
   
   ```yml
-  environment:
-    # 最好使用此设定时区，其它镜像也可以使用
-    - TZ=CST-8
+  ....
+      environment:
+      # 最好使用此设定时区，其它镜像也可以使用
+        - TZ=CST-8
+  ....
+  ```
+
+- 添加 `networks` 节点
+  
+  ```sh
+  networks:
+    default:
+      external: true
+      name: rebue
   ```
 
 - 最终结果如下:
 
-```ini
+```yml
 version: "3.9"
 services:
   nacos1:
@@ -186,6 +197,10 @@ services:
       - TZ=CST-8
     env_file:
       - ../env/nacos-hostname.env
+networks:
+  default:
+    external: true
+    name: rebue
 ```
 
 ### 5.4. 配置数据库连接参数(与上面创建数据库时的参数要一致)

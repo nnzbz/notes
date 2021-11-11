@@ -88,11 +88,11 @@ services:
     volumes:
       - zoo3data:/data
       - zoo3datalog:/datalog
-  web-ui:
-    image: tobilg/zookeeper-webui
-    environment:
-      ZK_DEFAULT_NODE: zoo1:2181/,zoo2:2181,zoo3:2181
-      TZ: CST-8
+  # web-ui:
+  #   image: tobilg/zookeeper-webui
+  #   environment:
+  #     ZK_DEFAULT_NODE: zoo1:2181/,zoo2:2181,zoo3:2181
+  #     TZ: CST-8
 
 volumes:
   zoo1data:
@@ -101,7 +101,6 @@ volumes:
   zoo2datalog:
   zoo3data:
   zoo3datalog:
-
 
 networks:
   default:

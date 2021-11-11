@@ -46,6 +46,10 @@ services:
     environment:
       # 最好使用此设定时区，其它镜像也可以使用
       - TZ=CST-8
+networks:
+  default:
+    external: true
+    name: rebue
 ```
 
 ### 3.2. 部署

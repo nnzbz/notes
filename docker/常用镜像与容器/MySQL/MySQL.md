@@ -170,9 +170,9 @@ log-slave-updates=on
 skip_slave_start=on
 # 即使开启了skip_slave_start，从库仍然可能在崩溃后被中断
 # 因为master.info和中级日志文件都不是崩溃安全的，所以建议开启以下3个选项：
-sync_master_info=on
-sync_relay_log=on
-sync_relay_log_info=on
+#sync_master_info=on
+#sync_relay_log=on
+#sync_relay_log_info=on
 
 # 不能执行写操作(root用户依旧可以)
 read_only=on

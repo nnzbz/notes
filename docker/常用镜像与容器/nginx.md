@@ -40,7 +40,7 @@ vi /usr/local/nginx/stack.yml
 
 如果要建立自定义的端口号，请修改 `ports` 部分 `:` 前面的80
 
-```yaml
+```yaml{.line-numbers}
 version: "3.9"
 services:
   nginx:
@@ -55,11 +55,16 @@ services:
       # 配置文件目录
       - /usr/local/nginx/conf/:/etc/nginx/conf.d/
       # 数字证书目录
-      # - /usr/local/nginx/cert/:/etc/nginx/cert/
+      - /usr/local/nginx/cert/:/etc/nginx/cert/
       # 网页存放目录
       - /usr/local/nginx/html:/usr/share/nginx/html
     deploy:
       replicas: 3
+
+networks:
+  default:
+    external: true
+    name: rebue
 ```
 
 - 部署
@@ -86,27 +91,27 @@ server {
     listen       443 ssl;
     server_name 域名;
 
+    # 数字证书
     # 注意文件位置，是从/etc/nginx/下开始算起的
+    # 注意文件名不要用通配符，要将具体数字证书的名字写下来
     ssl_certificate cert/**.*.pem;
     ssl_certificate_key cert/**.*.key;
     ssl_session_timeout 5m;
     ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
     ssl_ciphers ECDHE-RSA-AES128-GCM-SHA256:HIGH:!aNULL:!MD5:!RC4:!DHE;
     ssl_prefer_server_ciphers on;
+
     # 对于只支持HTTP协议里的GET和POST请求，不支持PUT/DELETE请求的
     # 所有的PUT请求，要携带Header：X-HTTP-Method-Override: PUT　　
     # 所有的DELETE请求，要携带Header：X-HTTP-Method-Override: DELETE
     # 可以在nginx层修改和转发
-    # 添加下面5行，记得执行 nginx -s reload 重新加载
     set $method $request_method;
     if ($http_X_HTTP_Method_Override ~* 'PUT|DELETE') {
         set $method $http_X_HTTP_Method_Override;
     }
     proxy_method $method;
 
-    #location /admin-web/ {
-    #    root /usr/share/nginx/html/;
-    #}
+    # 静态网页
     location /admin-web {
         root /usr/share/nginx/html;
         index           index.html; 

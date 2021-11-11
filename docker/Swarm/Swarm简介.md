@@ -137,9 +137,7 @@ docker service scale nginx=5
 ### 4.4. 更新镜像并重启
 
 ```sh
-docker service update \
-    --image nginx:1.13.12-alpine \
-    nginx
+docker service update --image nginx:1.13.12-alpine nginx
 ```
 
 ### 4.5. 强制更新并重启
