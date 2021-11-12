@@ -2,7 +2,7 @@
 
 [TOC]
 
-## 单机
+## 1. 单机
 
 ```sh
 docker run --name jenkins \
@@ -13,7 +13,7 @@ docker run --name jenkins \
     jenkins
 ```
 
-## Swarm
+## 2. Swarm
 
 ```sh
 mkdir /usr/local/jenkins
@@ -50,11 +50,11 @@ networks:
 docker stack deploy -c /usr/local/jenkins/stack.yml jenkins
 ```
 
-## 浏览
+## 3. 浏览
 
 <xxx.xxx.xxx.xxx:50080>
 
-## 查看密码
+## 4. 查看密码
 
 ```sh
 docker exec -it xxxx bash
