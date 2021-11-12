@@ -34,7 +34,7 @@ mkdir /usr/local/kafka
 vi /usr/local/kafka/stack.yml
 ```
 
-```yaml
+```yaml{.line-numbers}
 version: "3.9"
 services:
   kafka1:

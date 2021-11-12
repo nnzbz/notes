@@ -9,7 +9,7 @@ mkdir /usr/local/flink
 vi /usr/local/flink/stack.yml
 ```
 
-```yaml
+```yaml{.line-numbers}
 version: "3.9"
 services:
   jobmanager:
