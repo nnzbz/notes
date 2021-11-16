@@ -5,12 +5,12 @@
 ## 1. 单机
 
 ```sh
-docker run --name minio -d -p9000:9000 -p9001:9001 --restart=always minio/minio server /data --console-address ":9001"
+docker run --name minio -d -p19000:19000 -p19001:9001 --restart=always minio/minio server /data --address "0.0.0.0:19000" --console-address ":9001"
 ```
 
 - 访问
   - 地址
-    <http://127.0.0.1:9001>
+    <http://127.0.0.1:19001>
   - Access Key
     minioadmin
   - Secret Key
@@ -53,8 +53,8 @@ services:
   minio:
     image: minio/minio
     ports:
-      - 9000:9000
-      - 9001:9001
+      - 19000:19000
+      - 19001:9001
     secrets:
       - source: minio_access_key
         target: access_key
@@ -66,6 +66,7 @@ services:
       # 最好使用此设定时区，其它镜像也可以使用
       - TZ=CST-8
     command: server /data
+            --address "0.0.0.0:19000"
             --console-address ":9001"
 secrets:
   minio_access_key:
@@ -90,7 +91,7 @@ docker stack deploy -c /usr/local/minio/stack.yml minio
 
 - 访问
   - 地址
-    <http://xxxx:9001>
+    <http://xxxx:19001>
   - Access Key
     AKIAIOSFODNN7EXAMPLE
   - Secret Key

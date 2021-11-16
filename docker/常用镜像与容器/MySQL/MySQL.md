@@ -230,6 +230,8 @@ version: "3.9"
 services:
   mysql1:
     image: mysql:5
+    # 注意: 如果是arm架构服务器，请用下面这个镜像
+    # image: biarms/mysql:5
     hostname: mysql1
     ports:
       - 3316:3306
@@ -254,6 +256,8 @@ services:
     #       - node.hostname == ecs2d8ed9c368b9
   mysql2:
     image: mysql:5
+    # 注意: 如果是arm架构服务器，请用下面这个镜像
+    # image: biarms/mysql:5
     hostname: mysql2
     ports:
       - 3326:3306
@@ -336,46 +340,6 @@ show slave status\G;
 - 如果开启成功，返回结果如下图:
 
 ![主从开启成功](主从开启成功.png)
-
-#### 2.4.7. 在主从环境中创建账户并授权
-
-分别对 mysql1 和 mysql2 执行下面命令
-
-```sh
-# 查看mysql的容器id
-docker ps | grep mysql
-# 进入mysql容器
-docker exec -it <容器id> bash
-# 查看密码
-cat /run/secrets/mysql_root_password
-# 进入 mysql
-mysql -u root -p
-# 创建用户并授权(xxx是账户名)
-GRANT ALL ON xxx.* to 'xxx'@'%' identified by '密码';
-```
-
-#### 2.4.8. 在主从环境中修改账户密码
-
-分别对 mysql1 和 mysql2 执行下面命令
-
-```sh
-# 查看mysql的容器id
-docker ps | grep mysql
-# 进入mysql容器
-docker exec -it <容器id> bash
-# 查看密码
-cat /run/secrets/mysql_root_password
-# 进入 mysql
-mysql -u root -p
-# 选择数据库
-use mysql;
-# 查看账户密码(密码是经过杂凑算法显示出来的)
-select host,user,authentication_string from user;
-# 修改账户密码(xxx是账户名)
-update user set authentication_string=password('密码') where user='xxx' and host='%';
-# 刷新缓存
-FLUSH PRIVILEGES;
-```
 
 #### 2.4.9. ~~开启主主同步~~
 

@@ -137,6 +137,7 @@ vi /usr/local/nacos-docker/example/cluster-hostname.yaml
 ```
 
 - `version` 改为 `"3.9"`
+- 注意: 如果是 `arm` 架构的服务器，镜像改为 `cqiang1993/nacos-server`
 - 删除 nacos1/nacos2/nacos3 下 `image` 的 `:${NACOS_VERSION}`
 - 删除 nacos1/nacos2/nacos3 下 `depenOn` 节点
 - 删除 `mysql` 节点
@@ -168,6 +169,8 @@ version: "3.9"
 services:
   nacos1:
     image: nacos/nacos-server
+    # 如果是arm架构的服务器，镜像使用下面这行
+    # image: cqiang1993/nacos-server
     ports:
       - "8848:8848"
       - "9848:9848"
@@ -179,6 +182,8 @@ services:
       - ../env/nacos-hostname.env
   nacos2:
     image: nacos/nacos-server
+    # 如果是arm架构的服务器，镜像使用下面这行
+    # image: cqiang1993/nacos-server
     ports:
       - "8849:8848"
       - "9849:9848"
@@ -189,6 +194,8 @@ services:
       - ../env/nacos-hostname.env
   nacos3:
     image: nacos/nacos-server
+    # 如果是arm架构的服务器，镜像使用下面这行
+    # image: cqiang1993/nacos-server
     ports:
       - "8850:8848"
       - "9850:9848"

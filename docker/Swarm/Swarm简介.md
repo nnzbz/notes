@@ -124,12 +124,19 @@ docker service create --replicas 3 -p 80:80 --name nginx nginx:1.13.7-alpine
 
   ```sh
   docker service ps nginx
+  
   ```
 
-- 查看单个服务详情
+- 查看单个服务启动失败的详情
 
   ```sh
-  docker service logs nginx
+  docker service ps --no-trunc nginx
+  ```
+
+- 查看单个服务日志
+
+  ```sh
+  docker service logs -f nginx
   ```
 
 ### 4.3. 服务伸缩
