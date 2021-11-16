@@ -256,7 +256,7 @@ systemctl enable rpcbind
 systemctl start rpcbind
 ```
 
-### 打开防火墙
+### 7.3. 打开防火墙
 
 ```sh
 firewall-cmd --zone=public --add-port=111/tcp --permanent
@@ -266,7 +266,7 @@ firewall-cmd --zone=public --add-port=2049/udp --permanent
 firewall-cmd --reload
 ```
 
-### 7.3. 配置
+### 7.4. 配置
 
 - 在manager节点上配置nfs
 
@@ -315,7 +315,7 @@ ls -al /usr/local
 echo 'mount -t nfs 172.16.0.75:/usr/local /usr/local' >> /etc/rc.d/rc.local
 ```
 
-- Dockerfile
+- ~~Dockerfile~~
 
 ```yml
 ...
