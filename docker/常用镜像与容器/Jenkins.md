@@ -24,7 +24,7 @@ vi /usr/local/jenkins/stack.yml
 version: "3.9"
 services:
   jenkins:
-    image: jenkins/jenkins
+    image: jenkins/jenkins:centos7-jdk8
     hostname: jenkins
     ports:
       - 50080:8080

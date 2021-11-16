@@ -49,6 +49,12 @@ Swarm 是使用 SwarmKit 构建的 Docker 引擎内置（原生）的集群管�
 docker swarm init --advertise-addr <IP>
 ```
 
+- 查看节点加入命令
+
+```sh
+docker swarm join-token worker
+```
+
 ### 2.2. 将本节点加入集群
 
 ```sh
