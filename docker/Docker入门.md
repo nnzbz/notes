@@ -118,7 +118,15 @@ vi /etc/docker/daemon.json
 }
 ```
 
- **注意重启docker才能生效**
+或
+
+```json
+{
+  "registry-mirrors": ["https://ustc-edu-cn.mirror.aliyuncs.com"]
+}
+```
+
+**注意重启docker才能生效**
 
 ```sh
 systemctl restart docker
