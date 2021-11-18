@@ -24,7 +24,7 @@ vi /usr/local/jenkins/stack.yml
 version: "3.9"
 services:
   jenkins:
-    image: jenkins/jenkins:centos7-jdk8
+    image: jenkins/jenkins
     hostname: jenkins
     ports:
       - 50080:8080
@@ -54,9 +54,27 @@ docker stack deploy -c /usr/local/jenkins/stack.yml jenkins
 
 <xxx.xxx.xxx.xxx:50080>
 
-## 4. 查看密码
+## 4. 初始化
+
+- 查看初始化密码(也可通过日志查看)
 
 ```sh
 docker exec -it xxxx bash
 cat /var/jenkins_home/secrets/initialAdminPassword
+```
+
+- 安装推荐插件
+
+## 配置
+
+- 进入 `Manage Jenkins` > `Global Tool Configuration`
+- 配置JDK/Git/Maven
+- 可通过进入容器查看相关信息(Maven需选择自动安装)
+
+```sh
+docker exec -it jenkins容器id bash
+# 查看Java的安装路径
+echo $JAVA_HOME     # /opt/java/openjdk
+# 查看git的安装路径
+which git           # /usr/bin/git
 ```
