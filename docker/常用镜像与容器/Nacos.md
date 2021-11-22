@@ -171,6 +171,8 @@ services:
     image: nacos/nacos-server
     # 如果是arm架构的服务器，镜像使用下面这行
     # image: cqiang1993/nacos-server
+    hostname: nacos1
+    container_name: nacos1
     ports:
       - "8848:8848"
       - "9848:9848"
@@ -184,6 +186,8 @@ services:
     image: nacos/nacos-server
     # 如果是arm架构的服务器，镜像使用下面这行
     # image: cqiang1993/nacos-server
+    hostname: nacos2
+    container_name: nacos2
     ports:
       - "8849:8848"
       - "9849:9848"
@@ -196,6 +200,8 @@ services:
     image: nacos/nacos-server
     # 如果是arm架构的服务器，镜像使用下面这行
     # image: cqiang1993/nacos-server
+    hostname: nacos3
+    container_name: nacos3
     ports:
       - "8850:8848"
       - "9850:9848"
