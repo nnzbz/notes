@@ -17,8 +17,8 @@
 
   国内源更换完成后，安装还是使用官网上的命令操作：
 
-  ```
-  sudo yum install docker-ce docker-ce-cli containerd.io
+  ```sh
+  yum install docker-ce docker-ce-cli containerd.io -y
   ```
 
 - Ubuntu

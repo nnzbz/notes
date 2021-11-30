@@ -2,50 +2,53 @@
 
 [TOC]
 
-
-## 1. 为 `mongo` 和 `mongo-express` 创建专用网络
-
-```sh
-docker network create -d bridge mongo-net
-```
-
-## 2. mongo
-
-### 2.1. 创建并运行容器的示例
+## 1. Docker Compose
 
 ```sh
-docker run --name mongo -d --restart=always --network mongo-net mongo
+mkdir -p /usr/local/mongo
+vi /usr/local/mongo/stack.yml
 ```
 
-### 2.2. 创建并运行容器的命令格式
+```yaml
+version: '3.9'
 
-```sh
-docker run --name some-mongo -d mongo:tag
+services:
+
+  db:
+    image: mongo
+    hostname: mongo
+    container_name: mongo
+    ports:
+      - 27017:27017
+    volumes:
+      - mongodata:/data/db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+    restart: always
+
+  express:
+    image: mongo-express
+    hostname: mongo-express
+    container_name: mongo-express
+    ports:
+      - 27081:8081
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+      ME_CONFIG_MONGODB_ADMINPASSWORD: example
+      ME_CONFIG_MONGODB_URL: mongodb://root:example@mongo:27017/
+    restart: always
+
+volumes:
+  mongodata:
+
+networks:
+  default:
+    external: true
+    name: rebue
 ```
 
-## 3. mongo-express
-
-mongo-express is a web-based MongoDB admin interface written in Node.js, Express.js, and Bootstrap3.
-
-### 3.1. 创建并运行容器的示例
-
-```sh
-docker run -it --rm \
-    --network mongo-net \
-    --name mongo-express \
-    -p 8181:8081 \
-    -e ME_CONFIG_BASICAUTH_USERNAME="user" \
-    -e ME_CONFIG_BASICAUTH_PASSWORD="fairly long password" \
-    mongo-express
-```
-
-### 3.2. 创建并运行容器的命令格式
-
-```sh
-docker run --network some-network -e ME_CONFIG_MONGODB_SERVER=some-mongo -p 8081:8081 mongo-express
-```
-
-### 3.3. 环境变量说明
+## 2. 环境变量说明
 
 Name                            | Default         | Description
 --------------------------------|-----------------|------------
@@ -73,6 +76,20 @@ ME_CONFIG_MONGODB_AUTH_DATABASE | 'db'            | Database name
 ME_CONFIG_MONGODB_AUTH_USERNAME | 'admin'         | Database username
 ME_CONFIG_MONGODB_AUTH_PASSWORD | 'pass'          | Database password
 
-### 3.4. 管理链接
+## 3. 创建并运行容器
 
-<http://host-ip:8181>
+- 单机
+
+```sh
+docker-compose -f /usr/local/mongo/stack.yml up -d
+```
+
+- Swarm
+
+```sh
+docker stack deploy -c /usr/local/mongo/stack.yml mongo
+```
+
+## 4. 管理链接
+
+<http://host-ip:27081>
