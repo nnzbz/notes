@@ -13,7 +13,7 @@
 
   当服务器连接docker官方网站速度非常缓慢，可以参考以下地址，更换docker-ce.repo为国内源
 
-  <https://mirror.tuna.tsinghua.edu.cn/help/docker-ce/>
+  https://mirror.tuna.tsinghua.edu.cn/help/docker-ce/
 
   国内源更换完成后，安装还是使用官网上的命令操作：
 
@@ -372,7 +372,25 @@ docker inspect node1 | grep IPA
 docker inspect 【container name】| grep LogPath | cut -d ':' -f 2 | cut -d ',' -f 1 | xargs echo | xargs truncate -s 0
 ```
 
-### 4.15. 常见报错
+
+### 4.15. 卸载docker
+为了能彻底清除docker安装痕迹，需要将所有依赖项也清除
+较旧版本的Docker被称为docker或docker-engine.请卸载它们以及相关的依赖项
+
+ sudo yum remove docker \
+ docker-client \
+ docker-client-latest \
+ docker-common \
+ docker-latest \
+ docker-latest-logrotate \
+ docker-logrotate \
+ docker-selinux \
+ docker-engine-selinux \
+ docker-engine
+
+
+
+### 4.16. 常见报错
 
 - 未启动docker会报错
 
@@ -429,3 +447,7 @@ docker inspect 【container name】| grep LogPath | cut -d ':' -f 2 | cut -d ','
   ```
 
   如果返回为“net.ipv4.ip_forward = 1”则表示成功了
+
+
+ - Docker容器启动失败 Failed to start Docker Application Container Engine
+ 参考https://www.cnblogs.com/huhyoung/p/9495956.html
