@@ -374,19 +374,18 @@ docker inspect 【container name】| grep LogPath | cut -d ':' -f 2 | cut -d ','
 
 
 ### 4.15. 卸载docker
-为了能彻底清除docker安装痕迹，需要将所有依赖项也清除
-较旧版本的Docker被称为docker或docker-engine.请卸载它们以及相关的依赖项
+为了能彻底清除docker安装痕迹，需要将所有依赖项也清除，较旧版本的Docker被称为docker或docker-engine.请卸载它们以及相关的依赖项
 
- sudo yum remove docker \
- docker-client \
- docker-client-latest \
- docker-common \
- docker-latest \
- docker-latest-logrotate \
- docker-logrotate \
- docker-selinux \
- docker-engine-selinux \
- docker-engine
+  sudo yum remove docker \
+  docker-client \
+  docker-client-latest \
+  docker-common \
+  docker-latest \
+  docker-latest-logrotate \
+  docker-logrotate \
+  docker-selinux \
+  docker-engine-selinux \
+  docker-engine
 
 
 
