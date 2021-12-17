@@ -40,27 +40,27 @@ alias rm='rm -i'
 
 ## 6. 设置默认不启用fn功能
 
-## 在Finder中将文件夹加入favorites
+## 7. 在Finder中将文件夹加入favorites
 
 选择文件夹 > ```control-command-T```
 
-## 7. 在Finder中快速进入当前目录的命令行
+## 8. 在Finder中快速进入当前目录的命令行
 
 从 ```Finder``` > ```Services``` > ```Services Preferences``` > 选中 ```New Terminal at Folder``` 和 ```New Terminal Tab at Folder```
 
-## 8. 复制/移动大于2G的文件到FAT32格式的U盘中
+## 9. 复制/移动大于2G的文件到FAT32格式的U盘中
 
 ```sh
 cp/mv DQ11.cia /Volumes/UNTITLED/
 ```
 
-## 9. 设置hosts
+## 10. 设置hosts
 
 ```sh
 sudo vim /etc/hosts
 ```
 
-## 10. 常见问题
+## 11. 常见问题
 
 1. xxx已损坏，打不开，您应该将它移到废纸篓以及来自身份不明的开发者
 
