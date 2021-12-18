@@ -84,7 +84,6 @@ docker node ls
 默认情况下，防火墙拦截了docker创建的虚拟网络链接，需要开通以下通信端口，使各节点能够正常通信
 
 ```sh
-firewall-cmd --zone=public --add-port=22/tcp --permanent
 firewall-cmd --zone=public --add-port=2376/tcp --permanent
 firewall-cmd --zone=public --add-port=2377/tcp --permanent
 firewall-cmd --zone=public --add-port=7946/tcp --permanent
