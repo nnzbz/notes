@@ -2,11 +2,11 @@
 
 [TOC]
 
-## 参考资料
+## 1. 参考资料
 
 <https://yeasy.gitbook.io/docker_practice/>
 
-## 1. 安装
+## 2. 安装
 
 - CentOS
   <https://docs.docker.com/engine/install/centos/>
@@ -45,7 +45,7 @@ deb [arch=amd64] https://download.docker.com/linux/debian buster stable
 
 - 官方文档使用 `$(lsb_release -cs)`，在Deepin中得到 *unstable*， 这里就具体指定debian的版本(在Deepin中查看Debian的版本请用 `cat /etc/debian_version` ，然后查看该版本对应的代号)
 
-## 2. 安装后配置系统
+## 3. 安装后配置系统
 
 <https://docs.docker.com/engine/install/linux-postinstall/>
 
@@ -82,9 +82,9 @@ systemctl enable docker
 systemctl start docker
 ```
 
-## 3. 镜像
+## 4. 镜像
 
-### 3.1. 搜索仓库的镜像
+### 4.1. 搜索仓库的镜像
 
 例如，搜索基于Ubuntu 操作系统的容器
 
@@ -96,9 +96,9 @@ docker search ubuntu
 
 <https://hub.docker.com/>
 
-### 3.2. 国内镜像
+### 4.2. 国内镜像
 
-#### 3.2.1. 设置默认从国内镜像拉取
+#### 4.2.1. 设置默认从国内镜像拉取
 
 - 查看阿里云镜像加速器地址
 
@@ -140,7 +140,7 @@ systemctl restart docker
 https://registry.docker-cn.com
 ```
 
-#### 3.2.2. 拉取时指定镜像
+#### 4.2.2. 拉取时指定镜像
 
 ```sh
 docker pull registry.docker-cn.com/myname/myrepo:mytag
@@ -152,13 +152,13 @@ docker pull registry.docker-cn.com/myname/myrepo:mytag
 docker pull registry.docker-cn.com/library/ubuntu:16.04
 ```
 
-### 3.3. 查看本地所有镜像
+### 4.3. 查看本地所有镜像
 
 ```sh
 docker images
 ```
 
-### 3.4. 拉取镜像到本地
+### 4.4. 拉取镜像到本地
 
 ```sh
 docker pull centos
@@ -170,7 +170,7 @@ docker pull centos
 docker images centos
 ```
 
-### 3.5. 导出/导入镜像
+### 4.5. 导出/导入镜像
 
 ```sh
 # 导出镜像
@@ -179,7 +179,7 @@ docker export cbe3cb7799ed > update.tar
 docker import - update < update.tar
 ```
 
-### 3.6. 删除镜像
+### 4.6. 删除镜像
 
 > **注意:删除镜像前要先删除它的容器**
 
@@ -187,9 +187,9 @@ docker import - update < update.tar
 docker rmi redis
 ```
 
-## 4. 容器常用操作
+## 5. 容器常用操作
 
-### 4.1. 创建并运行容器
+### 5.1. 创建并运行容器
 
 ```sh
 docker run -d -p 7000:6379 --name redis1 --restart=always redis
@@ -210,7 +210,7 @@ docker run -d -p 7000:6379 --name redis1 --restart=always redis
 - -t
  分配一个终端或控制台
 
-#### 4.1.1. 创建并运行完退出
+#### 5.1.1. 创建并运行完退出
 
 ```sh
 docker run --name redis-temp redis echo "no run"
@@ -218,7 +218,7 @@ docker run --name redis-temp redis echo "no run"
 
 该命令在创建容器后，运行 ```echo``` 然后退出，通常用于数据卷容器
 
-#### 4.1.2. 启动容器不自动退出
+#### 5.1.2. 启动容器不自动退出
 
 两种方法
 
@@ -237,7 +237,7 @@ RUN touch /var/log/1.txt
 CMD "tail" "-f" "/var/log/1.txt"
 ```
 
-#### 4.1.3. 创建容器后修改参数
+#### 5.1.3. 创建容器后修改参数
 
 如果创建容器后想修改参数，如设置为自动启动，如下：
 
@@ -245,7 +245,7 @@ CMD "tail" "-f" "/var/log/1.txt"
 docker container update --restart=always 容器名字
 ```
 
-### 4.2. 启动/停止/重启/删除容器
+### 5.2. 启动/停止/重启/删除容器
 
 - start/stop/restart/rm
 
@@ -265,7 +265,7 @@ docker rm $(docker ps -a -q)
 docker stop $(docker ps -q) & docker rm $(docker ps -aq)
 ```
 
-### 4.3. 进入/退出容器
+### 5.3. 进入/退出容器
 
 - 进入已启动的容器
 
@@ -282,7 +282,7 @@ docker stop $(docker ps -q) & docker rm $(docker ps -aq)
 - 退出容器
  在容器内的命令行运行 ```exit```的指令或 ```ctrl+d```
 
-### 4.4. 查看所有容器
+### 5.4. 查看所有容器
 
 ```sh
 docker ps -a
@@ -291,7 +291,7 @@ docker ps -a
 - -a
  显示所有状态容器，否则只显示当前运行的容器
 
-### 4.5. 查看指定端口号的容器是哪个
+### 5.5. 查看指定端口号的容器是哪个
 
 ```sh
 # 查找端口号的PID
@@ -300,7 +300,7 @@ netstat -nap|grep 8080
 docker ps -q | xargs docker inspect --format '{{.State.Pid}}, {{.Name}}' | grep "%PID%"
 ```
 
-### 4.6. 查看变化的文件和文件夹
+### 5.6. 查看变化的文件和文件夹
 
 列出容器内与镜像不同的文件和文件夹
 
@@ -308,7 +308,7 @@ docker ps -q | xargs docker inspect --format '{{.State.Pid}}, {{.Name}}' | grep 
 docker diff redis-temp
 ```
 
-### 4.7. 生成新镜像
+### 5.7. 生成新镜像
 
 提交容器内修改的内容生成新镜像
 
@@ -316,13 +316,13 @@ docker diff redis-temp
 docker commit -m "redis cluster node" -a "zbz" redis-temp zboss/redis-cluster-node:v1.0.0
 ```
 
-### 4.8. 在容器外编辑容器内的文件
+### 5.8. 在容器外编辑容器内的文件
 
 ```sh
 docker exec -it gitlab vi /etc/gitlab/gitlab.rb
 ```
 
-### 4.9. 主机与容器间复制文件
+### 5.9. 主机与容器间复制文件
 
 - 从主机往容器内复制文件
 
@@ -336,13 +336,13 @@ docker cp /host/path/target <containerId>:/file/path/within/container
 docker cp <containerId>:/file/path/within/container /host/path/target
 ```
 
-### 4.10. 修改容器时区和主机一致
+### 5.10. 修改容器时区和主机一致
 
 ```sh
 docker cp /etc/localtime [容器ID或者NAME]:/etc/localtime
 ```
 
-### 4.11. 修改容器的运行参数(手动修改配置文件)
+### 5.11. 修改容器的运行参数(手动修改配置文件)
 
 > **注意：修改参数的时候要将docker停掉**
 
@@ -352,13 +352,13 @@ docker cp /etc/localtime [容器ID或者NAME]:/etc/localtime
 
 默认路径在 ```/var/lib/docker/containers/{容器id}/hostconfig.json```
 
-### 4.12. 修改容器的运行参数(update)
+### 5.12. 修改容器的运行参数(update)
 
 ```sh
 docker update --restart=always redis1
 ```
 
-### 4.13. 查看容器的IP地址
+### 5.13. 查看容器的IP地址
 
 查看容器内部的IP地址
 
@@ -366,14 +366,14 @@ docker update --restart=always redis1
 docker inspect node1 | grep IPA
 ```
 
-### 4.14. 清空容器日志
+### 5.14. 清空容器日志
 
 ```sh
 docker inspect 【container name】| grep LogPath | cut -d ':' -f 2 | cut -d ',' -f 1 | xargs echo | xargs truncate -s 0
 ```
 
 
-### 4.15. 卸载docker
+### 5.15. 卸载docker
 为了能彻底清除docker安装痕迹，需要将所有依赖项也清除，较旧版本的Docker被称为docker或docker-engine.请卸载它们以及相关的依赖项
 
   sudo yum remove docker \
@@ -389,7 +389,7 @@ docker inspect 【container name】| grep LogPath | cut -d ':' -f 2 | cut -d ','
 
 
 
-### 4.16. 常见报错
+### 5.16. 常见报错
 
 - 未启动docker会报错
 
