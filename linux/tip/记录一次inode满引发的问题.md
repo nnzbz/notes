@@ -57,7 +57,20 @@ ls -it /tmp | wc -l
 结果过了很久才反应，不停打印出临时文件，果断暂停并删除
 
 ```sh
-find /tmp -type f -exec rm {} \;
+find /tmp -type f -size 0c -exec rm {} \;
+```
+
+定时删除文件
+
+```sh
+echo 'find /tmp -type f -size 0c -exec rm {} \;' > /usr/local/tmpclean.sh
+crontab -e
+```
+
+添加一行，每5分钟执行一次清理
+
+```ini
+*/5 * * * * /bin/bash /usr/local/tmpclean.sh
 ```
 
 ## 补充解释
