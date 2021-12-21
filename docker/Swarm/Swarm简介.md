@@ -135,7 +135,7 @@ docker service create --replicas 3 -p 80:80 --name nginx nginx:1.13.7-alpine
 - 查看单个服务日志
 
   ```sh
-  docker service logs -f nginx
+  docker service logs -n2000 --raw nginx
   ```
 
 ### 4.3. 服务伸缩
