@@ -20,7 +20,7 @@ docker run -dp6379:6379 \
 
 ```sh
 # 准备配置文件
-echo requirepass b4903e4939f55c329abeb0861a107ecb327fa2baace95b489bf94b36f0c501f71e07e93d22b25f17bd63abb5c69b1a6318cf834f0ec4511595deaa6d52986288 >> /usr/local/redis/redis.conf
+echo requirepass xxxxxxxx >> /usr/local/redis/redis.conf
 # 创建并运行容器
 docker run -dp6379:6379 \
   --privileged=true \
@@ -32,6 +32,43 @@ docker run -dp6379:6379 \
   --restart=always \
   redis \
   redis-server /data/redis.conf --appendonly yes
+```
+
+## Swarm(单例)
+
+```sh
+mkdir -p /usr/local/redis/
+# 准备密码
+echo requirepass xxxxxxxx >> /usr/local/redis/redis.conf
+vi /usr/local/redis/stack-standalone.yml
+```
+
+```yml{.line-numbers}
+version: "3.9"
+services:
+  redis:
+    image: redis
+    environment:
+      # 最好使用此设定时区，其它镜像也可以使用
+      - TZ=CST-8
+    configs:
+      - source: redis.conf
+        # 不要放在/data/目录下，否则启动报错: Read-only file system，/data/目录是存放数据的目录
+        target: /usr/local/redis/redis.conf
+    command: redis-server /usr/local/redis/redis.conf --appendonly yes
+configs:
+  redis.conf:
+    file: /usr/local/redis/redis.conf
+networks:
+  default:
+    external: true
+    name: rebue
+```
+
+- 部署
+
+```sh
+docker stack deploy -c /usr/local/redis/stack-standalone.yml redis
 ```
 
 ## 2. Swarm(一主多从多哨兵)
