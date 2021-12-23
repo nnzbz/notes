@@ -2,7 +2,9 @@
 
 locale这个单词中文翻译成地区或者地域，其实这个单词包含的意义要宽泛很多。Locale是根据计算机用户所使用的语言，所在国家或者地区，以及当地的文化传统所定义的一个软件运行时的语言环境。
 
-[oracle@game ~]$ locale
+```sh
+# 查看
+$ locale
 LANG=en_US.UTF-8
 LC_CTYPE="en_US.UTF-8"
 LC_NUMERIC="en_US.UTF-8"
@@ -17,7 +19,7 @@ LC_TELEPHONE="en_US.UTF-8"
 LC_MEASUREMENT="en_US.UTF-8"
 LC_IDENTIFICATION="en_US.UTF-8"
 LC_ALL=en_US.UTF-8
-[oracle@game ~]$
+```
 
 locale把按照所涉及到的文化传统的各个方面分成12个大类，这12个大类分别是：
 
@@ -36,8 +38,9 @@ locale把按照所涉及到的文化传统的各个方面分成12个大类，这
 
 所以说，locale就是某一个地域内的人们的语言习惯和文化传统和生活习惯。一个地区的locale就是根据这几大类的习惯定义的，这些locale定 义文件放在/usr/share/i18n/locales目录下面，例如en_US, zh_CN and de_DE@euro都是locale的定义文件，这些文件都是用文本格式书写的，你可以用写字板打开，看看里边的内容，当然出了有限的注释以外，大部分 东西可能你都看不懂，因为是用的Unicode的字符索引方式。
 
-[oracle@game ~]$ cd /usr/share/i18n/locales
-[oracle@game locales]$ ls
+```sh
+$ cd /usr/share/i18n/locales
+$ ls
 aa_DJ        ar_YE       el_GR       es_ES       fr_CH           iso14651_t1 ne_NP       so_ET                  translit_hangul
 aa_ER        az_AZ       el_GR@euro es_ES@euro fr_FR           it_CH        nl_BE       so_KE                  translit_narrow
 aa_ER@saaho be_BY       en_AU       es_GT       fr_FR@euro      it_IT        nl_BE@euro so_SO                  translit_neutral
@@ -62,7 +65,7 @@ ar_SA        de_DE       es_CO       fo_FO       hy_AM           mr_IN        si
 ar_SD        de_DE@euro es_CR       fr_BE       i18n            ms_MY        sk_SK       translit_compat        zu_ZA
 ar_SY        de_LU       es_DO       fr_BE@euro id_ID           mt_MT        sl_SI       translit_font
 ar_TN        de_LU@euro es_EC       fr_CA       is_IS           nb_NO        so_DJ       translit_fraction
-[oracle@game locales]$
+```
 
 对于de_DE@euro的一点说明，@后边是修正项，也就是说你可以看到两个德国的locale：/usr/share/i18n/locales /de_DE@euro和/usr/share/i18n/locales/de_DE。打开这两个locale定义，你就会知道它们的差别在于 de_DE@euro使用的是欧洲的排序、比较和缩进习惯，而de_DE用的是德国的标准习惯。
 
