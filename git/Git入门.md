@@ -19,6 +19,9 @@ git config --global user.name "zbz"
 git config --global user.email "nnzbz@qq.com"
 # 保存用户名和密码，这样就不用每次push时都要输入用户名和密码
 git config --global credential.helper store
+# 统一设置LF格式
+git config --global core.autocrlf input
+# 设置代理
 git config --global http.proxy 'socks5://127.0.0.1:12345'
 git config --global https.proxy 'socks5://127.0.0.1:12345'
 # 查看配置信息
