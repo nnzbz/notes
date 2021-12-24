@@ -4,7 +4,23 @@
 
 ## 1. 软件操作
 
-### 1.1. 修改hostname
+### 1.1. 修改UTF-8
+
+- CentOS7
+
+```sh
+vi /etc/locale.conf
+```
+
+```ini
+LANG="en_US.UTF-8"
+```
+
+```sh
+. /etc/locale.conf
+```
+
+### 1.2. 修改hostname
 
 - CentOS7
 
@@ -21,15 +37,13 @@ vi /etc/hosts
 # 省略
 ```
 
-### 1.2. 查看版本
-
-- debian
+### 1.3. 查看版本
 
 ```sh
-cat /etc/issue
+cat /etc/*-release
 ```
 
-### 1.3. 查看软件安装到了哪些地方
+### 1.4. 查看软件安装到了哪些地方
 
 - ubuntu
 
