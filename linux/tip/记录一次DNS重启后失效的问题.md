@@ -60,7 +60,7 @@ cat /etc/sysconfig/network-scripts/ifcfg-eth0
 按之前的再做一遍，但是ping通后先不要重启，运行下面的命令
 
 ```sh
-# 只允许root修改此文件，如果以后想去掉限制，把 +i 改为 -i 执行一遍这个命令就可以了
+# 不得任意更动此文件，如果以后想去掉限制，把 +i 改为 -i 再执行一下就可以了
 chattr +i /etc/resolv.conf
 ```
 
