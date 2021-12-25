@@ -149,31 +149,100 @@ setsebool -P httpd_anon_write on
 
 **注意: 最好记得一定要加上 `-P` 的选项，这样才能将此设置写入配置文件，否则重启后失效**
 
-## 6. 安全上下文（Security Context）
+## 6. Security Context(安全上下文)格式
 
 ### 6.1. 格式
 
 安全上下文为一个**字符串**，用3个 `:` 隔开，分为 **4** 个部分，例如: `system_u:object_r:admin_home_t:s0`
 
-| Identify | Role | Domain/Type | .... |
-| :------- | ---- | ----------- | ---- |
-| 身份识别 | 角色 | 领域/类型   | .... |
+| Identify | Role | Domain/Type | Range |
+| :------- | ---- | ----------- | ----- |
+| 身份识别 | 角色 | 领域/类型   | 范围  |
 
-### 6.2. 意义
+### 6.2. Identify(身份识别)
 
-- 身份识别 （Identify）: 相当于帐号方面的身份识别
-  - unconfined_u：不受限的用户，也就是说，该文件来自于不受限的程序所产生的！一般来说，我们使用可登陆帐号来取得 bash 之后， 默认的 bash 环境是不受 SELinux 管制的～因为 bash 并不是什么特别的网络服务！因此，在这个不受 SELinux 所限制的 bash 程序所产生的文件， 其身份识别大多就是 unconfined_u 这个“不受限”用户
-  - system_u：系统用户，大部分就是系统自己产生的文件
-- 角色 （Role）: 说明是主体、目标还是使用者
-  - object_r：目标
-  - system_r: 进程或使用者
-- 领域/类型 （Domain/Type）:
-  - 在默认的 `targeted` 策略中， `Identify` 与 `Role` 字段基本上是不重要的！重要的在于这个类型 （type） 字段！
-    - domain：在主体上称为领域 （domain）
-    - type：在目标上称为类型 （type）
-  - `Domain` 需要与 `Type` 搭配，则该主体才能存取目标
+从Linux user映射而来，带上后缀 `_u`
 
-### 6.3. 查看
+两者之间的最大不同是，Linux user可以通过 `su/sudo` 改变权限，而SELinux user永远不能，除非系统重启。
+
+查看全部SELinux users（需要安装 `setools-console` 软件包）
+
+```sh
+seinfo -u
+```
+
+其中主要有下面两个用户:
+
+- unconfined_u
+  不受限的用户，也就是说，该文件来自于不受限的程序所产生的！一般来说，我们使用可登陆帐号来取得 bash 之后， 默认的 bash 环境是不受 SELinux 管制的～因为 bash 并不是什么特别的网络服务！因此，在这个不受 SELinux 所限制的 bash 程序所产生的文件， 其身份识别大多就是 unconfined_u 这个“不受限”用户
+- system_u
+  系统用户，大部分就是系统自己产生的文件
+
+查看Linux/SELinu user之间的映射关系（需要安装policycoreutils-python软件包），可以执行如下命令：
+
+```sh
+$semanage login -l
+
+Login Name           SELinux User         MLS/MCS Range        Service
+ 
+__default__          unconfined_u         s0-s0:c0.c1023       *
+root                 unconfined_u         s0-s0:c0.c1023       *
+system_u             system_u             s0-s0:c0.c1023       *
+```
+
+由此可知如下:
+
+- 非root用户默认被映射为SELinux unconfined_u，即不受限制
+- Linux root默认被映射为SELinux unconfined_u，即不受限制
+- system_u是个特殊的SELinux用户标识符，专用于系统进程和系统对象，永远不要将其与Linux用户关联。
+
+### 6.3. Role(角色)
+
+- 一个SELinux user可能拥有多个roles
+- SELinux  role的名称都以_r后缀
+- 任何一个系统资源都默认拥有一个名为object_r的role
+
+查看全部SELinux roles（需要安装 `setools-console` 软件包）
+
+```sh
+seinfo -r
+```
+
+注意下面两种
+
+- object_r：说明是目标
+- system_r: 说明是进程或使用者
+
+### 6.4. Domain/Type(领域/类型)
+
+在默认的 `targeted` 策略中， `Identify` 与 `Role` 字段基本上是不重要的！重要的在于这个类型 （type） 字段！
+
+- domain：在主体上称为领域 （domain）
+- type：在目标上称为类型 （type）
+
+`Domain` 需要与 `Type` 搭配，则该主体才能存取目标
+
+查看全部SELinux types（需要安装setools-console软件包）
+
+```sh
+seinfo -t
+```
+
+SELinux type的命名以_t结尾。示例如下：
+
+- Web server(如Apache、 Nginx、 Tomcat)的type为httpd_t
+- Web server的端口的type为http_port_t
+- Web server的docroot目录/var/www/html/的type为httpd_sys_content_t
+- /tmp或/var/tmp目录的type为tmp_t
+- MySQL的type为mysqld_db_t
+
+### 6.5. Range(范围)
+
+可选的，也被称为 `MLS/MCS security range`，或者 `MLS/MCS security level`
+  
+## 7. 安全上下文相关操作
+
+### 7.1. 查看
 
 ```sh
 # 查看主体的安全上下文
@@ -182,12 +251,12 @@ ps -eZ
 ls -Z
 ```
 
-### 6.4. 修改文件或目录的安全上下文
+### 7.2. 修改文件的安全上下文
 
 - 用法
 
 ```sh
-chcon <选项> 文件或目录1> [<文件或目录2> ...]
+chcon <选项> 文件1> [<文件2> ...]
 ```
 
 - 选项
@@ -211,12 +280,12 @@ chcon <选项> 文件或目录1> [<文件或目录2> ...]
 chcon -u aaa_u -r bbb_r -t ccc_t test
 ```
 
-### 6.5. 把文件或目录的安全上下文恢复到默认值
+### 7.3. 把文件的安全上下文恢复到默认值
 
 - 用法
 
 ```sh
-restorecon [选项] <文件或目录1> [<文件或目录2> ...]
+restorecon [选项] <文件1> [<文件2> ...]
 ```
 
 - 选项
@@ -230,9 +299,9 @@ restorecon [选项] <文件或目录1> [<文件或目录2> ...]
 restorecon -R /usr/share/nginx/html/
 ```
 
-### 6.6. 管理文件或目录的默认安全上下文
+### 7.4. 管理文件的默认安全上下文
 
-#### 6.6.1. 查询
+#### 7.4.1. 查询
 
 - 用法
 
@@ -255,7 +324,7 @@ semanage fcontext -l
 semanage fcontext -l | grep -E '^/etc |^/etc/cron'
 ```
 
-#### 6.6.2. 修改
+#### 7.4.2. 修改
 
 ```sh
 semanage fcontext -{a|d|m} [-frst] file_spec
@@ -275,7 +344,7 @@ semanage fcontext -{a|d|m} [-frst] file_spec
 semanage fcontext -a -t system_cron_spool_t "/srv/mycron（/.*）?"
 ```
 
-### 6.7. 允许进程访问端口
+### 7.5. 允许进程访问端口
 
 - 用法
 
@@ -292,19 +361,19 @@ semanage port -a -t <服务类型> -p <协议> <端口号>
 semanage port -a -t http_port_t -p tcp 80
 ```
 
-## 7. 错误分析和解决
+## 8. 错误分析和解决
 
-### 7.1. 日志默认的存储路径
+### 8.1. 日志默认的存储路径
 
  `/var/log/audit/audit.log`
 
-### 7.2. 使用 sealert 分析错误
+### 8.2. 使用 sealert 分析错误
 
 ```sh
 sealert -a /var/log/audit/audit.log
 ```
 
-### 7.3. 解决思路
+### 8.3. 解决思路
 
 1. 先用 `sealert` 检查是否有该服务进程名称
 2. 查看分析报告中的违规原因
