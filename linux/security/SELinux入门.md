@@ -24,6 +24,12 @@
 
 ### 2.2. 开启和禁用
 
+先安装工具包
+
+```sh
+yum install setools-console -y
+```
+
 ```sh
 vi /etc/selinux/config
 ```
@@ -222,7 +228,7 @@ seinfo -r
 
 `Domain` 需要与 `Type` 搭配，则该主体才能存取目标
 
-查看全部SELinux types（需要安装setools-console软件包）
+查看全部SELinux types（需要安装 `setools-console` 软件包）
 
 ```sh
 seinfo -t
@@ -367,15 +373,15 @@ semanage port -a -t http_port_t -p tcp 80
 
  `/var/log/audit/audit.log`
 
-### 8.2. 使用 sealert 分析错误
+### 8.2. 使用工具分析错误
 
 ```sh
-sealert -a /var/log/audit/audit.log
+audit2why < /var/log/audit/audit.log
 ```
 
 ### 8.3. 解决思路
 
-1. 先用 `sealert` 检查是否有该服务进程名称
+1. 先检查日志中是否有该服务进程名称的错误
 2. 查看分析报告中的违规原因
 3. 查看分析报告中的解决方案
 4. 优先选择修改布尔值、设置默认安全上下文之类操作简单、容易理解的解决方案
