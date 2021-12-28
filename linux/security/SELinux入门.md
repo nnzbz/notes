@@ -373,13 +373,60 @@ semanage port -a -t http_port_t -p tcp 80
 
  `/var/log/audit/audit.log`
 
-### 8.2. 使用工具分析错误
+### 8.2. 前面准备
+
+发现一些服务器查不到日志，是因为没有启动 `auditd` 服务，先把它启动起来
 
 ```sh
-audit2why < /var/log/audit/audit.log
+systemctl enable auditd
+systemctl start auditd
 ```
 
-### 8.3. 解决思路
+以防日志太多，先清空一下日志
+
+```sh
+cat /dev/null > /var/log/audit/audit.log
+```
+
+有时候，一些错误日志仍然看不到，是因为SELinux默认加载了一个拒绝记录的模块，如果要加载比较全面的日志，把它禁用
+
+```sh
+semodule --disable_dontaudit --build
+# 或
+semodule -DB
+```
+
+> 注意: 上面的命令在清空日志后失效，清空日志后一定要再执行一遍
+
+调试完后要改回来请执行
+
+```sh
+semodule --build
+# 或
+semodule -B
+```
+
+### 8.3. 使用工具分析错误
+
+```sh
+# 查看原因
+audit2why -a
+# 查看解决方案
+audit2allow -a
+```
+
+### 8.4. 使用工具解决错误
+
+`audit2allow` 可以根据selinux日志文件中的denied信息生成allow的策略文件，然后再将策略模块加载进内核即可生效
+
+```sh
+# 生成含解决方案的文件
+audit2allow -a -M <模块名>
+# 将模块加载进内核
+semodule -i <模块名>.pp
+```
+
+### 8.5. 解决思路
 
 1. 先检查日志中是否有该服务进程名称的错误
 2. 查看分析报告中的违规原因
