@@ -110,15 +110,49 @@ server {
         set $method $http_X_HTTP_Method_Override;
     }
     proxy_method $method;
-
-    # 静态网页
+     location /jwt-svr/ {
+        add_header Cache-Control no-cache;
+        proxy_pass http://gateway;
+    }
+    location /oap-svr/ {
+        add_header Cache-Control no-cache;
+        proxy_pass http://gateway;
+    }
+    location /orp-svr/ {
+        add_header Cache-Control no-cache;
+        proxy_pass http://gateway;
+    }
+    location /oss-svr/ {
+        add_header Cache-Control no-cache;
+        proxy_pass http://gateway;
+    }
+    location /rac-svr/ {
+        add_header Cache-Control no-cache;
+        proxy_pass http://gateway;
+    }
+    location /etl-svr/ {
+        add_header Cache-Control no-cache;
+        proxy_pass http://gateway;
+    }
+    location /rrl-svr/ {
+        add_header Cache-Control no-cache;
+        proxy_pass http://gateway;
+    }
     location /admin-web {
         root /usr/share/nginx/html;
         index           index.html; 
         try_files       $uri $uri/ /admin-web/index.html; 
     }
-    location / {
-        proxy_pass http://gateway/;
+    location /oss-obj/ {
+        proxy_pass http://172.16.200.221:9000;
     }
+    location /rac-avatar/ {
+        proxy_pass http://172.16.200.221:9000;
+    }
+    location / {
+        root /usr/share/nginx/html/admin-web;
+        index index.html;
+    }
+   
 }
 ```
