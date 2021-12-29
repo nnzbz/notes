@@ -37,9 +37,14 @@ docker run -dp6379:6379 \
 ## Swarm(单例)
 
 ```sh
-mkdir -p /usr/local/redis/
+mkdir -p /usr/local/redis/conf
 # 准备密码
-echo requirepass xxxxxxxx >> /usr/local/redis/redis.conf
+echo 'requirepass xxxxxxxx' >> /usr/local/redis/conf/redis.conf
+# 如果在arm架构服务器上，启动redis启动不起来，报下面的错
+# Redis will now exit to prevent data corruption. Note that it is possible to suppress this warning by setting the following config: ignore-warnings ARM64-COW-BUG
+# 那么请运行下面这行
+echo 'ignore-warnings ARM64-COW-BUG' >> /usr/local/redis/conf/redis.conf
+
 vi /usr/local/redis/stack-standalone.yml
 ```
 
@@ -47,18 +52,17 @@ vi /usr/local/redis/stack-standalone.yml
 version: "3.9"
 services:
   redis:
-    image: redis
+    image: redis:alpine
     environment:
       # 最好使用此设定时区，其它镜像也可以使用
       - TZ=CST-8
-    configs:
-      - source: redis.conf
-        # 不要放在/data/目录下，否则启动报错: Read-only file system，/data/目录是存放数据的目录
-        target: /usr/local/redis/redis.conf
-    command: redis-server /usr/local/redis/redis.conf --appendonly yes
-configs:
-  redis.conf:
-    file: /usr/local/redis/redis.conf
+    volumes:
+      # 不要放在/data/目录下，否则启动报错: Read-only file system，/data/目录是存放数据的目录
+      - /usr/local/redis/conf/:/usr/local/redis/conf/:z
+    sysctls:
+      # 消除警告: The TCP backlog setting of 511 cannot be enforced because /proc/sys/net/core/somaxconn is set to the lower value of 128.
+      - net.core.somaxconn=2048
+    command: redis-server /usr/local/redis/conf/redis.conf --appendonly yes
 networks:
   default:
     external: true
@@ -78,11 +82,16 @@ docker stack deploy -c /usr/local/redis/stack-standalone.yml redis
 - master
 
 ```sh
-mkdir -p /usr/local/redis/{master,slave,sentinel1,sentinel2,sentinel3}
+mkdir -p /usr/local/redis/{master,slave1,slave2,sentinel1,sentinel2,sentinel3}
 vi /usr/local/redis/master/redis.conf
 ```
 
 ```ini
+# 如果在arm架构服务器上，启动redis启动不起来，报下面的错
+# Redis will now exit to prevent data corruption. Note that it is possible to suppress this warning by setting the following config: ignore-warnings ARM64-COW-BUG
+# 那么请打开下面这行注释
+# ignore-warnings ARM64-COW-BUG
+
 # 绑定服务器的所有IP地址
 bind 0.0.0.0
 # AOF持久化
@@ -94,10 +103,15 @@ requirepass xxxxxxxx
 - slave
 
 ```sh
-vi /usr/local/redis/slave/redis.conf
+vi /usr/local/redis/slave1/redis.conf
 ```
 
 ```ini
+# 如果在arm架构服务器上，启动redis启动不起来，报下面的错
+# Redis will now exit to prevent data corruption. Note that it is possible to suppress this warning by setting the following config: ignore-warnings ARM64-COW-BUG
+# 那么请打开下面这行注释
+# ignore-warnings ARM64-COW-BUG
+
 # 绑定服务器的所有IP地址
 bind 0.0.0.0
 # AOF持久化
@@ -110,6 +124,12 @@ replicaof redis_master 6379
 masterauth xxxxxxxx
 ```
 
+复制到2
+
+```sh
+cp /usr/local/redis/slave1/redis.conf /usr/local/redis/slave2/redis.conf
+```
+
 - sentinel
 
 ```sh
@@ -117,6 +137,11 @@ vi /usr/local/redis/sentinel1/sentinel.conf
 ```
 
 ```ini{.line-numbers}
+# 如果在arm架构服务器上，启动redis启动不起来，报下面的错
+# Redis will now exit to prevent data corruption. Note that it is possible to suppress this warning by setting the following config: ignore-warnings ARM64-COW-BUG
+# 那么请打开下面这行注释
+# ignore-warnings ARM64-COW-BUG
+
 # 解析主机名，没有此行，下面命令就不能用主机名，而只能用IP
 sentinel resolve-hostnames yes
 # Sentine监听的master地址
@@ -151,77 +176,88 @@ vi /usr/local/redis/stack.yml
 version: "3.9"
 services:
   master:
-    image: redis
+    image: redis:alpine
     environment:
       # 最好使用此设定时区，其它镜像也可以使用
       - TZ=CST-8
-    configs:
-      - source: master.conf
-        # 不要放在/data/目录下，否则启动报错: Read-only file system，/data/目录是存放数据的目录
-        target: /usr/local/redis/redis.conf
+    volumes:
+      # 不要放在/data/目录下，否则启动报错: Read-only file system，/data/目录是存放数据的目录
+      - /usr/local/redis/master/:/usr/local/redis/:z
+    sysctls:
+      # 消除警告: The TCP backlog setting of 511 cannot be enforced because /proc/sys/net/core/somaxconn is set to the lower value of 128.
+      - net.core.somaxconn=2048
     command: redis-server /usr/local/redis/redis.conf
   slave1:
-    image: redis
+    image: redis:alpine
     depends_on:
       - master
     environment:
       # 最好使用此设定时区，其它镜像也可以使用
       - TZ=CST-8
-    configs:
-      - source: slave.conf
-        # 不要放在/data/目录下，否则启动报错: Read-only file system，/data/目录是存放数据的目录
-        target: /usr/local/redis/redis.conf    
+    volumes:
+      # 不要放在/data/目录下，否则启动报错: Read-only file system，/data/目录是存放数据的目录
+      - /usr/local/redis/slave1/:/usr/local/redis/:z
     command: redis-server /usr/local/redis/redis.conf
   slave2:
-    image: redis
+    image: redis:alpine
     depends_on:
       - master
     environment:
       # 最好使用此设定时区，其它镜像也可以使用
       - TZ=CST-8
-    configs:
-      - source: slave.conf
-        # 不要放在/data/目录下，否则启动报错: Read-only file system，/data/目录是存放数据的目录
-        target: /usr/local/redis/redis.conf    
+    volumes:
+      # 不要放在/data/目录下，否则启动报错: Read-only file system，/data/目录是存放数据的目录
+      - /usr/local/redis/slave2/:/usr/local/redis/:z
+    sysctls:
+      # 消除警告: The TCP backlog setting of 511 cannot be enforced because /proc/sys/net/core/somaxconn is set to the lower value of 128.
+      - net.core.somaxconn=2048
     command: redis-server /usr/local/redis/redis.conf
   sentinel1:
-    image: redis
+    image: redis:alpine
     environment:
       # 最好使用此设定时区，其它镜像也可以使用
       - TZ=CST-8
     volumes:
-      - /usr/local/redis/sentinel1/:/tmp/sentinel/
-    command: redis-sentinel /tmp/sentinel/sentinel.conf
+      - /usr/local/redis/sentinel1/:/usr/local/redis/:z
+    sysctls:
+      # 消除警告: The TCP backlog setting of 511 cannot be enforced because /proc/sys/net/core/somaxconn is set to the lower value of 128.
+      - net.core.somaxconn=2048
+    command: redis-sentinel /usr/local/redis/sentinel.conf
     depends_on:
       - master
       - slave1
+      - slave2
   sentinel2:
-    image: redis
+    image: redis:alpine
     environment:
       # 最好使用此设定时区，其它镜像也可以使用
       - TZ=CST-8
     volumes:
-      - /usr/local/redis/sentinel2/:/tmp/sentinel/
-    command: redis-sentinel /tmp/sentinel/sentinel.conf
+      - /usr/local/redis/sentinel2/:/usr/local/redis/:z
+    sysctls:
+      # 消除警告: The TCP backlog setting of 511 cannot be enforced because /proc/sys/net/core/somaxconn is set to the lower value of 128.
+      - net.core.somaxconn=2048
+    command: redis-sentinel /usr/local/redis/sentinel.conf
     depends_on:
       - master
       - slave1
+      - slave2
   sentinel3:
-    image: redis
+    image: redis:alpine
     environment:
       # 最好使用此设定时区，其它镜像也可以使用
       - TZ=CST-8
     volumes:
-      - /usr/local/redis/sentinel3/:/tmp/sentinel/
-    command: redis-sentinel /tmp/sentinel/sentinel.conf
+      - /usr/local/redis/sentinel3/:/usr/local/redis/:z
+    sysctls:
+      # 消除警告: The TCP backlog setting of 511 cannot be enforced because /proc/sys/net/core/somaxconn is set to the lower value of 128.
+      - net.core.somaxconn=2048
+    command: redis-sentinel /usr/local/redis/sentinel.conf
     depends_on:
       - master
       - slave1
-configs:
-  master.conf:
-    file: /usr/local/redis/master/redis.conf
-  slave.conf:
-    file: /usr/local/redis/slave/redis.conf
+      - slave2
+
 networks:
   default:
     external: true
