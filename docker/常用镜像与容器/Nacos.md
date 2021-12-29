@@ -35,7 +35,7 @@ vi example/standalone-derby.yaml
 docker-compose -f example/standalone-derby.yaml up -d
 ```
 
-## 4. 部署单机mysql
+## 4. Swarm单机
 
 - 创建数据库
   数据库名称/用户名/密码分别是nacos/nacos/nacos(这个可以根据需要改动，但注意后面要对应 `env/nacos-standlone-mysql.env` 文件里的参数)
@@ -43,6 +43,7 @@ docker-compose -f example/standalone-derby.yaml up -d
   执行 [nacos-mysql.sql](https://github.com/alibaba/nacos/blob/master/distribution/conf/nacos-mysql.sql) 里面的内容
 - 修改 yaml 文件内容
   - `version` 改为 `"3.9"`
+  - 修改镜像为 `nnzbz/nacos`
   - 取消示例 yaml 中关联mysql容器的地方
     因为示例中是要关联一个自己定义的mysql容器，一般开发环境都会有mysql，不用再独立弄一个出来，所以要取消掉，然后关联自己的mysql即可
 
@@ -60,7 +61,7 @@ docker-compose -f example/standalone-derby.yaml up -d
   - 修改示例 yaml 中映射卷的地方
     删除 `nacos` 下的 `volumes` 节点
   - 删除示例 yaml 中 `prometheus` 与 `grafana` 的节点
-  - 修改 yaml 中 `restart` 的值为 `always`
+  - 删除 yaml 中 `restart` 节点
   - 添加 `networks`
 
     ```yaml
@@ -76,7 +77,7 @@ docker-compose -f example/standalone-derby.yaml up -d
     version: "3.9"
     services:
       nacos:
-        image: nacos/nacos-server:${NACOS_VERSION}
+        image: nnzbz/nacos
         hostname: nacos
         container_name: nacos-standalone-mysql
         env_file:
@@ -85,7 +86,6 @@ docker-compose -f example/standalone-derby.yaml up -d
           - "8848:8848"
           - "9848:9848"
           - "9555:9555"
-        restart: always
     networks:
       default:
         external: true
@@ -110,7 +110,7 @@ docker-compose -f example/standalone-derby.yaml up -d
 - 创建并运行容器
 
   ```sh
-  docker-compose -f example/standalone-mysql-5.7.yaml up -d
+  docker stack deploy -c /usr/local/nacos-docker/example/standalone-mysql-5.7.yaml nacos
   ```
 
 ## 5. 部署Swarm
@@ -137,7 +137,7 @@ vi /usr/local/nacos-docker/example/cluster-hostname.yaml
 ```
 
 - `version` 改为 `"3.9"`
-- 注意: 如果是 `arm` 架构的服务器，镜像改为 `cqiang1993/nacos-server`
+- 修改镜像为 `nnzbz/nacos`
 - 删除 nacos1/nacos2/nacos3 下 `image` 的 `:${NACOS_VERSION}`
 - 删除 nacos1/nacos2/nacos3 下 `depenOn` 节点
 - 删除 `mysql` 节点
@@ -168,9 +168,7 @@ vi /usr/local/nacos-docker/example/cluster-hostname.yaml
 version: "3.9"
 services:
   nacos1:
-    image: nacos/nacos-server
-    # 如果是arm架构的服务器，镜像使用下面这行
-    # image: cqiang1993/nacos-server
+    image: nnzbz/nacos
     hostname: nacos1
     container_name: nacos1
     ports:
@@ -183,9 +181,7 @@ services:
     env_file:
       - ../env/nacos-hostname.env
   nacos2:
-    image: nacos/nacos-server
-    # 如果是arm架构的服务器，镜像使用下面这行
-    # image: cqiang1993/nacos-server
+    image: nnzbz/nacos
     hostname: nacos2
     container_name: nacos2
     ports:
@@ -197,9 +193,7 @@ services:
     env_file:
       - ../env/nacos-hostname.env
   nacos3:
-    image: nacos/nacos-server
-    # 如果是arm架构的服务器，镜像使用下面这行
-    # image: cqiang1993/nacos-server
+    image: nnzbz/nacos
     hostname: nacos3
     container_name: nacos3
     ports:

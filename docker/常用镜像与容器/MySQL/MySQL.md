@@ -91,9 +91,93 @@ docker run --name mysql-data nnzbz/mysql echo "data-only container for MySQL"
 docker run -dp3306:3306 --restart=always --name mysql -e MYSQL_ROOT_PASSWORD=root --volumes-from mysql-data nnzbz/mysql
 ```
 
-### 2.4. 在Swarm中安装MySQL
+### 2.4. Swarm单机
 
 #### 2.4.1. 创建 secret
+
+```sh
+# 两种方式
+# 创建 secret(20位随机密码)
+openssl rand -base64 20 | docker secret create mysql_root_password -
+# 创建 secret(自定义密码)
+echo "xxxxxxxx" | docker secret create mysql_root_password -
+```
+
+#### 2.5.2. 准备 `my.cnf` 文件
+
+```sh
+mkdir -p /usr/local/mysql
+vi /usr/local/mysql/mysql-my.cnf
+```
+
+```ini
+[mysqld]
+# 为服务器分配id，可以自定义，不区分大小，起标识作用。不同数据库节点分配不同的id
+server_id=1
+# 打开Mysql 日志，日志格式为二进制
+log-bin=mysql-bin
+# 每1次在事务提交前会将二进制日志同步到磁盘上，保证在服务器崩溃时不会丢失事件
+# 默认是0，为性能考虑，也可以改为100
+sync_binlog=1
+```
+
+#### 2.5.4. `Docker Compose`
+
+```sh
+vi /usr/local/mysql/stack.yml
+```
+
+```yaml{.line-numbers}
+version: "3.9"
+services:
+  mysql:
+    image: mysql:5
+    # 注意: 如果是arm架构服务器，请用下面这个镜像
+    # image: biarms/mysql:5
+    hostname: mysql
+    ports:
+      - 3306:3306
+      - 33060:33060
+    secrets:
+      - mysql_root_password
+    volumes:
+      - /usr/local/mysql/mysql-my.cnf:/etc/mysql/my.cnf
+      - mysqldata:/var/lib/mysql
+    environment:
+      # 最好使用此设定时区，其它镜像也可以使用
+      - TZ=CST-8
+      - MYSQL_ROOT_PASSWORD_FILE=/run/secrets/mysql_root_password
+    command: --default-time-zone='+8:00'
+            --character-set-client-handshake=FALSE
+            --character-set-server=utf8mb4
+            --collation-server=utf8mb4_general_ci
+    # deploy:
+    #   placement:
+    #     constraints:
+    #       #该hostname为指定容器在哪个主机启动
+    #       - node.hostname == ecs2d8ed9c368b9
+
+secrets:
+  mysql_root_password:
+    external: true
+volumes:
+  mysqldata:
+
+networks:
+  default:
+    external: true
+    name: rebue
+```
+
+#### 2.5.5. 部署
+
+```sh
+docker stack deploy -c /usr/local/mysql/stack.yml mysql
+```
+
+### 2.5. Swarm集群
+
+#### 2.5.1. 创建 secret
 
 ```sh
 # 两种方式
@@ -112,7 +196,7 @@ docker exec -it <容器id> /bin/sh
 cat /run/secrets/mysql_root_password
 ```
 
-#### 2.4.2. 准备 `my.cnf` 文件
+#### 2.5.2. 准备 `my.cnf` 文件
 
 - mysql1的 `my.cnf`
 
@@ -185,7 +269,7 @@ read_only=on
 #replicate-ignore-db=performance_schema
 ```
 
-#### 2.4.3. ~~nginx反向代理的配置文件~~
+#### 2.5.3. ~~nginx反向代理的配置文件~~
 
 ```sh
 vi /usr/local/mysql/nginx.conf
@@ -219,7 +303,7 @@ stream {
 }
 ```
 
-#### 2.4.4. `Docker Compose`
+#### 2.5.4. `Docker Compose`
 
 ```sh
 vi /usr/local/mysql/stack.yml
@@ -296,13 +380,13 @@ networks:
     name: rebue
 ```
 
-#### 2.4.5. 部署
+#### 2.5.5. 部署
 
 ```sh
 docker stack deploy -c /usr/local/mysql/stack.yml mysql
 ```
 
-#### 2.4.6. 开启主从同步
+#### 2.5.6. 开启主从同步
 
 1. 分别对 mysql1 和 mysql2 执行下面命令
 
@@ -341,7 +425,7 @@ show slave status\G;
 
 ![主从开启成功](主从开启成功.png)
 
-#### 2.4.9. ~~开启主主同步~~
+#### 2.5.7. ~~开启主主同步~~
 
 1. 分别对 mysql1 和 mysql2 执行下面命令
 
@@ -388,7 +472,7 @@ show slave status\G;
 
 ![主从开启成功](主从开启成功.png)
 
-#### 2.4.10. ~~在主主环境中创建账户并授权~~
+#### 2.5.8. ~~在主主环境中创建账户并授权~~
 
 分别对 mysql1 和 mysql2 执行下面命令
 
@@ -405,7 +489,7 @@ mysql -u root -p
 GRANT ALL ON xxx.* to 'xxx'@'%' identified by '密码';
 ```
 
-#### 2.4.11. ~~在主主环境中修改账户密码~~
+#### 2.5.9. ~~在主主环境中修改账户密码~~
 
 分别对 mysql1 和 mysql2 执行下面命令
 
