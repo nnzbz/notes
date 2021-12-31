@@ -113,7 +113,7 @@ docker-compose -f example/standalone-derby.yaml up -d
   docker stack deploy -c /usr/local/nacos-docker/example/standalone-mysql-5.7.yaml nacos
   ```
 
-## 5. 部署Swarm
+## 5. Swarm集群
 
 ### 5.1. 创建数据库
 
