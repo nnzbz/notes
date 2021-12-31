@@ -23,6 +23,10 @@ docker run --name mysql -dp3306:3306 -p33060:33060 \
         --character-set-client-handshake=FALSE \
         --character-set-server=utf8mb4 \
         --collation-server=utf8mb4_general_ci
+        # 设置最大连接数，默认151太小
+        --max_connections=5000
+        # 为了加快连接速度，禁用反向域名解析，这样授权表中的host字段就不能用IP
+        --skip-name-resolve
 ```
 
 ### 2.2. 将数据映射到宿主机路径中保存
@@ -103,7 +107,7 @@ openssl rand -base64 20 | docker secret create mysql_root_password -
 echo "xxxxxxxx" | docker secret create mysql_root_password -
 ```
 
-#### 2.5.2. 准备 `my.cnf` 文件
+#### 2.4.2. 准备 `my.cnf` 文件
 
 ```sh
 mkdir -p /usr/local/mysql
@@ -121,7 +125,7 @@ log-bin=mysql-bin
 sync_binlog=1
 ```
 
-#### 2.5.4. `Docker Compose`
+#### 2.4.3. `Docker Compose`
 
 ```sh
 vi /usr/local/mysql/stack.yml
@@ -151,6 +155,10 @@ services:
             --character-set-client-handshake=FALSE
             --character-set-server=utf8mb4
             --collation-server=utf8mb4_general_ci
+            # 设置最大连接数，默认151太小
+            --max_connections=5000
+            # 为了加快连接速度，禁用反向域名解析，这样授权表中的host字段就不能用IP
+            --skip-name-resolve
     # deploy:
     #   placement:
     #     constraints:
@@ -169,7 +177,7 @@ networks:
     name: rebue
 ```
 
-#### 2.5.5. 部署
+#### 2.4.4. 部署
 
 ```sh
 docker stack deploy -c /usr/local/mysql/stack.yml mysql
@@ -333,6 +341,10 @@ services:
             --character-set-client-handshake=FALSE
             --character-set-server=utf8mb4
             --collation-server=utf8mb4_general_ci
+            # 设置最大连接数，默认151太小
+            --max_connections=5000
+            # 为了加快连接速度，禁用反向域名解析，这样授权表中的host字段就不能用IP
+            --skip-name-resolve
     # deploy:
     #   placement:
     #     constraints:
@@ -361,6 +373,10 @@ services:
             --character-set-client-handshake=FALSE
             --character-set-server=utf8mb4
             --collation-server=utf8mb4_general_ci
+            # 设置最大连接数，默认151太小
+            --max_connections=5000
+            # 为了加快连接速度，禁用反向域名解析，这样授权表中的host字段就不能用IP
+            --skip-name-resolve
     # deploy:
     #   placement:
     #     constraints:
