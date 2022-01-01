@@ -40,32 +40,53 @@ Swarm 是使用 SwarmKit 构建的 Docker 引擎内置（原生）的集群管�
 
 ## 2. 创建集群
 
-### 2.1. 初始化一个集群
+### 2.1. 初始化集群
 
-执行 `docker swarm init` 命令的节点自动成为管理节点。
+- 初始化Swarm集群，并将本机自动设置为管理节点。
 
 ```sh
-# 如果你的 Docker 主机有多个网卡，拥有多个 IP，必须使用 --advertise-addr 指定 IP
+docker swarm init
+```
+
+- 如果主机有多个网卡，拥有多个 IP，必须使用 --advertise-addr 指定 IP
+
+```sh
 docker swarm init --advertise-addr <IP>
 ```
 
-- 查看节点加入命令
+### 2.2. 将机器加入集群
+
+#### 2.2.1. 作为 worker 节点加入
+
+在 manager 节点上执行
 
 ```sh
 docker swarm join-token worker
 ```
 
-### 2.2. 将本节点加入集群
+在运行命令后可以得到加入的指令，形式如下:
 
 ```sh
 docker swarm join --token xxxxx <集群节点IP>:<PORT>
 ```
 
-- 通过在manage节点执行下面命令，可以查看加入节点的命令，可以直接复制到worker节点执行
+可以直接复制到到要加入的机器上执行即可
+
+#### 2.2.2. 作为 manager 节点加入
+
+在 manager 节点上执行
 
 ```sh
-docker swarm join-token worker
+docker swarm join-token manager
 ```
+
+在运行命令后可以得到加入的指令，形式如下:
+
+```sh
+docker swarm join --token xxxxx <集群节点IP>:<PORT>
+```
+
+可以直接复制到到要加入的机器上执行即可
 
 ### 2.3. 添加管理
 
