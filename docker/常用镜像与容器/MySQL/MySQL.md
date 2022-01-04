@@ -23,9 +23,7 @@ docker run --name mysql -dp3306:3306 -p33060:33060 \
         --character-set-client-handshake=FALSE \
         --character-set-server=utf8mb4 \
         --collation-server=utf8mb4_general_ci
-        # 设置最大连接数，默认151太小
         --max_connections=5000
-        # 为了加快连接速度，禁用反向域名解析，这样授权表中的host字段就不能用IP
         --skip-name-resolve
 ```
 
@@ -155,9 +153,7 @@ services:
             --character-set-client-handshake=FALSE
             --character-set-server=utf8mb4
             --collation-server=utf8mb4_general_ci
-            # 设置最大连接数，默认151太小
             --max_connections=5000
-            # 为了加快连接速度，禁用反向域名解析，这样授权表中的host字段就不能用IP
             --skip-name-resolve
     # deploy:
     #   placement:
@@ -341,9 +337,7 @@ services:
             --character-set-client-handshake=FALSE
             --character-set-server=utf8mb4
             --collation-server=utf8mb4_general_ci
-            # 设置最大连接数，默认151太小
             --max_connections=5000
-            # 为了加快连接速度，禁用反向域名解析，这样授权表中的host字段就不能用IP
             --skip-name-resolve
     # deploy:
     #   placement:
