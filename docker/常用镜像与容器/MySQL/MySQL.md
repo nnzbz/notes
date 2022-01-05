@@ -22,8 +22,8 @@ docker run --name mysql -dp3306:3306 -p33060:33060 \
         --default-time-zone='+8:00' \
         --character-set-client-handshake=FALSE \
         --character-set-server=utf8mb4 \
-        --collation-server=utf8mb4_general_ci
-        --max_connections=5000
+        --collation-server=utf8mb4_general_ci \
+        --max_connections=5000 \
         --skip-name-resolve
 ```
 
