@@ -11,6 +11,8 @@
 ### 2.1. 用于开发
 
 ```sh
+# max_connections设置最大连接数，默认151太小
+# skip-name-resolve设置最大连接数，默认151太小
 docker run --name mysql -dp3306:3306 -p33060:33060 \
     --network rebue \
     -h mysql \
@@ -149,6 +151,8 @@ services:
       # 最好使用此设定时区，其它镜像也可以使用
       - TZ=CST-8
       - MYSQL_ROOT_PASSWORD_FILE=/run/secrets/mysql_root_password
+    # max_connections设置最大连接数，默认151太小
+    # skip-name-resolve为了加快连接速度，禁用反向域名解析，这样授权表中的host字段就不能用IP
     command: --default-time-zone='+8:00'
             --character-set-client-handshake=FALSE
             --character-set-server=utf8mb4
@@ -327,12 +331,14 @@ services:
     secrets:
       - mysql_root_password
     volumes:
-      - /usr/local/mysql/mysql1-my.cnf:/etc/mysql/my.cnf
-      - mysql1data:/var/lib/mysql
+      - /usr/local/mysql/mysql1-my.cnf:/etc/mysql/my.cnf:z
+      - mysql1data:/var/lib/mysql:z
     environment:
       # 最好使用此设定时区，其它镜像也可以使用
       - TZ=CST-8
       - MYSQL_ROOT_PASSWORD_FILE=/run/secrets/mysql_root_password
+    # max_connections设置最大连接数，默认151太小
+    # skip-name-resolve为了加快连接速度，禁用反向域名解析，这样授权表中的host字段就不能用IP
     command: --default-time-zone='+8:00'
             --character-set-client-handshake=FALSE
             --character-set-server=utf8mb4
@@ -343,7 +349,7 @@ services:
     #   placement:
     #     constraints:
     #       #该hostname为指定容器在哪个主机启动
-    #       - node.hostname == ecs2d8ed9c368b9
+    #       - node.hostname == db1
   mysql2:
     image: mysql:5
     # 注意: 如果是arm架构服务器，请用下面这个镜像
@@ -357,8 +363,8 @@ services:
     secrets:
       - mysql_root_password
     volumes:
-      - /usr/local/mysql/mysql2-my.cnf:/etc/mysql/my.cnf
-      - mysql2data:/var/lib/mysql
+      - /usr/local/mysql/mysql2-my.cnf:/etc/mysql/my.cnf:z
+      - mysql2data:/var/lib/mysql:z
     environment:
       # 最好使用此设定时区，其它镜像也可以使用
       - TZ=CST-8
@@ -375,7 +381,17 @@ services:
     #   placement:
     #     constraints:
     #       #该hostname为指定容器在哪个主机启动
-    #       - node.hostname == ecseafe0d11214a
+    #       - node.hostname == db2
+
+  phpmyadmin:
+    image: phpmyadmin
+    environment:
+      - PMA_ARBITRARY=1
+    # deploy:
+    #   placement:
+    #     constraints:
+    #       #该hostname在哪个label约束启动
+    #       - node.labels.role == web
 
 secrets:
   mysql_root_password:

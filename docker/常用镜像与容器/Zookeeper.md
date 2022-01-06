@@ -54,8 +54,8 @@ services:
       - ZOO_4LW_COMMANDS_WHITELIST=*
       - TZ=CST-8
     volumes:
-      - zoo1data:/data
-      - zoo1datalog:/datalog
+      - zoo1data:/data:z
+      - zoo1datalog:/datalog:z
   zoo2:
     image: zookeeper
     hostname: zoo2
@@ -70,8 +70,8 @@ services:
       - ZOO_4LW_COMMANDS_WHITELIST=*
       - TZ=CST-8
     volumes:
-      - zoo2data:/data
-      - zoo2datalog:/datalog
+      - zoo2data:/data:z
+      - zoo2datalog:/datalog:z
   zoo3:
     image: zookeeper
     hostname: zoo3
@@ -86,8 +86,8 @@ services:
       - ZOO_4LW_COMMANDS_WHITELIST=*
       - TZ=CST-8
     volumes:
-      - zoo3data:/data
-      - zoo3datalog:/datalog
+      - zoo3data:/data:z
+      - zoo3datalog:/datalog:z
   # web-ui:
   #   image: tobilg/zookeeper-webui
   #   environment:

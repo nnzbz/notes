@@ -53,13 +53,13 @@ services:
       - TZ=CST-8
     volumes:
       # 配置文件目录
-      - /usr/local/nginx/conf/:/etc/nginx/conf.d/
+      - /usr/local/nginx/conf/:/etc/nginx/conf.d/:z
       # 数字证书目录
-      - /usr/local/nginx/cert/:/etc/nginx/cert/
+      - /usr/local/nginx/cert/:/etc/nginx/cert/:z
       # 网页存放目录
-      - /usr/local/nginx/html:/usr/share/nginx/html
+      - /usr/local/nginx/html:/usr/share/nginx/html:z
     deploy:
-      replicas: 3
+      replicas: 1
 
 networks:
   default:
