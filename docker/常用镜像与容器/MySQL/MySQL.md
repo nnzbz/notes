@@ -369,13 +369,13 @@ services:
       # 最好使用此设定时区，其它镜像也可以使用
       - TZ=CST-8
       - MYSQL_ROOT_PASSWORD_FILE=/run/secrets/mysql_root_password
+    # max_connections设置最大连接数，默认151太小
+    # skip-name-resolve为了加快连接速度，禁用反向域名解析，这样授权表中的host字段就不能用IP
     command: --default-time-zone='+8:00'
             --character-set-client-handshake=FALSE
             --character-set-server=utf8mb4
             --collation-server=utf8mb4_general_ci
-            # 设置最大连接数，默认151太小
             --max_connections=5000
-            # 为了加快连接速度，禁用反向域名解析，这样授权表中的host字段就不能用IP
             --skip-name-resolve
     # deploy:
     #   placement:
