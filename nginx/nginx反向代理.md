@@ -6,8 +6,8 @@
 
 ```js
 upstream my_server {                                                         
+    server 10.0.0.1:8080;                                                
     server 10.0.0.2:8080;                                                
-    keepalive 2000;
 }
 server {
     # 公网暴露的端口变量
@@ -29,13 +29,18 @@ server {
 
     # 处理 http(s)://xxx.xxx.xxx.xxx:80(443)/my 的请求
     location /my/ {
+        # 如果nginx前面没有代理，可以使用X-Real-IP获取用户IP
+        proxy_set_header X-Real-IP       $remote_addr;
+        # 如果 nginx 前面有代理，请使用X-Forwarded-For获取用户IP，因为它是被广泛
+支持的头部
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_pass http://my_server/;
         proxy_set_header Host $host:$expose_port;
-        # 下面这段部分解决一些web网站把路径写成绝对路径，无法代理的情况
-        sub_filter 'href="/' 'href="/my/';
-        sub_filter 'src="/' 'src="/my/';
-        sub_filter_types text/html;
-        sub_filter_once off;
+#        # 下面这段部分解决一些web网站把路径写成绝对路径，无法代理的情况
+#        sub_filter 'href="/' 'href="/my/';
+#        sub_filter 'src="/' 'src="/my/';
+#        sub_filter_types text/html;
+#        sub_filter_once off;
     }
 }
 ```
