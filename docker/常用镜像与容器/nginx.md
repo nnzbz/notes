@@ -80,16 +80,26 @@ vi /usr/local/nginx/conf/default.conf
 ```
 
 ```ini
-upstream gateway {
-    server gateway-server:80;
-    keepalive 2000;
+# 负载均衡
+upstream nacos {
+    server nacos1:8848;
+    server nacos2:8848;
+    server nacos3:8848;
+}
+
+# 如果未通过指定的IP或域名访问，返回403
+server {
+    listen 80 default;
+    server_name _;
+    return 403;
 }
 
 server {
     listen       80;
     listen  [::]:80;
     listen       443 ssl;
-    server_name 域名;
+    listen  [::]:443;
+    server_name 域名1 域名2 域名3;
 
     # 数字证书
     # 注意文件位置，是从/etc/nginx/下开始算起的
@@ -110,49 +120,57 @@ server {
         set $method $http_X_HTTP_Method_Override;
     }
     proxy_method $method;
-     location /jwt-svr/ {
-        add_header Cache-Control no-cache;
-        proxy_pass http://gateway;
+
+    # http://xxx.xxx.xxx.xxx:xxxx/rabbitmq/ (不能省略后面的“/”)
+    location /rabbitmq/ {
+        proxy_pass http://rabbitmq:15672/;
     }
-    location /oap-svr/ {
-        add_header Cache-Control no-cache;
-        proxy_pass http://gateway;
+
+    # http://xxx.xxx.xxx.xxx:xxxx/phpmyadmin/ (不能省略后面的“/”)
+    # 注意还要在phpMyAdmin的部署文档上配置PMA_ABSOLUTE_URI参数
+    location /phpmyadmin/ {
+        proxy_pass http://phpmyadmin/;
     }
-    location /orp-svr/ {
-        add_header Cache-Control no-cache;
-        proxy_pass http://gateway;
+
+    # http://xxx.xxx.xxx.xxx:xxxx/alibaba-sentinel-dashboard/ (不能省略后面的“/”)
+    location /alibaba-sentinel-dashboard/ {
+        proxy_pass http://alibaba-sentinel-dashboard:8080/;
     }
-    location /oss-svr/ {
-        add_header Cache-Control no-cache;
-        proxy_pass http://gateway;
+
+    # http://xxx.xxx.xxx.xxx:xxxx/zipkin/ (不能省略后面的“/”)
+    location /zipkin/ {
+        # 注意后面不能带有“/”
+        proxy_pass http://zipkin:9411;
     }
-    location /rac-svr/ {
-        add_header Cache-Control no-cache;
-        proxy_pass http://gateway;
+
+    # http://xxx.xxx.xxx.xxx:xxxx/nacos/ (不能省略后面的“/”)
+    location /nacos/ {
+        # 注意后面不能带有“/”
+        proxy_pass http://nacos;
     }
-    location /etl-svr/ {
-        add_header Cache-Control no-cache;
-        proxy_pass http://gateway;
+
+    location /minio/ {
+        proxy_pass http://minio:9001/;
+        sub_filter '<base href="/"/>' '<base href="/minio/"/>';
+        sub_filter '"/login"' '"/minio/login"';
+        # 可反复匹配替换
+        sub_filter_once off;
+        # sub_filter无法处理压缩内容，可以使用如下语句禁用压缩
+        proxy_set_header Accept-Encoding '';
     }
-    location /rrl-svr/ {
-        add_header Cache-Control no-cache;
-        proxy_pass http://gateway;
-    }
+
     location /admin-web {
         root /usr/share/nginx/html;
-        index           index.html; 
-        try_files       $uri $uri/ /admin-web/index.html; 
+        index           index.html;
+        try_files       $uri $uri/ /admin-web/index.html;
     }
-    location /oss-obj/ {
-        proxy_pass http://172.16.200.221:9000;
-    }
-    location /rac-avatar/ {
-        proxy_pass http://172.16.200.221:9000;
-    }
-    location / {
-        root /usr/share/nginx/html/admin-web;
-        index index.html;
+
+    location = / {
+       rewrite ^/(.*) admin-web/platform-admin-web/ redirect;
     }
    
 }
 ```
+
+- 注意
+  - 很常见的一个问题就是 `sub_filter` 无效。因为浏览器都是允许压缩的，所以请求头都是带 `Accept-Encoding: gzip` 的。而 `Nginx` 的 `sub_filter` 无法处理压缩过的请求， `Nginx` 自身也不会解压。事实上，要想写一个解压的插件也是不可能的，因为 Nginx 目前并没有 `input filtering` 相关的接口。一般网上的解决办法都是 `proxy_set_header Accept-Encoding “”;`禁用上游的压缩，对客户端的压缩不受影响。

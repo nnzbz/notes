@@ -148,7 +148,7 @@ vi /usr/local/nacos-docker/example/cluster-hostname.yaml
   ```yml
   ....
       environment:
-      # 最好使用此设定时区，其它镜像也可以使用
+        # 最好使用此设定时区，其它镜像也可以使用
         - TZ=CST-8
   ....
   ```

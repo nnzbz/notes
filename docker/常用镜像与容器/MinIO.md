@@ -52,6 +52,7 @@ version: "3.9"
 services:
   minio:
     image: minio/minio
+    hostname: minio
     ports:
       - 19000:19000
       - 19001:9001

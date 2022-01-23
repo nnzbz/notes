@@ -13,7 +13,7 @@ docker run -dp6379:6379 \
   --network rebue \
   -e TZ=CST-8 \
   --restart=always \
-  redis
+  redis:alpine
 ```
 
 - 配置密码

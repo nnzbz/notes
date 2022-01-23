@@ -25,21 +25,3 @@ networks:
 ```sh
 docker stack deploy -c /usr/local/mysql/phpmyadmin-stack.yml phpmyadmin
 ```
-
-## nginx映射
-
-```json
-server {
-    ....
-
-    location /phpmyadmin {
-        proxy_pass http://phpmyadmin/;
-    }
-}
-```
-
-## 访问
-
-<http://xxx.xxx.xxx.xxx:xxxx/phpmyadmin/>
-
-- 注意：不能省略后面的 `/`
