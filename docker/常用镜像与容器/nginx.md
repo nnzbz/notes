@@ -153,6 +153,8 @@ server {
         proxy_pass http://minio:9001/;
         sub_filter '<base href="/"/>' '<base href="/minio/"/>';
         sub_filter '"/login"' '"/minio/login"';
+        # 匹配任意文件，默认只是 text/html
+        sub_filter_types *;
         # 可反复匹配替换
         sub_filter_once off;
         # sub_filter无法处理压缩内容，可以使用如下语句禁用压缩
