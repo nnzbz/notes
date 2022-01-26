@@ -149,10 +149,11 @@ server {
         proxy_pass http://nacos;
     }
 
+    # http://xxx.xxx.xxx.xxx:xxxx/minio/ (不能省略后面的“/”)
     location /minio/ {
         proxy_pass http://minio:9001/;
-        sub_filter '<base href="/"/>' '<base href="/minio/"/>';
-        sub_filter '"/login"' '"/minio/login"';
+        sub_filter '"/login"'         '"/minio/login"';
+        sub_filter 'href="/'          'href="/minio/';
         # 匹配任意文件，默认只是 text/html
         sub_filter_types *;
         # 可反复匹配替换

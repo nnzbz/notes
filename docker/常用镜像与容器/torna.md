@@ -61,6 +61,11 @@ services:
       - TZ=CST-8
     volumes:
       - /usr/local/torna/config/application.properties:/torna/config/application.properties
+
+networks:
+  default:
+    external: true
+    name: rebue
 ```
 
 ### 4.2. 部署
