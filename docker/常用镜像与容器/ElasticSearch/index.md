@@ -12,7 +12,7 @@
 ### 1.2. 开发模式(命令行)
 
 ```sh
-docker run -p 127.0.0.1:9200:9200 -p 127.0.0.1:9300:9300 -e "discovery.type=single-node" docker.elastic.co/elasticsearch/elasticsearch:7.16.2
+docker run -p 127.0.0.1:9200:9200 -p 127.0.0.1:9300:9300 -e "discovery.type=single-node" docker.elastic.co/elasticsearch/elasticsearch:7.16.3
 ```
 
 ### 1.3. 检查是否正常运行
@@ -82,10 +82,30 @@ elasticsearch.version=ElasticSearch当前的版本
 
 <https://www.elastic.co/guide/en/elasticsearch/reference/7.16/docker.html#docker-compose-file>
 
-### 2.2. Docker Compose
+### 2.2. 准备配置文件
 
 ```sh
-mkdir -p /usr/local/es
+mkdir -p /usr/local/es/config
+vi /usr/local/es/config/elasticsearch.yml
+```
+
+```yml
+cluster:
+  name: "docker-cluster"
+  initial_master_nodes: es01
+network:
+  host: 0.0.0.0
+xpack:
+  security:
+    enabled: true
+    #transport:
+    #  ssl:
+    #    enabled: true
+```
+
+### 2.3. Docker Compose
+
+```sh
 vi /usr/local/es/stack.yml
 ```
 
@@ -93,7 +113,8 @@ vi /usr/local/es/stack.yml
 version: "3.9"
 services:
   es01:
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.16.2
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.16.3
+    hostname: es01
     container_name: es01
     environment:
       - node.name=es01
@@ -106,12 +127,21 @@ services:
       memlock:
         soft: -1
         hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
     volumes:
+      - /usr/local/es/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
       - es01data:/usr/share/elasticsearch/data
-    ports:
-      - 9200:9200
+    # ports:
+    #   - 9200:9200
+    deploy:
+      placement:
+        constraints:
+          - node.labels.role==es
   es02:
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.16.2
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.16.3
+    hostname: es02
     container_name: es02
     environment:
       - node.name=es02
@@ -124,10 +154,19 @@ services:
       memlock:
         soft: -1
         hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
     volumes:
+      - /usr/local/es/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
       - es02data:/usr/share/elasticsearch/data
+    deploy:
+      placement:
+        constraints:
+          - node.labels.role==es
   es03:
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.16.2
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.16.3
+    hostname: es03
     container_name: es03
     environment:
       - node.name=es03
@@ -140,8 +179,16 @@ services:
       memlock:
         soft: -1
         hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
     volumes:
+      - /usr/local/es/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
       - es03data:/usr/share/elasticsearch/data
+    deploy:
+      placement:
+        constraints:
+          - node.labels.role==es
 
 volumes:
   es01data:
@@ -154,7 +201,7 @@ networks:
     name: rebue
 ```
 
-### 2.3. 部署
+### 2.4. 部署
 
 ```sh
 docker stack deploy -c /usr/local/es/stack.yml es
@@ -208,3 +255,40 @@ sysctl -w vm.max_map_count=262144
 
 使用 `ES_JAVA_OPTS` 环境变量来设置内存使用大小，默认 `-Xms2g -Xmx2g`，开发根据实际需要可以改小些，如: `-e ES_JAVA_OPTS="-Xms1g -Xmx1g"` 。
 
+## 4. 配置
+
+### 4.1. KeyStore
+
+开启SSL需要KeyStore
+
+- 创建KeyStore并设置访问KeyStore的密码
+
+```sh
+./bin/elasticsearch-keystore create -p
+```
+
+### 4.2. 密码
+
+基于BASE验证需要设置密码
+
+- 自动生成账户密码
+
+```sh
+./bin/elasticsearch-setup-passwords auto
+```
+
+- 手动指定密码
+
+```sh
+./bin/elasticsearch-setup-passwords interactive
+```
+
+- 重置 elastic 账户密码
+
+```sh
+curl -u elastic -XPUT 'http://localhost:9200/_xpack/security/user/elastic/_password?pretty' -H 'Content-Type: application/json' -d'
+{
+"password" : "elastic"
+}
+'
+```

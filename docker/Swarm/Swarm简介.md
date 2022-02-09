@@ -122,7 +122,7 @@ firewall-cmd --reload
 
 ## 4. 节点 Label 管理
 
-- 添加Label
+- 添加Label(已存在则为修改)
 
 ```sh
 docker node update --label-add role=web node1
