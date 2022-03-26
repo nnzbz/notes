@@ -5,10 +5,12 @@
 
 2. 将下载好的包复制到要安装的机器。
 
-3. 登录到要安装的机器， cd 到安装包所在目录
+3. 解压安装包
+
+登录到要安装的机器， cd 到安装包所在目录
 
 ```sh
-tar  zxvf  lrzsz-0.12.20.tar.gz 解压安装包
+tar  zxvf  lrzsz-0.12.20.tar.gz
 ```
 
 4. 进入解压好的目录里
@@ -19,7 +21,9 @@ cd  lrzsz-0.12.20
 
 5. 配置安装路径
 
+```sh
 ./configure --prefix=/usr/local/lrzsz
+```
 
 6. 编译
 
