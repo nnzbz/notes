@@ -87,7 +87,7 @@ systemctl restart chronyd
 # 查看 Chrony 服务的日志
 journalctl -u chronyd
 
-# 显示所有 NTP 源服务器的信息
+# 显示所有 NTP 源服务器的信息(^?表示不通，^*表示连通)
 chronyc sources -v
 
 # 显示所有 NTP 源服务器的状态
