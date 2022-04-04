@@ -23,6 +23,11 @@ server <ntp服务器2> iburst [minpoll x] [maxpoll x]
 
 ....
 
+# 当服务器重启后，读取硬件时钟的时间如果和chronyd同步的源时间相差600秒以上，就不会进行同步(默认是3秒)
+maxdistance 600.0
+
+....
+
 # 根据实际时间计算的修正值，将补偿参数记录在该文件
 driftfile /var/lib/chrony/drift
 
@@ -84,7 +89,10 @@ systemctl restart chronyd
 ## 查看
 
 ```sh
-# 查看 Chrony 服务的日志
+# 查看服务的状态
+systemctl status chronyd
+
+# 查看服务的日志
 journalctl -u chronyd
 
 # 显示所有 NTP 源服务器的信息(^?表示不通，^*表示连通)
