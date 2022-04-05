@@ -27,7 +27,7 @@
 先安装工具包
 
 ```sh
-yum install setools-console -y
+yum install setroubleshoot -y
 ```
 
 ```sh
