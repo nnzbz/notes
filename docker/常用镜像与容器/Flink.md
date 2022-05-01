@@ -64,7 +64,8 @@ vi /usr/local/flink/stack.yml
 version: "3.9"
 services:
   jobmanager:
-    image: nnzbz/flink-with-connector-jdbc:1.13.3
+    image: flink
+    #image: nnzbz/flink-with-connector-jdbc:1.13.3
     ports:
       - "8091:8081"
     command: jobmanager
@@ -74,7 +75,7 @@ services:
         jobmanager.rpc.address: jobmanager
 
   taskmanager:
-    image: flink:1.13.3-scala_2.12
+    image: flink
     depends_on:
       - jobmanager
     command: taskmanager
