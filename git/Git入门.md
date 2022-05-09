@@ -24,6 +24,9 @@ git config --global core.autocrlf input
 # 设置代理
 git config --global http.proxy 'socks5://127.0.0.1:12345'
 git config --global https.proxy 'socks5://127.0.0.1:12345'
+# 取消设置代理
+git config --global --unset http.proxy
+git config --global --unset https.proxy
 # 查看配置信息
 git config --list
 ```
