@@ -75,3 +75,9 @@ brew install another-redis-desktop-manager
 ## 11. UNetbootin
 
 记录U盘启动的工具
+
+## 12. mvnd
+
+```sh
+brew install mvndaemon/homebrew-mvnd/mvnd
+```
