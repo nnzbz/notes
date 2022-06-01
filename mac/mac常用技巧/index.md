@@ -60,7 +60,31 @@ cp/mv DQ11.cia /Volumes/UNTITLED/
 sudo vim /etc/hosts
 ```
 
-## 11. 常见问题
+## 11. 左手鼠标
+
+`Mousecape`，这东西本来是拿来自定义鼠标指针的，也很贴心的给了换方向的功能
+
+- GitHub链接
+<https://github.com/alexzielenski/Mousecape/releases#:~:text=3-,Mousecape_1813.zip,-4.35%20MB>
+- 如果打不开的话
+<https://link.zhihu.com/?target=https%3A//en.freedownloadmanager.org/Mac-OS/Mousecape-FREE.html#:~:text=https%3A//en.-,freedownloadmanager,-.org/Mac%2DOS>
+
+下载之后解压缩，双击打开图标
+
+顶端菜单栏 -> `Mousecape` -> `Preferences`, 弹出的菜单里选 `I am left handed`
+
+顶端菜单栏 -> `Mousecape` -> `Install Helper Tool`
+
+顶端菜单栏 -> `Capes` -> `Dump Cursors`, 会发现空白的那个地方出现了一排指针：
+
+![CursorDump](CursorDump.png)
+
+右键 -> `Apply`
+
+OK~~~
+
+
+## 12. 常见问题
 
 1. xxx已损坏，打不开，您应该将它移到废纸篓以及来自身份不明的开发者
 
