@@ -81,3 +81,9 @@ brew install another-redis-desktop-manager
 ```sh
 brew install mvndaemon/homebrew-mvnd/mvnd
 ```
+
+## 13. Scroll Reverser
+
+设置鼠标和触摸板滚轮的方向相反
+
+<https://pilotmoon.com/scrollreverser/>
