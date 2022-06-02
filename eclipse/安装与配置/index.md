@@ -255,6 +255,17 @@ sudo chmod u+x ~/Desktop/eclipse.desktop
 
 ### 6.1. 反编译(Enhanced Class Decompiler)
 
+
+### m2e-apt
+
+让eclipse的Maven项目支持注解处理器
+
+Eclipse marketplace -> m2e-apt -> Install
+
+配置: 右击项目 -> 属性 -> Java Compiler -> Annotation Processing
+
+![m2e-apt](m2e-apt.png)
+
 ### 6.2. STS(Spring Tools)
 
 **注意:**
