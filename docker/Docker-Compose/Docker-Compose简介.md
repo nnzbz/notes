@@ -36,7 +36,7 @@
 进入到 `docker-compose.yml` 文件所在目录，执行下面的命令
 
 ```sh
-docker-compose up -d
+docker-compose -f xxx.yml up -d
 ```
 
 ## 4. 参考

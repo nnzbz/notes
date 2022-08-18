@@ -34,7 +34,7 @@ docker run -dp6379:6379 \
   redis-server /data/redis.conf --appendonly yes
 ```
 
-## Swarm(单例)
+## 2. Swarm(单例)
 
 ```sh
 mkdir -p /usr/local/redis/conf
@@ -75,9 +75,9 @@ networks:
 docker stack deploy -c /usr/local/redis/stack-standalone.yml redis
 ```
 
-## 2. Swarm(一主多从多哨兵)
+## 3. Swarm(一主多从多哨兵)
 
-### 2.1. 准备 `redis.conf` 配置文件
+### 3.1. 准备 `redis.conf` 配置文件
 
 - master
 
@@ -166,7 +166,7 @@ cp /usr/local/redis/sentinel1/sentinel.conf /usr/local/redis/sentinel2/
 cp /usr/local/redis/sentinel1/sentinel.conf /usr/local/redis/sentinel3/
 ```
 
-### 2.2. Docker Compose
+### 3.2. Docker Compose
 
 ```sh
 vi /usr/local/redis/stack.yml
@@ -264,13 +264,163 @@ networks:
     name: rebue
 ```
 
-### 2.3. 部署
+### 3.3. 部署
 
 ```sh
 docker stack deploy -c /usr/local/redis/stack.yml redis
 ```
 
-## 3. Redis Web
+## 4. Swarm(三主三从集群)
+
+### 4.1. 准备 `redis.conf` 配置文件
+
+- master
+
+```sh
+mkdir -p /usr/local/redis/{master1,master2,master3,slave1,slave2,slave3}
+vi /usr/local/redis/master1/redis.conf
+```
+
+```ini
+# 如果在arm架构服务器上，启动redis启动不起来，报下面的错
+# Redis will now exit to prevent data corruption. Note that it is possible to suppress this warning by setting the following config: ignore-warnings ARM64-COW-BUG
+# 那么请打开下面这行注释
+# ignore-warnings ARM64-COW-BUG
+
+# 保护模式，默认值 yes，即开启。
+# 开启保护模式以后，需配置 bind ip 或者设置访问密码
+# 关闭保护模式，外部网络可以直接访问
+protected-mode no
+# AOF持久化
+appendonly yes
+# 本实例密码
+requirepass xxxxxxxx
+# 设置从节点要访问主节点的密码
+masterauth xxxxxxxx
+# 开启集群模式
+cluster-enabled yes
+#  集群节点类型
+cluster-preferred-endpoint-type hostname
+# 集群节点的主机名
+cluster-announce-hostname redismaster1
+```
+
+复制配置文件到 `master2/slave1/slave2/slave3`
+
+```sh
+cp /usr/local/redis/master1/redis.conf /usr/local/redis/master2/
+cp /usr/local/redis/master1/redis.conf /usr/local/redis/master3/
+cp /usr/local/redis/master1/redis.conf /usr/local/redis/slave1/
+cp /usr/local/redis/master1/redis.conf /usr/local/redis/slave2/
+cp /usr/local/redis/master1/redis.conf /usr/local/redis/slave3/
+```
+
+修改配置文件中的 `redismaster1` 为对应的主机名
+
+### 4.2. Docker Compose
+
+```sh
+vi /usr/local/redis/stack.yml
+```
+
+```yml{.line-numbers}
+version: "3.9"
+services:
+  master1:
+    image: redis:alpine
+    hostname: redismaster1
+    environment:
+      # 最好使用此设定时区，其它镜像也可以使用
+      - TZ=CST-8
+    volumes:
+      # 不要放在/data/目录下，否则启动报错: Read-only file system，/data/目录是存放数据的目录
+      - /usr/local/redis/master1/:/usr/local/redis/:z
+    sysctls:
+      # 消除警告: The TCP backlog setting of 511 cannot be enforced because /proc/sys/net/core/somaxconn is set to the lower value of 128.
+      - net.core.somaxconn=2048
+    command: redis-server /usr/local/redis/redis.conf
+  master2:
+    image: redis:alpine
+    hostname: redismaster2
+    environment:
+      # 最好使用此设定时区，其它镜像也可以使用
+      - TZ=CST-8
+    volumes:
+      # 不要放在/data/目录下，否则启动报错: Read-only file system，/data/目录是存放数据的目录
+      - /usr/local/redis/master2/:/usr/local/redis/:z
+    sysctls:
+      # 消除警告: The TCP backlog setting of 511 cannot be enforced because /proc/sys/net/core/somaxconn is set to the lower value of 128.
+      - net.core.somaxconn=2048
+    command: redis-server /usr/local/redis/redis.conf
+  master3:
+    image: redis:alpine
+    hostname: redismaster3
+    environment:
+      # 最好使用此设定时区，其它镜像也可以使用
+      - TZ=CST-8
+    volumes:
+      # 不要放在/data/目录下，否则启动报错: Read-only file system，/data/目录是存放数据的目录
+      - /usr/local/redis/master3/:/usr/local/redis/:z
+    sysctls:
+      # 消除警告: The TCP backlog setting of 511 cannot be enforced because /proc/sys/net/core/somaxconn is set to the lower value of 128.
+      - net.core.somaxconn=2048
+    command: redis-server /usr/local/redis/redis.conf
+  slave1:
+    image: redis:alpine
+    hostname: redisslave1
+    environment:
+      # 最好使用此设定时区，其它镜像也可以使用
+      - TZ=CST-8
+    volumes:
+      # 不要放在/data/目录下，否则启动报错: Read-only file system，/data/目录是存放数据的目录
+      - /usr/local/redis/slave1/:/usr/local/redis/:z
+    command: redis-server /usr/local/redis/redis.conf
+  slave2:
+    image: redis:alpine
+    hostname: redisslave2
+    environment:
+      # 最好使用此设定时区，其它镜像也可以使用
+      - TZ=CST-8
+    volumes:
+      # 不要放在/data/目录下，否则启动报错: Read-only file system，/data/目录是存放数据的目录
+      - /usr/local/redis/slave2/:/usr/local/redis/:z
+    command: redis-server /usr/local/redis/redis.conf
+  slave3:
+    image: redis:alpine
+    hostname: redisslave3
+    environment:
+      # 最好使用此设定时区，其它镜像也可以使用
+      - TZ=CST-8
+    volumes:
+      # 不要放在/data/目录下，否则启动报错: Read-only file system，/data/目录是存放数据的目录
+      - /usr/local/redis/slave3/:/usr/local/redis/:z
+    command: redis-server /usr/local/redis/redis.conf
+
+networks:
+  default:
+    external: true
+    name: rebue
+```
+
+### 4.3. 部署
+
+```sh
+docker stack deploy -c /usr/local/redis/stack.yml redis
+```
+
+### 4.4. 创建集群
+
+随便进入一个容器节点，并进入 /usr/local/bin/ 目录
+
+```sh
+redis-cli -a xxxxxxxx --cluster create redismaster1:6379 redismaster2:6379 redismaster3:6379 redisslave1:6379 redisslave2:6379 redisslave3:6379 --cluster-replicas 1
+```
+
+> `-a`的参数: 密码
+> replicas的参数 ```1``` ，表示每个master就有一个从节点
+> **注意:这里IP不能是 ```127.0.0.1``` ，而是局域网所能访问的IP**
+
+## 5. Redis Web
 
 <https://github.com/ErikDubbelboer/phpRedisAdmin>
 
@@ -280,11 +430,11 @@ docker stack deploy -c /usr/local/redis/stack.yml redis
 docker run -p15080:80 --rm --name redisweb --network=rebue -it -e REDIS_1_HOST=redis_master -e REDIS_1_NAME=redis_master -e REDIS_1_PORT=6379 -e REDIS_1_AUTH=xxxxxxxx erikdubbelboer/phpredisadmin
 ```
 
-## 4. ~~安装redis5集群~~
+## 6. ~~安装redis5集群~~
 
-### 4.1. 拉取redis镜像(同上)
+### 6.1. 拉取redis镜像(同上)
 
-### 4.2. 准备redis源文件
+### 6.2. 准备redis源文件
 
 从官网下载redis软件包
 
@@ -306,14 +456,14 @@ mkdir -p /usr/local/redis-cluster/conf
 cp /tmp/redis-5.0.5/redis.conf /usr/local/redis-cluster/conf
 ```
 
-### 4.3. 修改配置文件
+### 6.3. 修改配置文件
 
 ```sh
 sed -i 's/^bind 127.0.0.1$/bind 0.0.0.0/' /usr/local/redis-cluster/conf/redis.conf
 sed -i '/# cluster-enabled yes/acluster-enabled yes' /usr/local/redis-cluster/conf/redis.conf
 ```
 
-### 4.4. 准备集群中每个节点的配置文件
+### 6.4. 准备集群中每个节点的配置文件
 
 ```sh
 cd /usr/local/redis-cluster/conf/
@@ -337,7 +487,7 @@ sed -i 's/^port 6379$/port 7101/' 7101/redis.conf
 sed -i 's/^port 6379$/port 7102/' 7102/redis.conf
 ```
 
-### 4.5. 创建并运行容器
+### 6.5. 创建并运行容器
 
 **注：目前latest的版本是5.0.5**
 
@@ -353,7 +503,7 @@ docker run -d --net=host --name redis-b1 --restart=always -v /usr/local/redis-cl
 docker run -d --net=host --name redis-c1 --restart=always -v /usr/local/redis-cluster/conf/7102:/usr/local/etc/redis redis redis-server /usr/local/etc/redis/redis.conf
 ```
 
-### 4.6. 打开防火墙端口
+### 6.6. 打开防火墙端口
 
 ```sh
 firewall-cmd --zone=dmz --permanent --add-port=7000/tcp
@@ -364,7 +514,7 @@ firewall-cmd --zone=dmz --permanent --add-port=7101/tcp
 firewall-cmd --zone=dmz --permanent --add-port=7102/tcp
 ```
 
-### 4.7. 创建集群
+### 6.7. 创建集群
 
 - 进入任一个容器
 
@@ -379,7 +529,7 @@ redis-cli --cluster create --cluster-replicas 1 192.168.1.201:7000 192.168.1.201
 > replicas的参数 ```1``` ，表示每个master就有一个从节点
 > **注意:这里IP不能是 ```127.0.0.1``` ，而是局域网所能访问的IP**
 
-### 4.8. 检查集群是否安装成功
+### 6.8. 检查集群是否安装成功
 
 在宿主机上执行如下：
 
@@ -393,11 +543,11 @@ polkitd  28578  0.1  0.0  43252 10372 ?        Ssl  16:02   0:01 redis-server 0.
 polkitd  28704  0.1  0.0  43252 10368 ?        Ssl  16:02   0:01 redis-server 0.0.0.0:7102 [cluster]
 ```
 
-## 5. ~~安装redis4集群~~
+## 7. ~~安装redis4集群~~
 
-### 5.1. ~~拉取redis镜像(同上)~~
+### 7.1. ~~拉取redis镜像(同上)~~
 
-### 5.2. ~~准备redis源文件~~
+### 7.2. ~~准备redis源文件~~
 
 从官网下载redis软件包
 
@@ -420,14 +570,14 @@ mkdir -p /usr/local/redis-cluster/conf
 cp /tmp/redis-4.0.2/redis.conf /usr/local/redis-cluster/conf
 ```
 
-### 5.3. ~~修改配置文件~~
+### 7.3. ~~修改配置文件~~
 
 ```sh
 sed -i 's/^bind 127.0.0.1$/bind 0.0.0.0/' /usr/local/redis-cluster/conf/redis.conf
 sed -i '/# cluster-enabled yes/acluster-enabled yes' /usr/local/redis-cluster/conf/redis.conf
 ```
 
-### 5.4. ~~准备集群中每个节点的配置文件~~
+### 7.4. ~~准备集群中每个节点的配置文件~~
 
 ```sh
 cd /usr/local/redis-cluster/conf/
@@ -451,7 +601,7 @@ sed -i 's/^port 6379$/port 7101/' 7101/redis.conf
 sed -i 's/^port 6379$/port 7102/' 7102/redis.conf
 ```
 
-### 5.5. ~~制作集群管理的镜像~~
+### 7.5. ~~制作集群管理的镜像~~
 
 > **注意：其实可以不用制作镜像，直接用现成的，用类似下面这条命令**
 
@@ -459,7 +609,7 @@ sed -i 's/^port 6379$/port 7102/' 7102/redis.conf
 docker run -it --rm zvelo/redis-trib create --replicas 1 192.168.1.201:7000 192.168.1.201:7001 192.168.1.201:7002 192.168.1.201:7100 192.168.1.201:7101 192.168.1.201:7102
 ```
 
-#### 5.5.1. ~~创建集群管理的容器~~
+#### 7.5.1. ~~创建集群管理的容器~~
 
 ```sh
 docker run --net=host -it --name redis-trib centos /bin/bash
@@ -545,7 +695,7 @@ ruby --version
 gem install redis
 ```
 
-#### 5.5.2. ~~复制redis-trib.rb到容器~~
+#### 7.5.2. ~~复制redis-trib.rb到容器~~
 
 在主机中将 redis-trib.rb 文件复制到redis-trib容器中的 /usr/local/bin/ 目录下
 
@@ -553,13 +703,13 @@ gem install redis
 docker cp /tmp/redis-4.0.2/src/redis-trib.rb redis-trib:/usr/local/bin/
 ```
 
-#### 5.5.3. ~~提交修改生成新镜像~~
+#### 7.5.3. ~~提交修改生成新镜像~~
 
 ```sh
 docker commit -m "redis trib" -a "zbz" redis-trib zboss/redis-trib:v1.0.0
 ```
 
-### 5.6. ~~创建并运行容器~~
+### 7.6. ~~创建并运行容器~~
 
 ```sh
 # master
@@ -573,7 +723,7 @@ docker run -d --net=host --name redis-b1 --restart=always -v /usr/local/redis-cl
 docker run -d --net=host --name redis-c1 --restart=always -v /usr/local/redis-cluster/conf/7102:/usr/local/redis/conf redis /usr/local/redis/conf/redis.conf
 ```
 
-### 5.7. ~~打开防火墙端口~~
+### 7.7. ~~打开防火墙端口~~
 
 ```sh
 firewall-cmd --zone=dmz --permanent --add-port=7000/tcp
@@ -584,7 +734,7 @@ firewall-cmd --zone=dmz --permanent --add-port=7101/tcp
 firewall-cmd --zone=dmz --permanent --add-port=7102/tcp
 ```
 
-### 5.8. ~~创建集群~~
+### 7.8. ~~创建集群~~
 
 启动redis-trib容器
 
