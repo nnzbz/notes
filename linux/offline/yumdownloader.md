@@ -10,7 +10,7 @@
    yum install epel-release -y
    ```
 
-2. 安装
+2. 安装(如已有则不用安装)
 
    ```sh
    yum install yum-utils -y
@@ -21,8 +21,9 @@
 3. 下载httpd软件包并压缩
 
    ```sh
-   yumdownloader --resolve --destdir=~/httpd httpd
-   yumdownloader --resolve --destdir=~/httpd createrepo
+   mkdir httpd
+   yumdownloader --resolve --destdir=httpd httpd
+   yumdownloader --resolve --destdir=httpd createrepo
    tar -zcvf httpd.tar.gz ~/httpd
    ```
 
