@@ -8,6 +8,12 @@ ssh-keygen
 
 默认会生成 `~/.ssh/id_rsa.pub` 公钥和 `~/.ssh/id_rsa` 私钥两个文件
 
+## 控制权限
+
+```sh
+chmod 600 ~/.ssh/id_rsa
+```
+
 ## 上传公钥至服务器
 
 ```sh
