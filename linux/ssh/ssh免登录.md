@@ -11,7 +11,7 @@ ssh-keygen
 ## 上传公钥至服务器
 
 ```sh
-ssh-copy-id -i ~/.ssh/id_rsa.pub root@<服务器地址>
+cat ~/.ssh/id_rsa.pub | ssh xxx.xxx.xxx.xxx -pxxxxx "umask 077;mkdir -p .ssh;cat >> .ssh/authorized_keys"
 ```
 
 ## 测试是否免密码登录
