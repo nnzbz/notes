@@ -1,4 +1,4 @@
-# 翻墙安装androidSDK
+# 科学上网安装androidSDK
 
 ## 1. 首先取消方式一中设置的HTTP Proxy
 

@@ -43,7 +43,7 @@ sudo usermod -a -G vboxusers `whoami`
 2. 下载左手光标
    <https://www.gnome-look.org/content/show.php/Obsidian+(left+handed+version)?content=121197>
    或
-   <https://raw.githubusercontent.com/nnzbz/notes/master/linux/deepin/121197-Obsidian_L.tar.gz>(需要翻墙)
+   <https://raw.githubusercontent.com/nnzbz/notes/master/linux/deepin/121197-Obsidian_L.tar.gz>(需要科学上网)
 3. 解压目录到 `~/.icons` 或 `/usr/share/icons/`
 4. 在Deepin的外观设置界面看到这个光标主题，切换过去
    `Control Center` > `Personalization` > `Theme` > 选择 `Obsidian`
@@ -187,13 +187,13 @@ sudo vi /usr/share/applications/{文件名}.desktop
 ```txt
 [Desktop Entry]
 Encoding=UTF-8
-Name=eclipse  
-Comment=Eclipse IDE  
-Exec=/opt/eclipse/eclipse  
-Icon=/opt/eclipse/icon.xpm  
-Terminal=false  
-StartupNotify=true  
-Type=Application  
+Name=eclipse
+Comment=Eclipse IDE
+Exec=/opt/eclipse/eclipse
+Icon=/opt/eclipse/icon.xpm
+Terminal=false
+StartupNotify=true
+Type=Application
 Categories=Application;Development;
 ```
 

@@ -68,7 +68,7 @@ sudo apt install nautilus-admin
 
 - 三种鼠标主题
   - 下载 <https://www.gnome-look.org/content/show.php/Obsidian+(left+handed+version)?content=121197>
-  - 下载 <https://raw.githubusercontent.com/nnzbz/notes/master/linux/deepin/121197-Obsidian_L.tar.gz> (需要翻墙)
+  - 下载 <https://raw.githubusercontent.com/nnzbz/notes/master/linux/deepin/121197-Obsidian_L.tar.gz> (需要科学上网)
   - `apt-get install crystalcursors`
 - 如果是下载的，须将下载的文件解压到 `~/.icons/` (Deepin) or `/usr/share/icons/` (Ubuntu)
 - 利用之前安装的 `GNOME Tweak` 设置鼠标主题
