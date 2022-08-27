@@ -305,6 +305,8 @@ cluster-preferred-endpoint-type hostname
 cluster-announce-hostname redismaster1
 ```
 
+- 注意修改配置中的密码 xxxxxxxx
+
 复制配置文件到 `master2/slave1/slave2/slave3`
 
 ```sh
@@ -339,6 +341,11 @@ services:
       # 消除警告: The TCP backlog setting of 511 cannot be enforced because /proc/sys/net/core/somaxconn is set to the lower value of 128.
       - net.core.somaxconn=2048
     command: redis-server /usr/local/redis/redis.conf
+    deploy:
+      placement:
+        constraints:
+          # 部署的节点指定是app角色的
+          - node.labels.role==app
   master2:
     image: redis:alpine
     hostname: redismaster2
@@ -352,6 +359,11 @@ services:
       # 消除警告: The TCP backlog setting of 511 cannot be enforced because /proc/sys/net/core/somaxconn is set to the lower value of 128.
       - net.core.somaxconn=2048
     command: redis-server /usr/local/redis/redis.conf
+    deploy:
+      placement:
+        constraints:
+          # 部署的节点指定是app角色的
+          - node.labels.role==app
   master3:
     image: redis:alpine
     hostname: redismaster3
@@ -365,6 +377,11 @@ services:
       # 消除警告: The TCP backlog setting of 511 cannot be enforced because /proc/sys/net/core/somaxconn is set to the lower value of 128.
       - net.core.somaxconn=2048
     command: redis-server /usr/local/redis/redis.conf
+    deploy:
+      placement:
+        constraints:
+          # 部署的节点指定是app角色的
+          - node.labels.role==app
   slave1:
     image: redis:alpine
     hostname: redisslave1
@@ -375,6 +392,11 @@ services:
       # 不要放在/data/目录下，否则启动报错: Read-only file system，/data/目录是存放数据的目录
       - /usr/local/redis/slave1/:/usr/local/redis/:z
     command: redis-server /usr/local/redis/redis.conf
+    deploy:
+      placement:
+        constraints:
+          # 部署的节点指定是app角色的
+          - node.labels.role==app
   slave2:
     image: redis:alpine
     hostname: redisslave2
@@ -385,6 +407,11 @@ services:
       # 不要放在/data/目录下，否则启动报错: Read-only file system，/data/目录是存放数据的目录
       - /usr/local/redis/slave2/:/usr/local/redis/:z
     command: redis-server /usr/local/redis/redis.conf
+    deploy:
+      placement:
+        constraints:
+          # 部署的节点指定是app角色的
+          - node.labels.role==app
   slave3:
     image: redis:alpine
     hostname: redisslave3
@@ -395,6 +422,11 @@ services:
       # 不要放在/data/目录下，否则启动报错: Read-only file system，/data/目录是存放数据的目录
       - /usr/local/redis/slave3/:/usr/local/redis/:z
     command: redis-server /usr/local/redis/redis.conf
+    deploy:
+      placement:
+        constraints:
+          # 部署的节点指定是app角色的
+          - node.labels.role==app
 
 networks:
   default:
@@ -416,9 +448,8 @@ docker stack deploy -c /usr/local/redis/stack.yml redis
 redis-cli -a xxxxxxxx --cluster create redismaster1:6379 redismaster2:6379 redismaster3:6379 redisslave1:6379 redisslave2:6379 redisslave3:6379 --cluster-replicas 1
 ```
 
-> `-a`的参数: 密码
-> replicas的参数 ```1``` ，表示每个master就有一个从节点
-> **注意:这里IP不能是 ```127.0.0.1``` ，而是局域网所能访问的IP**
+- `-a`的参数: 密码
+- --cluster-replicas的参数 `1` ，表示每个master就有一个从节点
 
 ## 5. Redis Web
 
