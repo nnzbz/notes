@@ -60,7 +60,7 @@ WantedBy=multi-user.target
 
 ```sh
 chmod +x /etc/systemd/system/docker.service
-systemctl daemon-reload 
+systemctl daemon-reload
 ```
 
 5. 配置开机启动与启动

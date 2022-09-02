@@ -72,6 +72,12 @@ docker swarm join --token xxxxx <集群节点IP>:<PORT>
 
 可以直接复制到到要加入的机器上执行即可
 
+- 如果主机有多个网卡，拥有多个 IP，必须使用 --advertise-addr 指定 IP
+
+```sh
+docker swarm join --advertise-addr <IP>  --token xxxxx <集群节点IP>:<PORT>
+```
+
 #### 2.2.2. 作为 manager 节点加入
 
 在 manager 节点上执行
@@ -87,6 +93,12 @@ docker swarm join --token xxxxx <集群节点IP>:<PORT>
 ```
 
 可以直接复制到到要加入的机器上执行即可
+
+- 如果主机有多个网卡，拥有多个 IP，必须使用 --advertise-addr 指定 IP
+
+```sh
+docker swarm join --advertise-addr <IP>  --token xxxxx <集群节点IP>:<PORT>
+```
 
 ### 2.3. 添加管理
 
@@ -177,7 +189,7 @@ services:
 
   ```sh
   docker service ps nginx
-  
+
   ```
 
 - 查看单个服务启动失败的详情
@@ -285,5 +297,5 @@ docker service create \
 
 ```sh
 docker config create nginx1.conf /usr/local/nginx/nginx.conf
-docker service update --config-rm nginx.conf --config-add src=nginx1.conf,target=/etc/nginx/nginx.conf nginx 
+docker service update --config-rm nginx.conf --config-add src=nginx1.conf,target=/etc/nginx/nginx.conf nginx
 ```

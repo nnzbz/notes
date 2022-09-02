@@ -82,6 +82,15 @@ systemctl enable docker
 systemctl start docker
 ```
 
+## 查看docker系统日志
+
+```sh
+# CentOS
+jounarlctl -u docker -f
+# Ubuntu
+tail -f /var/log/upstart/docker.log
+```
+
 ## 4. 镜像
 
 ### 4.1. 搜索仓库的镜像
@@ -405,7 +414,7 @@ docker inspect 【container name】| grep LogPath | cut -d ':' -f 2 | cut -d ','
   Redirecting to /bin/systemctl start docker.service
   ```
 
-  可以设置开机启动  
+  可以设置开机启动
 
   ```sh
   systemctl enable docker

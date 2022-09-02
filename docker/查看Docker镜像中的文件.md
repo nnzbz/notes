@@ -10,7 +10,7 @@ tar -xvf nginx.tar
 ## 创建容器并运行的方式
 
 ```sh
-docker run -it --entrypoint sh nginx:latest
+docker run --rm -it --entrypoint sh nginx:latest
 ```
 
 ## 进入容器的方式
