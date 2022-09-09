@@ -150,7 +150,7 @@ scp -P 2222 -r root@www.vpser.net:/root/lnmp0.4/ /home/lnmp0.4/
 find / -name filename
 ```
 
-- -type d/f 
+- -type d/f
   查找的类型是目录/文件
 
 #### 4.5.2. 查找内容
@@ -280,6 +280,10 @@ crontab -l
 crontab -r
 ```
 
+### 7.5. 查看执行任务是否出错
+
+cron的日志存放在 `/var/log/cron`，默认邮件日志存放在 `/var/spool/mail/root` (root账户)
+
 ## 8. 创建软硬链接
 
 - 链接分为有软链接(symbolic link)和硬链接(hard link)
@@ -327,7 +331,7 @@ umount /mnt/usb_disk
 ## 10. 自动挂载
 
 - 查看磁盘分区的UUID
-  
+
   ```sh
   sudo blkid
   ```
@@ -346,7 +350,7 @@ umount /mnt/usb_disk
   - 第6列设置是否开机的时候使用fsck检验所挂载的磁盘，置0为不检验，置1，2为检验，但置2盘比置1的盘晚检验。
 
 - 检验
-  
+
   ```sh
   mount -a
   df -h
