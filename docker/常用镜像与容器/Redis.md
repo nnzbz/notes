@@ -317,7 +317,7 @@ cp /usr/local/redis/master1/redis.conf /usr/local/redis/slave2/
 cp /usr/local/redis/master1/redis.conf /usr/local/redis/slave3/
 ```
 
-修改配置文件中的 `redismaster1` 为对应的主机名
+- 注意修改配置文件中的 `redismaster1` 为对应的主机名
 
 ### 4.2. Docker Compose
 
@@ -346,6 +346,9 @@ services:
         constraints:
           # 部署的节点指定是app角色的
           - node.labels.role==app
+    logging:
+      options:
+        max-size: 50m
   master2:
     image: redis:alpine
     hostname: redismaster2
@@ -364,6 +367,9 @@ services:
         constraints:
           # 部署的节点指定是app角色的
           - node.labels.role==app
+    logging:
+      options:
+        max-size: 50m
   master3:
     image: redis:alpine
     hostname: redismaster3
@@ -382,6 +388,9 @@ services:
         constraints:
           # 部署的节点指定是app角色的
           - node.labels.role==app
+    logging:
+      options:
+        max-size: 50m
   slave1:
     image: redis:alpine
     hostname: redisslave1
@@ -397,6 +406,9 @@ services:
         constraints:
           # 部署的节点指定是app角色的
           - node.labels.role==app
+    logging:
+      options:
+        max-size: 50m
   slave2:
     image: redis:alpine
     hostname: redisslave2
@@ -412,6 +424,9 @@ services:
         constraints:
           # 部署的节点指定是app角色的
           - node.labels.role==app
+    logging:
+      options:
+        max-size: 50m
   slave3:
     image: redis:alpine
     hostname: redisslave3
@@ -427,6 +442,9 @@ services:
         constraints:
           # 部署的节点指定是app角色的
           - node.labels.role==app
+    logging:
+      options:
+        max-size: 50m
 
 networks:
   default:
@@ -445,11 +463,16 @@ docker stack deploy -c /usr/local/redis/stack.yml redis
 随便进入一个容器节点，并进入 /usr/local/bin/ 目录
 
 ```sh
-redis-cli -a xxxxxxxx --cluster create redismaster1:6379 redismaster2:6379 redismaster3:6379 redisslave1:6379 redisslave2:6379 redisslave3:6379 --cluster-replicas 1
+redis-cli -a 'xxxxxxxx' --cluster create redismaster1:6379 redismaster2:6379 redismaster3:6379 redisslave1:6379 redisslave2:6379 redisslave3:6379 --cluster-replicas 1
 ```
 
 - `-a`的参数: 密码
 - --cluster-replicas的参数 `1` ，表示每个master就有一个从节点
+
+如果出现如下错误
+> Node redismaster2:6379 replied with error:
+> ERR Invalid node address specified: redismaster1:6379
+目前的解决方案是将上面命令中的hostname改成ip(各个节点IP的获取可以在容器内ping一下获得)
 
 ## 5. Redis Web
 
