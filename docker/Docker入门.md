@@ -11,9 +11,19 @@
 - CentOS
   <https://docs.docker.com/engine/install/centos/>
 
+  ```sh
+  yum install -y yum-utils
+  yum-config-manager \
+    --add-repo \
+    https://download.docker.com/linux/centos/docker-ce.repo
+  yum install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
+  systemctl start docker
+  systemctl enable docker
+  ```
+
   当服务器连接docker官方网站速度非常缓慢，可以参考以下地址，更换docker-ce.repo为国内源
 
-  https://mirror.tuna.tsinghua.edu.cn/help/docker-ce/
+  <https://mirror.tuna.tsinghua.edu.cn/help/docker-ce/>
 
   国内源更换完成后，安装还是使用官网上的命令操作：
 
