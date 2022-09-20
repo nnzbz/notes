@@ -19,24 +19,25 @@ vi /etc/lsyncd.conf
 
 ```ini
 settings {
-    logfile = "/tmp/lsyncd.log",        # 日志
-    statusFile = "/tmp/lsyncd.status",  # 记录同步的文件和目录
-    maxProcesses = 1,                   # 同步进程的最大个数
+    logfile = "/var/log/lsyncd/lsyncd.log",         -- 日志
+    statusFile = "/var/log/lsyncd/lsyncd.status",   -- 记录同步的文件和目录
+    maxProcesses = 1                                -- 同步进程的最大个数
 }
-targets = {                             # 目的主机的列表
-    'xxx.xxx.xxx.xxx:/usr/local',
-    'xxx.xxx.xxx.xxx:/usr/local'
+targets = {                                         -- 目的主机的列表
+    'xxx.xxx.xxx.xxx',
+    'xxx.xxx.xxx.xxx'
 }
-for _, target in ipairs( targets )      # 循环同步的目的主机
+for _, target in ipairs( targets )                  -- 循环同步的目的主机
 do
     sync {
-        source = "/usr/local",          # 源地址
-        target = target,                # 目的地址
-        exclude = { "logs" },           # 排除不需要同步的文件或文件夹
+        default.rsync,
+        source = "/usr/local",                      -- 源地址
+        target = target .. ":/usr/local",           -- 目的地址
+        exclude = { "logs/*" },                     -- 排除不需要同步的文件或文件夹
         rsync = {
             archive = true,
             compress = true
-        }
+        },
         ssh = {
             port = xxxxx
         }
@@ -49,4 +50,18 @@ end
 ```sh
 systemctl start lsyncd
 systemctl enable lsyncd
+```
+
+## 查看启动状态
+
+```sh
+systemctl status lsyncd
+```
+
+
+## 查看日志
+
+```sh
+cat /var/log/lsyncd/lsyncd.log
+cat /var/log/lsyncd/lsyncd.status
 ```
