@@ -89,6 +89,6 @@ this.$router.go(100)
 this.$router.go(-100)
 ```
 
-## 5. this.router.forward() 前进一步
+## 5. this.$router.forward() 前进一步
 
-## 6. this.router.back() 回退一步
+## 6. this.$router.back() 回退一步

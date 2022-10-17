@@ -317,7 +317,7 @@ cp /usr/local/redis/master1/redis.conf /usr/local/redis/slave2/
 cp /usr/local/redis/master1/redis.conf /usr/local/redis/slave3/
 ```
 
-- 注意修改配置文件中的 `redismaster1` 为对应的主机名
+- 注意修改配置文件中的 `redismaster1` 为对应的主机名(redismaster2/redismaster3/redismslave1/redismslave2/redismslave3)
 
 ### 4.2. Docker Compose
 

@@ -18,6 +18,8 @@ version: '3.9'
 services:
   db:
     image: postgres
+    ports:
+      - 5432:5432
     environment:
       # 用户名
       - POSTGRES_USER=postgres
@@ -30,6 +32,7 @@ services:
         constraints:
           # 部署的节点指定是db角色的
           - node.labels.role==db
+          #- node.hostname == db01
   adminer:
     image: adminer
     ports:
@@ -42,6 +45,7 @@ services:
         constraints:
           # 部署的节点指定是db角色的
           - node.labels.role==db
+          #- node.hostname == db01
 
 networks:
   default:
