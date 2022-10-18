@@ -345,7 +345,7 @@ services:
       placement:
         constraints:
           # 部署的节点指定是app角色的
-          - node.labels.role==app
+          - node.hostname==app01
     logging:
       options:
         max-size: 50m
@@ -366,7 +366,7 @@ services:
       placement:
         constraints:
           # 部署的节点指定是app角色的
-          - node.labels.role==app
+          - node.hostname==app02
     logging:
       options:
         max-size: 50m
@@ -387,7 +387,7 @@ services:
       placement:
         constraints:
           # 部署的节点指定是app角色的
-          - node.labels.role==app
+          - node.hostname==app03
     logging:
       options:
         max-size: 50m
@@ -405,7 +405,7 @@ services:
       placement:
         constraints:
           # 部署的节点指定是app角色的
-          - node.labels.role==app
+          - node.hostname==app02
     logging:
       options:
         max-size: 50m
@@ -423,7 +423,7 @@ services:
       placement:
         constraints:
           # 部署的节点指定是app角色的
-          - node.labels.role==app
+          - node.hostname==app03
     logging:
       options:
         max-size: 50m
@@ -441,7 +441,7 @@ services:
       placement:
         constraints:
           # 部署的节点指定是app角色的
-          - node.labels.role==app
+          - node.hostname==app01
     logging:
       options:
         max-size: 50m
