@@ -20,6 +20,11 @@ git config --global user.email "nnzbz@qq.com"
 # 保存用户名和密码，这样就不用每次push时都要输入用户名和密码
 git config --global credential.helper store
 # 统一设置LF格式
+git config --global core.eol lf
+# 设置commit和checkout是否转换换行符
+# true commit时转换为LF，checkout时转换为CRLF
+# false commit/checkout均不转换
+# input commit时转换为LF，checkout时不转换
 git config --global core.autocrlf input
 # 设置代理
 git config --global http.proxy 'socks5://127.0.0.1:12345'
@@ -345,7 +350,7 @@ git config --global --add core.compression -1
 或
 
 ```ini
-vi ~/.gitconfig 
+vi ~/.gitconfig
 
 ----------------------------------------------------
 
@@ -365,18 +370,18 @@ vi ~/.gitconfig
 ##### 6.3.1.2. 修改git的内存限制
 
 ```ini
-vi ~/.gitconfig 
+vi ~/.gitconfig
 
 ----------------------------------------------------
 
 ....
 
-[core] 
-    packedGitLimit = 512m 
-    packedGitWindowSize = 512m 
-[pack] 
-    deltaCacheSize = 2047m 
-    packSizeLimit = 2047m 
+[core]
+    packedGitLimit = 512m
+    packedGitWindowSize = 512m
+[pack]
+    deltaCacheSize = 2047m
+    packSizeLimit = 2047m
     windowMemory = 2047m
 
 ....
