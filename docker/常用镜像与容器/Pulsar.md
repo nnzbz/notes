@@ -18,6 +18,7 @@ version: '3.9'
 services:
   svr:
     image: apachepulsar/pulsar:2.10.1
+    hostname: pulsar
 #    ports:
 #      - 6650:6650
 #      - 8080:8080
