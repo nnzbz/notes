@@ -6,36 +6,40 @@
 
 ### 1.1. 隐藏文件/目录
 
-`[Settings...]` -> 输入 `file types` 搜索 -> `[File Types]` -> `[Ignore files and folders:]` -> 添加
+`Settings...` -> 输入 `file types` 搜索 -> `File Types` -> `Ignore files and folders:` -> 添加
 
 ![隐藏文件](隐藏文件.png)
 
 ### 1.2. 竖向对齐
 
-`[Settings...]` -> `[Editor]` -> `[Code Style]` -> `[Java]` -> `[Wrapping and Braces]` -> `[Group declarations]` -> 勾选 `Align fields in columns` 和 `Align variables in columns` 
+`Settings...` -> `Editor` -> `Code Style` -> `Java` -> `Wrapping and Braces` -> `Group declarations` -> 勾选 `Align fields in columns` 和 `Align variables in columns`
 
 ### 1.3. 格式化自动折行
 
-`[Settings...]` -> `[Editor]` -> `[Code Style]` -> `[java]` -> `[Wrapping and Braces]` -> `Hard wrap at`，设置 `180`
+`Settings...` -> `Editor` -> `Code Style` -> `java` -> `Wrapping and Braces` -> `Hard wrap at`，设置 `180`
 
-`[Settings...]` -> `[Editor]` -> `[Code Style]` -> `[XML]` -> `[Other]` -> `Hard wrap at`，设置 `180`
+`Settings...` -> `Editor` -> `Code Style` -> `XML` -> `Other` -> `Hard wrap at`，设置 `180`
 
 ### 1.4. 识别忽略格式化的标记
 
-`[Settings...]` -> `[Editor]` -> `[Code Style]` -> `Formatter Control` > 勾选 `Enable formatter markers in comments`
+`Settings...` -> `Editor` -> `Code Style` -> `Formatter Control` > 勾选 `Enable formatter markers in comments`
 
 
 ### 1.5. 过滤不看一些无关文件
 
-`[Settings]` -> `[Editor]` -> `[File Types]` -> `Ignore files and folders` -> 在末尾添加如下内容:
+`Settings` -> `Editor` -> `File Types` -> `Ignore files and folders` -> 在末尾添加如下内容:
 
 ```ini
 *.iml;*.idea;.project;.settings;.classpath;
 ```
 
-### 1.6. 热更新
+### 1.6. 调试时启用Maven项目中 `provided` 的依赖
 
-[Run] -> [Edit Configurations] -> Running Application Update Policies -> 两项全部选择 `Update classes and resources`
+`Run` -> `Edit Configurations` -> `Modify options` -> 勾选 `Add dependencies with "provided" scope to classpath`
+
+### 1.7. 热更新
+
+`Run` -> `Edit Configurations` -> `Running Application Update Policies` -> 两项全部选择 `Update classes and resources`
 
 ## 2. 插件
 
@@ -44,9 +48,9 @@
 - 插件地址:
   <http://plugins.jetbrains.com/plugin/6546?pr=idea&offset=15&max=15#comments_pan>
 - 安装
-  [Setting] -> [Plugins] -> `Install plugin from disk`，选中下载好的安装包【EclipseFormatter.zip】安装，重启后生效
+  `Setting` -> `Plugins` -> `Install plugin from disk`，选中下载好的安装包【EclipseFormatter.zip】安装，重启后生效
 - 配置
-  [Setting] -> [Eclipse Code Formatter]，勾选 `Use the Eclipse-code-formatter`，并在 `Eclipse Java Formatter config file` 选择Eclipse用的code-style.xml文件，这个选项会决定格式化代码的方式。
+  `Setting` -> `Eclipse Code Formatter`，勾选 `Use the Eclipse-code-formatter`，并在 `Eclipse Java Formatter config file` 选择Eclipse用的code-style.xml文件，这个选项会决定格式化代码的方式。
   同时配置Import order的From File也为Eclipse用的code-style.xml文件，这个选项会决定组织import区域的方式。
 - 使用插件
   使用Intellij的格式化快捷键”Ctrl+ALT+L”即可进行格式化。如果出错会输出提示到 **Event Log** 里，如果看到 `xxx formatted sucessfully by Eclipse code formatter` 则表示格式化成功！
