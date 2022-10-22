@@ -4,9 +4,13 @@
 
 ## 1. 设置
 
-### 1.1. 隐藏文件/目录
+### 1.1. 忽略显示文件/目录
 
 `Settings...` -> 输入 `file types` 搜索 -> `File Types` -> `Ignore files and folders:` -> 添加
+
+```ini
+*.iml;*.idea;.project;.settings;.classpath;
+```
 
 ![隐藏文件](隐藏文件.png)
 
@@ -24,20 +28,11 @@
 
 `Settings...` -> `Editor` -> `Code Style` -> `Formatter Control` > 勾选 `Enable formatter markers in comments`
 
-
-### 1.5. 过滤不看一些无关文件
-
-`Settings` -> `Editor` -> `File Types` -> `Ignore files and folders` -> 在末尾添加如下内容:
-
-```ini
-*.iml;*.idea;.project;.settings;.classpath;
-```
-
-### 1.6. 调试时启用Maven项目中 `provided` 的依赖
+### 1.5. 调试时启用Maven项目中 `provided` 的依赖
 
 `Run` -> `Edit Configurations` -> `Modify options` -> 勾选 `Add dependencies with "provided" scope to classpath`
 
-### 1.7. 热更新
+### 1.6. 热更新
 
 `Run` -> `Edit Configurations` -> `Running Application Update Policies` -> 两项全部选择 `Update classes and resources`
 
