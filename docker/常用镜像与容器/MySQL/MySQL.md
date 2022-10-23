@@ -163,7 +163,11 @@ services:
     #   placement:
     #     constraints:
     #       #该hostname为指定容器在哪个主机启动
-    #       - node.hostname == ecs2d8ed9c368b9
+    #       - node.hostname == db1
+    logging:
+      options:
+        max-size: 50m
+
 
 secrets:
   mysql_root_password:
@@ -277,40 +281,6 @@ read_only=on
 #replicate-ignore-db=performance_schema
 ```
 
-#### 2.5.3. ~~nginx反向代理的配置文件~~
-
-```sh
-vi /usr/local/mysql/nginx.conf
-```
-
-```ini{.line-numbers}
-user  nginx;
-worker_processes  auto;
-
-error_log  /var/log/nginx/error.log notice;
-pid        /var/run/nginx.pid;
-
-
-events {
-    worker_connections  1024;
-}
-
-stream {
-  upstream mysql {
-    # backup为备用mysql，当mysql1故障后自动切换mysql2，达到主备效果
-    server mysql1:3306 max_fails=3 fail_timeout=30s;
-    server mysql2:3306 backup;
-  }
-
-  server {
-    listen                3306;
-    proxy_connect_timeout 3s;
-    proxy_timeout         6s;
-    proxy_pass            mysql;
-  }
-}
-```
-
 #### 2.5.4. `Docker Compose`
 
 ```sh
@@ -350,6 +320,9 @@ services:
     #     constraints:
     #       #该hostname为指定容器在哪个主机启动
     #       - node.hostname == db1
+    logging:
+      options:
+        max-size: 50m
   mysql2:
     image: mysql:5
     # 注意: 如果是arm架构服务器，请用下面这个镜像
@@ -382,6 +355,10 @@ services:
     #     constraints:
     #       #该hostname为指定容器在哪个主机启动
     #       - node.hostname == db2
+    logging:
+      options:
+        max-size: 50m
+
 
   phpmyadmin:
     image: phpmyadmin
