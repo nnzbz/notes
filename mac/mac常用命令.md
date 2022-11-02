@@ -2,19 +2,37 @@
 
 [TOC]
 
-## 1. 查看本机IP地址
+## 1. 环境变量PATH
+
+Mac系统的环境变量，加载顺序为：
+
+1. /etc/profile         (系统级)
+2. /etc/paths           (系统级)
+3. ~/.bash_profile      (当前用户级)
+4. ~/.bash_login        (当前用户级)
+5. ~/.profile           (当前用户级)
+6. ~/.bashrc            (当前用户级)
+
+PATH的语法为如下
+
+```ini
+#中间用冒号隔开
+export PATH=$PATH:<PATH 1>:<PATH 2>:<PATH 3>:------:<PATH N>
+```
+
+## 2. 查看本机IP地址
 
 ```sh
 ifconfig | grep "inet " | grep -v 127.0.0.1
 ```
 
-## 2. 查看所有端口号
+## 3. 查看所有端口号
 
 ```sh
 lsof -n -P -i TCP -s TCP:LISTEN
 ```
 
-## 3. 将iso转换成dmg 转iso 用
+## 4. 将iso转换成dmg 转iso 用
 
 UDRW 替换为 UDTO
 
@@ -34,7 +52,7 @@ sudo hdiutil convert -format UDRW -o /linux.dmg kali.iso
  created: /linux.dmg
 ```
 
-## 4. 格式化
+## 5. 格式化
 
 ```sh
 # 格式化(注意usb_name命名不能用小写，要大写)
@@ -43,7 +61,7 @@ sudo diskutil eraseDisk exFAT usb_name MBRFormat /dev/disk[n]
 
 exFAT可为MS-DOS或FAT32
 
-## 5. 刻录ISO到U盘
+## 6. 刻录ISO到U盘
 
 ```sh
 # 找出U盘挂载路径
