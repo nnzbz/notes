@@ -27,6 +27,10 @@ vi /usr/local/xxl-job-admin/application.yml
 ```
 
 ```yml
+xxl:
+  job:
+    # 调度中心通讯TOKEN [选填]：非空时启用
+    accessToken:
 spring:
   # 数据库连接
   datasource:
@@ -58,7 +62,7 @@ docker run --name xxl-job-admin -dp <宿主机端口号>:8080 -v /usr/local/xxl-
 Mac用下面的命令（因为Mac下只能映射 `~/` 下的文件）
 
 ```sh
-docker run --name xxl-job-admin -dp <宿主机端口号>:8080 -v ~/docker/xxl-job-admin/application.yml:/application.yml --restart=always xuxueli/xxl-job-admin:2.3.0
+docker run --name xxl-job-admin -dp <宿主机端口号>:8080 -v ~/docker/xxl-job-admin/application.yml:/application.yml --restart=always xuxueli/xxl-job-admin:2.3.1
 ```
 
 - -v
@@ -67,7 +71,7 @@ docker run --name xxl-job-admin -dp <宿主机端口号>:8080 -v ~/docker/xxl-jo
 - <宿主机端口号>
   暴露出来可供网页访问的端口，我们默认设置为6060
 - <指定版本>
-  必须填，因为目前 xxl_job 没有 latest 的 tag，目前最新的版本是 `2.3.0`
+  必须填，因为目前 xxl_job 没有 latest 的 tag，目前最新的版本是 `2.3.1`
 - JAVA_OPTS
   如需自定义 JVM内存参数 等配置，可通过 "-e JAVA_OPTS" 指定，参数格式 JAVA_OPTS="-Xmx512m"
 
@@ -83,8 +87,8 @@ vi /usr/local/xxl-job-admin/stack.yml
 ```yml{.line-numbers}
 version: "3.9"
 services:
-  xxl-job-admin:
-    image: xuxueli/xxl-job-admin:2.3.0
+  svr:
+    image: xuxueli/xxl-job-admin:2.3.1
     ports:
       - 11080:8080
     environment:
@@ -92,6 +96,21 @@ services:
       - TZ=CST-8
     volumes:
       - /usr/local/xxl-job-admin/application.yml:/application.yml
+    deploy:
+      placement:
+        constraints:
+          # 部署的节点指定是app角色的
+          - node.labels.role==app
+          #该hostname为指定容器在哪个主机启动
+    #      - node.hostname == db2
+    logging:
+      options:
+        max-size: 50m
+
+networks:
+  default:
+    external: true
+    name: rebue
 ```
 
 ### 5.2. 部署

@@ -189,7 +189,7 @@ docker stack deploy -c /usr/local/mysql/stack.yml mysql
 
 ### 2.5. Swarm集群
 
-#### 2.5.1. 创建 secret
+#### 2.5.1. ~~创建 secret~~
 
 ```sh
 # 两种方式
@@ -306,7 +306,7 @@ services:
     environment:
       # 最好使用此设定时区，其它镜像也可以使用
       - TZ=CST-8
-      - MYSQL_ROOT_PASSWORD_FILE=/run/secrets/mysql_root_password
+      #- MYSQL_ROOT_PASSWORD_FILE=/run/secrets/mysql_root_password
     # max_connections设置最大连接数，默认151太小
     # skip-name-resolve为了加快连接速度，禁用反向域名解析，这样授权表中的host字段就不能用IP
     command: --default-time-zone='+8:00'
@@ -315,6 +315,8 @@ services:
             --collation-server=utf8mb4_general_ci
             --max_connections=5000
             --skip-name-resolve
+            # 首次进入容器不用密码登录
+            --skip-grant-tables
     # deploy:
     #   placement:
     #     constraints:
@@ -341,7 +343,7 @@ services:
     environment:
       # 最好使用此设定时区，其它镜像也可以使用
       - TZ=CST-8
-      - MYSQL_ROOT_PASSWORD_FILE=/run/secrets/mysql_root_password
+      #- MYSQL_ROOT_PASSWORD_FILE=/run/secrets/mysql_root_password
     # max_connections设置最大连接数，默认151太小
     # skip-name-resolve为了加快连接速度，禁用反向域名解析，这样授权表中的host字段就不能用IP
     command: --default-time-zone='+8:00'
@@ -350,6 +352,8 @@ services:
             --collation-server=utf8mb4_general_ci
             --max_connections=5000
             --skip-name-resolve
+            # 首次进入容器不用密码登录
+            --skip-grant-tables
     # deploy:
     #   placement:
     #     constraints:
@@ -359,20 +363,9 @@ services:
       options:
         max-size: 50m
 
-
-  phpmyadmin:
-    image: phpmyadmin
-    environment:
-      - PMA_ARBITRARY=1
-    # deploy:
-    #   placement:
-    #     constraints:
-    #       #该hostname在哪个label约束启动
-    #       - node.labels.role == web
-
-secrets:
-  mysql_root_password:
-    external: true
+#secrets:
+#  mysql_root_password:
+#    external: true
 volumes:
   mysql1data:
   mysql2data:
@@ -398,10 +391,14 @@ docker stack deploy -c /usr/local/mysql/stack.yml mysql
 docker ps | grep mysql
 # 进入mysql容器
 docker exec -it <容器id> bash
-# 查看密码
-cat /run/secrets/mysql_root_password
 # 进入 mysql
-mysql -u root -p
+mysql -uroot
+```
+
+```mysql
+# 设置xxxxxxxx为密码，注意不能超过32位
+update mysql.user set authentication_string=password('xxxxxxxx') where user='root';
+flush privileges;
 ```
 
 2. 在 mysql1 中执行下面的命令
@@ -427,6 +424,23 @@ show slave status\G;
 - 如果开启成功，返回结果如下图:
 
 ![主从开启成功](主从开启成功.png)
+
+4. 创建账户、数据库并授权
+
+分别对 mysql1 执行下面命令
+
+```sh
+# 查看mysql的容器id
+docker ps | grep mysql
+# 进入mysql容器
+docker exec -it <容器id> /bin/sh
+# 进入 mysql
+mysql -u root -p
+# 创建用户并授权(xxx是账户名)
+GRANT ALL ON xxx.* to 'xxx'@'%' identified by '密码';
+```
+
+
 
 #### 2.5.7. ~~开启主主同步~~
 

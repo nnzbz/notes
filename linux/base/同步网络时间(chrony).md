@@ -52,7 +52,7 @@ server参数详解
   最大间隔，默认值是 `9`，代表 `512s`
 - iburst
   在头四次 NTP 请求以 2s 或者更短的间隔，而不是以 minpoll x 指定的最小间隔
-  
+
 ## 启用 `chrony`
 
 ```sh
@@ -84,6 +84,8 @@ local stratum 10
 ```sh
 # 重新启动服务
 systemctl restart chronyd
+# 设置开机启动
+systemctl enable chronyd
 ```
 
 ## 查看

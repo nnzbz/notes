@@ -92,6 +92,12 @@ systemctl enable docker
 systemctl start docker
 ```
 
+## 升级
+
+```sh
+yum upgrade -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
+```
+
 ## 查看docker系统日志
 
 ```sh

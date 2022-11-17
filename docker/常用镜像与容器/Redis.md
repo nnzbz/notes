@@ -51,7 +51,7 @@ vi /usr/local/redis/stack-standalone.yml
 ```yml{.line-numbers}
 version: "3.9"
 services:
-  redis:
+  svr:
     image: redis:alpine
     environment:
       # 最好使用此设定时区，其它镜像也可以使用
@@ -63,6 +63,9 @@ services:
       # 消除警告: The TCP backlog setting of 511 cannot be enforced because /proc/sys/net/core/somaxconn is set to the lower value of 128.
       - net.core.somaxconn=2048
     command: redis-server /usr/local/redis/conf/redis.conf --appendonly yes
+    logging:
+      options:
+        max-size: 50m
 networks:
   default:
     external: true

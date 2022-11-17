@@ -33,6 +33,9 @@ services:
           # 部署的节点指定是db角色的
           - node.labels.role==db
           #- node.hostname == db01
+    logging:
+      options:
+        max-size: 50m
   adminer:
     image: adminer
     ports:
@@ -46,6 +49,9 @@ services:
           # 部署的节点指定是db角色的
           - node.labels.role==db
           #- node.hostname == db01
+    logging:
+      options:
+        max-size: 50m
 
 networks:
   default:
