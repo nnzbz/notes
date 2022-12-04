@@ -12,13 +12,13 @@
 
 ## 3. Amphetamine
 
-防止mac休眠的软件
+防止mac休眠的软件
 
 ## 4. meld
 
 跨平台的比较软件，在ubuntu和mac下都可以使用
 
-先安装brew，然后
+先安装brew，然后
 
 ```sh
 brew install Caskroom/cask/xquartz
