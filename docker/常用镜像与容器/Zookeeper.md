@@ -27,7 +27,55 @@ docker run --name zoo \
 | 2888 | follower port    |
 | 3888 | election port    |
 
-## 2. Swarm
+
+## Swarm 单机
+
+### 2.1. 准备部署文件
+
+```sh
+mkdir /usr/local/zookeeper/
+vi /usr/local/zookeeper/stack.yml
+```
+
+```sh{.line-numbers}
+version: '3.9'
+
+services:
+  zoo:
+    image: zookeeper
+    hostname: zoo
+    #ports:
+    #  - 2181:2181
+    environment:
+      # 嵌入的Admin服务器，默认为true
+      - ZOO_ADMINSERVER_ENABLED=false
+      # 开放监控客户端的白名单(EFAK监控需要打开)
+      - ZOO_4LW_COMMANDS_WHITELIST=*
+      - TZ=CST-8
+    volumes:
+      - zoodata:/data:z
+      - zoodatalog:/datalog:z
+    logging:
+      options:
+        max-size: 50m
+
+volumes:
+  zoodata:
+  zoodatalog:
+
+networks:
+  default:
+    external: true
+    name: rebue
+```
+
+### 2.2. 部署
+
+```sh
+docker stack deploy -c /usr/local/zookeeper/stack.yml zookeeper
+```
+
+## 2. Swarm集群
 
 ### 2.1. 准备部署文件
 
@@ -56,6 +104,9 @@ services:
     volumes:
       - zoo1data:/data:z
       - zoo1datalog:/datalog:z
+    logging:
+      options:
+        max-size: 50m
   zoo2:
     image: zookeeper
     hostname: zoo2
@@ -72,6 +123,9 @@ services:
     volumes:
       - zoo2data:/data:z
       - zoo2datalog:/datalog:z
+    logging:
+      options:
+        max-size: 50m
   zoo3:
     image: zookeeper
     hostname: zoo3
@@ -88,6 +142,9 @@ services:
     volumes:
       - zoo3data:/data:z
       - zoo3datalog:/datalog:z
+    logging:
+      options:
+        max-size: 50m
 
 volumes:
   zoo1data:
