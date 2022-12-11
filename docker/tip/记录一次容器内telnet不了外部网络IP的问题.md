@@ -8,9 +8,31 @@
 
 此方案是LZ银行解决的，本人未能到现场具体排查与核实，先行记录下来
 
+- 临时配置
+
 ```sh
 sysctl -w net.bridge.bridge-nf-call-ip6tables=1
-sVsctl-w net.bridge.bridge-nf-cal1-iptables=1
-sysctl-w net.bridge.bridge-nf-call-arptables=1
-sysctl -w net.ipv4.ip forward=1
+sysctl -w net.bridge.bridge-nf-call-iptables=1
+sysctl -w net.bridge.bridge-nf-call-arptables=1
+sysctl -w net.ipv4.ip_forward=1
+```
+
+- 永久配置
+
+```sh
+vi /etc/sysctl.conf
+```
+
+```ini
+....
+net.ipv4.ip_forward = 1
+net.bridge.bridge-nf-call-iptables = 1
+net.bridge.bridge-nf-call-ip6tables = 1
+net.bridge.bridge-nf-call-arptables = 1
+....
+```
+
+```sh
+# 加载并查看是否设置成功
+sysctl -p
 ```
