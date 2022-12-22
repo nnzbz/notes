@@ -183,7 +183,7 @@ find . -name "zboss*" -exec rename 's/zboss/rebue/' {} \;
 sudo chown -R $(whoami) /usr/local/sbin /usr/local/share/man/man7
 # 安装rename
 brew install rename
-# 将目录权限改回来
+# 将目录权限改回来
 sudo chown -R root /usr/local/sbin /usr/local/share/man/man7
 ```
 
