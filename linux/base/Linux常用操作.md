@@ -141,7 +141,6 @@ scp -P 2222 -r root@www.vpser.net:/root/lnmp0.4/ /home/lnmp0.4/
 
 > **注意：如果路径中有特殊字符，用双引号把路径括起来，并且在特殊字符前加上 ```\\``` 。**
 
-
 ### 4.5. 查找文件及内容
 
 #### 4.5.1. 查找文件
@@ -190,7 +189,19 @@ sudo chown -R root /usr/local/sbin /usr/local/share/man/man7
 
 > **注意:{}与\之间一定要留有空格**
 
-### 4.7. 批量删除
+### 4.7. 批量修改文件内容
+
+```sh
+sed -i "s/原字符串/新字符串/g" `grep 原字符串 -rl 所在目录`
+```
+
+- 例如：把mahuinan替换 为huinanma
+
+```sh
+sed -i "s/mahuinan/huinanma/g" 'grep mahuinan -rl /www'
+```
+
+### 4.8. 批量删除
 
 批量删除目录下级的多个目录或文件
 
