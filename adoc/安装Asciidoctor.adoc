@@ -1,0 +1,161 @@
+= 安装Asciidoctor
+:toc:
+:source-highlighter: highlightjs
+
+== 升级 Ruby
+
+```bash
+ruby -v
+brew update
+brew install ruby
+echo 'export PATH="/usr/local/opt/ruby/bin:$PATH"' >> ~/.zshrc
+echo 'export PATH="/usr/local/lib/ruby/gems/3.1.0/bin:$PATH"' >> ~/.zshrc
+source ~/.zshrc
+export LDFLAGS="-L/usr/local/opt/ruby/lib"
+export CPPFLAGS="-I/usr/local/opt/ruby/include"
+ruby -v
+```
+
+== 安装 asciidoctor-pdf
+
+```bash
+sudo gem install asciidoctor-pdf
+asciidoctor-pdf -v
+# 安装中文套件
+sudo gem install asciidoctor-pdf-cjk-kai_gen_gothic
+# 安装字体
+sudo asciidoctor-pdf-cjk-kai_gen_gothic-install
+# 复制下载的字体到字体库
+sudo cp /usr/local/lib/ruby/gems/3.1.0/gems/asciidoctor-pdf-cjk-kai_gen_gothic-0.1.1/data/fonts/* /usr/local/lib/ruby/gems/3.1.0/gems/asciidoctor-pdf-2.3.4/data/fonts
+```
+
+== 编辑主题以支持中文
+
+```bash
+sudo vi /usr/local/lib/ruby/gems/3.1.0/gems/asciidoctor-pdf-2.3.4/data/themes/zh-CN-theme.yml
+```
+
+```yml
+extends: default
+font:
+  catalog:
+    merge: true
+    # M+ 1p supports Latin, Latin-1 Supplement, Latin Extended, Greek, Cyrillic, Vietnamese, Japanese & an assortment of symbols
+    # It also provides arrows for ->, <-, => and <= replacements in case these glyphs are missing from font
+    M+ 1p Fallback:
+      normal: KaiGenGothicCN-Regular.ttf
+      bold: KaiGenGothicCN-Bold.ttf
+      italic: KaiGenGothicCN-Regular-Italic.ttf
+      bold_italic: KaiGenGothicCN-Bold-Italic.ttf
+    M+ 1mn:
+      normal: RobotoMono-Regular.ttf
+      bold: RobotoMono-Bold.ttf
+      italic: RobotoMono-Italic.ttf
+    Noto Emoji: notoemoji-subset.ttf
+  fallbacks: [M+ 1p Fallback, Noto Emoji]
+
+base:
+  align: left # 中英混合时, 不要将英文填入空白间距
+
+page:
+  size: Letter
+
+blockquote:
+  font-size: 10.5
+
+heading_h6_font_size: 11.5
+```
+
+```bash
+# 编辑主题以支持中文
+sudo vi /usr/local/lib/ruby/gems/3.1.0/gems/asciidoctor-pdf-2.3.4/data/themes/zh-TW-theme.yml
+```
+
+```yml
+extends: default
+font:
+  catalog:
+    merge: true
+    # M+ 1p supports Latin, Latin-1 Supplement, Latin Extended, Greek, Cyrillic, Vietnamese, Japanese & an assortment of symbols
+    # It also provides arrows for ->, <-, => and <= replacements in case these glyphs are missing from font
+    M+ 1p Fallback:
+      normal: KaiGenGothicTW-Regular.ttf
+      bold: KaiGenGothicTW-Bold.ttf
+      italic: KaiGenGothicTW-Regular-Italic.ttf
+      bold_italic: KaiGenGothicTW-Bold-Italic.ttf
+    M+ 1mn:
+      normal: RobotoMono-Regular.ttf
+      bold: RobotoMono-Bold.ttf
+      italic: RobotoMono-Italic.ttf
+    Noto Emoji: notoemoji-subset.ttf
+  fallbacks: [M+ 1p Fallback, Noto Emoji]
+
+base:
+  align: left # 中英混合时, 不要将英文填入空白间距
+
+page:
+  size: Letter
+
+blockquote:
+  font-size: 10.5
+
+heading_h6_font_size: 11.5
+```
+
+== 语法高亮支持
+
+```bash
+sudo gem install rouge
+#sudo gem install pygments.rb
+#sudo gem install coderay
+```
+
+启用语法高亮，只需要在.adoc文档头部填写如下内容即可
+
+
+```ini
+:source-highlighter: highlightjs
+```
+
+```ini
+:source-highlighter: rouge
+```
+
+== 支持框图
+
+```bash
+sudo gem install asciidoctor-diagram
+```
+
+== 编译 PDF
+
+```bash
+lang=zh-TW
+toctitle="目录"
+srcfile=<InputFile>
+target=<OutputFile>
+
+asciidoctor-pdf \
+-a scripts=cjk \
+-r ./bin/pdf-svg-font.rb \
+-a icons=font \
+-a source-highlighter=rouge \
+-a toc=1 \
+-a toc-title=$toctitle \
+-a sectnums=1 \
+-a sectnumlevels=1 \
+-a toclevels=3 \
+-a outlinelevels=3:0 \
+-a experimental=1 \
+-a pdf-theme=$lang -a lang=$lang $srcfile -o output/$target --trace --verbose
+```
+
+== VsCode添加的参数
+
+```bash
+-a pdf-theme=zh-CN
+-a toc-title=目录
+-a toclevels=3
+-a source-highlighter=rouge
+-r asciidoctor-diagram
+```
