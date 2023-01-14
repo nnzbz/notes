@@ -4,38 +4,38 @@
 
 == 升级 Ruby
 
-```bash
-ruby -v
-brew update
-brew install ruby
-echo 'export PATH="/usr/local/opt/ruby/bin:$PATH"' >> ~/.zshrc
-echo 'export PATH="/usr/local/lib/ruby/gems/3.1.0/bin:$PATH"' >> ~/.zshrc
-source ~/.zshrc
-export LDFLAGS="-L/usr/local/opt/ruby/lib"
-export CPPFLAGS="-I/usr/local/opt/ruby/include"
-ruby -v
-```
+[,shell]
+----
+$ ruby -v
+$ brew update
+$ brew install ruby
+$ echo 'export PATH="/usr/local/opt/ruby/bin:$PATH"' >> ~/.zshrc
+$ echo 'export PATH="/usr/local/lib/ruby/gems/3.1.0/bin:$PATH"' >> ~/.zshrc
+$ source ~/.zshrc
+$ export LDFLAGS="-L/usr/local/opt/ruby/lib"
+$ export CPPFLAGS="-I/usr/local/opt/ruby/include"
+$ ruby -v
+----
 
 == 安装 asciidoctor-pdf
 
-```bash
-sudo gem install asciidoctor-pdf
-asciidoctor-pdf -v
-# 安装中文套件
-sudo gem install asciidoctor-pdf-cjk-kai_gen_gothic
-# 安装字体
-sudo asciidoctor-pdf-cjk-kai_gen_gothic-install
-# 复制下载的字体到字体库
-sudo cp /usr/local/lib/ruby/gems/3.1.0/gems/asciidoctor-pdf-cjk-kai_gen_gothic-0.1.1/data/fonts/* /usr/local/lib/ruby/gems/3.1.0/gems/asciidoctor-pdf-2.3.4/data/fonts
-```
+[,shell]
+----
+$ sudo gem install asciidoctor-pdf
+$ asciidoctor-pdf -v
+$ # 安装中文套件
+$ sudo gem install asciidoctor-pdf-cjk-kai_gen_gothic
+$ # 安装字体
+$ sudo asciidoctor-pdf-cjk-kai_gen_gothic-install
+$ # 复制下载的字体到字体库
+$ sudo cp /usr/local/lib/ruby/gems/3.1.0/gems/asciidoctor-pdf-cjk-kai_gen_gothic-0.1.1/data/fonts/* /usr/local/lib/ruby/gems/3.1.0/gems/asciidoctor-pdf-2.3.4/data/fonts
+----
 
 == 编辑主题以支持中文
 
-```bash
-sudo vi /usr/local/lib/ruby/gems/3.1.0/gems/asciidoctor-pdf-2.3.4/data/themes/zh-CN-theme.yml
-```
-
-```yml
+./usr/local/lib/ruby/gems/3.1.0/gems/asciidoctor-pdf-2.3.4/data/themes/zh-CN-theme.yml
+[%linenums,yaml]
+----
 extends: default
 font:
   catalog:
@@ -64,14 +64,11 @@ blockquote:
   font-size: 10.5
 
 heading_h6_font_size: 11.5
-```
+----
 
-```bash
-# 编辑主题以支持中文
-sudo vi /usr/local/lib/ruby/gems/3.1.0/gems/asciidoctor-pdf-2.3.4/data/themes/zh-TW-theme.yml
-```
-
-```yml
+./usr/local/lib/ruby/gems/3.1.0/gems/asciidoctor-pdf-2.3.4/data/themes/zh-TW-theme.yml
+[%linenums,yaml]
+----
 extends: default
 font:
   catalog:
@@ -100,26 +97,30 @@ blockquote:
   font-size: 10.5
 
 heading_h6_font_size: 11.5
-```
+----
 
 == 语法高亮支持
 
-```bash
-sudo gem install rouge
-#sudo gem install pygments.rb
-#sudo gem install coderay
-```
+[,console]
+----
+$ sudo gem install rouge
+$ sudo gem install pygments.rb
+$ sudo gem install coderay
+----
 
 启用语法高亮，只需要在.adoc文档头部填写如下内容即可
 
 
-```ini
+[,shell]
+----
 :source-highlighter: highlightjs
-```
-
-```ini
+# 或
 :source-highlighter: rouge
-```
+# 或
+:source-highlighter: pygments
+# 或
+:source-highlighter: coderay
+----
 
 == 支持框图
 

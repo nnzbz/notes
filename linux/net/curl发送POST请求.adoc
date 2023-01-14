@@ -1,0 +1,38 @@
+= curl发送POST请求
+:toc:
+:toc-title: 目录
+
+== 格式
+
+[source,console]
+----
+$ curl -H <请求头> -d <请求体> -X POST <接口地址>
+----
+
+== 参数
+
+[%header,cols="1,1,5"]
+|===
+| 参数 | 内容   | 示例
+| *-H*  |	请求头  |	“Content-Type: application/json”
+| *-d*  | 请求体  |	‘{“id”: “001”, “name”:“张三”, “phone”:“13099999999”}’ 或者
+‘id=001&name=张三&phone=13099999999’ 或者 '@data.json'
+| *-X* | 请求协议 |POST、GET、DELETE、PUSH、PUT、OPTIONS、HEAD
+|===
+
+== 示例
+
+.data.json
+[,json]
+----
+{
+    "id": "001",
+    "name": "张三",
+    "phone": "13099999999"
+}
+----
+
+[source,console]
+----
+$ curl -H "Content-Type: application/json" -d @data.json -X POST http://127.0.0.1
+----
