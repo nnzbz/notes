@@ -1,0 +1,115 @@
+= MySQL常用操作
+
+:scripts: cjk
+:toc:
+:toc-title: 目录
+:toclevels: 2
+:doctype: book
+
+== 进入mysql命令执行环境
+[.shell]
+----
+# mysql -u<用户名> -p
+输入密码
+----
+== 数据库
+=== 列出所有数据库
+[,shell]
+----
+mysql> show databases;
+----
+=== 创建数据库
+[,shell]
+----
+mysql> CREATE DATABASE <数据库名>;
+----
+=== 打开数据库
+[,shell]
+----
+mysql> use <数据库名>;
+----
+=== 列出数据库所有表
+[,shell]
+----
+mysql> use <数据库名>;
+mysql> show tables;
+----
+== 用户
+=== 列出所有用户
+[,shell]
+----
+mysql> SELECT user FROM mysql.user;
+----
+=== 新建用户
+[,shell]
+----
+mysql> CREATE USER `<用户名>`@`%` IDENTIFIED BY '<密码>';
+----
+=== 授权用户
+[,shell]
+----
+mysql> GRANT ALL ON `<数据库名>`.* TO `<用户名>`@`%`;
+----
+=== 修改用户密码
+[,shell]
+----
+mysql> set password for `<用户名>`@`%` = password('<新密码>');
+----
+== 执行本地SQL文件
+[,shell]
+----
+mysql> use <数据库名>;
+mysql> source <本地SQL文件>;
+----
+== 查看实时执行的SQL语句
+MySQL默认不能实时查看执行的SQL语句，因为这会消耗一定的资源。要开启这个功能，稍微配置一下，打开这个LOG记录就可以了。
+
+. 查看是否已经开启日志功能
++
+[,shell]
+----
+mysql> use <数据库名>;
+mysql> SHOW VARIABLES LIKE "general_log%";
+----
++
+如下general_log值为OFF说明没有开启：
++
+[,shell]
+----
++------------------+----------------------------------+
+| Variable_name    | Value                            |
++------------------+----------------------------------+
+| general_log      | OFF                              |
+| general_log_file | /var/lib/mysql/galley-pc.log     |
++------------------+----------------------------------+
+2 rows in set (0.00 sec)
+----
+
+. 开启日志功能
+* 临时开启
++
+[,shell]
+----
+mysql> SET GLOBAL general_log = 'ON';
+mysql> SET GLOBAL general_log_file = '/var/log/mysql/general_sql.log';
+----
+[NOTE]
+此命令在重启mysql后失效
+* 永久开启
++
+配置 `my.cnf` 文件，加入下面两行：
++
+[,shell]
+----
+general_log = 1
+general_log_file = /var/log/mysql/general_sql.log
+----
+[NOTE]
+此配置需要重启MySQL生效
+
+. 实时查看
++
+[,shell]
+----
+tail -f /var/log/mysql/general_sql.log
+----

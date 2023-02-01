@@ -1,0 +1,86 @@
+= Postgre常用操作
+:scripts: cjk
+:toc:
+:toc-title: 目录
+:toclevels: 2
+:doctype: book
+
+== 进入pgsql命令执行环境
+[.shell]
+----
+# psql -U<用户名>
+----
+== 数据库
+=== 列出所有数据库
+[,shell]
+----
+postgres=# \l
+----
+=== 创建数据库
+[,shell]
+----
+postgres=# CREATE DATABASE <数据库名>;
+----
+=== 打开数据库
+[,shell]
+----
+mysql> \c <数据库名>
+----
+=== 列出数据库所有表
+[,shell]
+----
+mysql> \c <数据库名>
+mysql> \dt
+----
+== 用户
+=== 列出所有用户
+[,shell]
+----
+postgres=# \du
+----
+=== 新建用户
+[,shell]
+----
+postgres=# CREATE USER <用户名> WITH PASSWORD '<密码>';
+----
+=== 修改数据库Owner
+[,shell]
+----
+postgres=# ALTER DATABASE <数据库名> OWNER TO <用户名>
+----
+=== 授权用户
+[,shell]
+----
+postgres=# GRANT ALL PRIVILEGES ON DATABASE <数据库名> TO <用户名>;
+postgres=# GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO <用户名>;
+----
+=== 修改用户密码
+[,shell]
+----
+postgres=# ALTER USER <用户名> WITH PASSWORD '<新密码>';
+----
+
+== 备份与还原
+=== 单库备份
+[,shell]
+----
+pg_dump -U <用户名> -1 <数据库名> > <数据库名>_$(date +%Y%m%d_%H%M%S).bak
+----
+[NOTE]
+====
+-U: 用户名称
+
+-1: 单个事务
+====
+
+=== 全库备份
+[,shell]
+----
+pg_dumpall -U <用户名> > <数据库名>_$(date +%Y%m%d_%H%M%S).bak
+----
+
+=== 还原
+[,shell]
+----
+psql -U <用户名> < <备份文件名>
+----

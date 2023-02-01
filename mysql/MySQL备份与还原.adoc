@@ -1,0 +1,80 @@
+= MySQL备份与还原
+
+== 备份
+=== 手动备份
+[,shell]
+----
+mysqldump -uroot -p --set-gtid-purged=OFF --add-drop-database --single-transaction [--all-databases 或 <数据库名>] | gzip > /bak/<数据库名>_$(date +%Y%m%d_%H%M%S).sql.gz
+----
+[NOTE]
+====
+--all-databases: 备份所有数据库，如果想只备份其中一个数据库，可将此参数替换为要备份的数据库名称。
+====
+
+
+=== 定时自动备份
+. 创建密钥
++
+[,shell]
+----
+mysql_config_editor set --login-path=<密钥名> -uroot -p
+<密码>
+----
+. 备份文件内容
++
+./bak/backup-<数据库名>.sh
+[,shell]
+----
+mysqldump --login-path=<密钥名> --set-gtid-purged=OFF --add-drop-database --single-transaction [--all-databases 或 <数据库名>] | gzip > /bak/<数据库名>_$(date +%Y%m%d_%H%M%S).sql.gz
+----
++
+[NOTE]
+====
+--all-databases: 备份所有数据库，如果想只备份其中一个数据库，可将此参数替换为要备份的数据库名称。
+====
+
+. 添加文件的可执行权限
++
+[,shell]
+----
+chmod u+x /bak/backup-<数据库名>.sh
+----
+
+. 添加任务
++
+[,shell]
+----
+crontab -e
+----
+
+. 编辑任务内容示例
++
+[,vi]
+----
+* 3 * * * /bak/backup-<数据库名>.sh
+30 3 * * * find /bak -mtime +5 -name '<数据库名>_*.sql.gz' -exec rm -rf {} \;
+*/180 * * * * /bak/backup-<数据库名>.sh
+----
++
+[NOTE]
+====
+前面几个选项分别是：分 时 日 月 周，星星代表“每”，按:wq保存并退出，这样服务器就会每天自动执行了：
+第一行是每天凌晨3点备份数据库，第二行是每天凌晨3点半删除5天以前的旧数据文件，第三行是每3个小时备份一次。
+====
+
+. 查看任务执行情况
++
+[,shell]
+----
+tail -f /var/log/cron
+----
+
+== 还原
+[,shell]
+----
+gzip -d < /bak/<备份文件名> | mysql -u<用户名> -p <数据库名>
+----
+[NOTE]
+====
+如果想导入备份的所有数据库，把命令最后的<数据库名>去掉
+====
