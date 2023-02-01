@@ -1,4 +1,9 @@
 = MySQL备份与还原
+:scripts: cjk
+:toc:
+:toc-title: 目录
+:toclevels: 2
+:doctype: book
 
 == 备份
 === 手动备份
