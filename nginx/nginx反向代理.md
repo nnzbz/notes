@@ -6,9 +6,9 @@
 
 ```js
 # 负载均衡
-upstream my_server {                                                         
-    server 10.0.0.1:8080;                                                
-    server 10.0.0.2:8080;                                                
+upstream my_server {
+    server 10.0.0.1:8080;
+    server 10.0.0.2:8080;
 }
 server {
     # 公网暴露的端口变量
@@ -41,10 +41,10 @@ server {
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header Host $host:$expose_port;
 #        # 下面这段部分解决一些web网站把路径写成绝对路径，无法代理的情况
+#        sub_filter_types *; # 默认是text/html
+#        sub_filter_once off;
 #        sub_filter 'href="/' 'href="/my/';
 #        sub_filter 'src="/' 'src="/my/';
-#        sub_filter_types text/html;
-#        sub_filter_once off;
     }
 }
 ```
