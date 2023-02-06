@@ -27,6 +27,8 @@ services:
       - POSTGRES_PASSWORD=xxxxxxxx
       # 最好使用此设定时区，其它镜像也可以使用
       - TZ=CST-8
+    volumes:
+      - pgsqldata:/var/lib/postgresql/data
     deploy:
       placement:
         constraints:
@@ -52,6 +54,8 @@ services:
     logging:
       options:
         max-size: 50m
+volumes:
+  pgsqldata:
 
 networks:
   default:
