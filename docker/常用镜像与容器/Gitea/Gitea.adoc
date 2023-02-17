@@ -1,0 +1,99 @@
+= Gitea
+:scripts: cjk
+:toc:
+:toc-title: 目录
+:toclevels: 4
+
+== 单机
+[,shell]
+----
+mkdir /usr/local/gitea
+vi /usr/local/gitea/stack.yml
+----
+
+[source,yaml,linenums]
+----
+version: "3.9"
+
+services:
+  svr:
+    image: gitea/gitea
+    volumes:
+      - giteadata:/data
+    environment:
+      # 最好使用此设定时区，其它镜像也可以使用
+      - TZ=CST-8
+    ports:
+      # Http端口
+      - "30000:3000"
+      # SSH端口
+      - "220:22"
+
+volumes:
+  giteadata:
+
+networks:
+  default:
+    external: true
+    name: rebue
+----
+
+* 部署
+
+[,shell]
+----
+docker-compose -f /usr/local/gitea/stack.yml up -d
+----
+
+== Swarm
+[,shell]
+----
+mkdir /usr/local/gitea
+vi /usr/local/gitea/stack.yml
+----
+
+[source,yaml,linenums]
+----
+version: "3.9"
+
+services:
+  svr:
+    image: gitea/gitea
+    #hostname: gitea
+    #container_name: gitea
+    volumes:
+      - giteadata:/data
+    environment:
+      # 最好使用此设定时区，其它镜像也可以使用
+      - TZ=CST-8
+    #ports:
+      # Http端口
+      #- "30000:3000"
+      # SSH端口
+      #- "220:22"
+
+volumes:
+  giteadata:
+
+networks:
+  default:
+    external: true
+    name: rebue
+----
+
+- 部署
+
+[,shell]
+----
+docker stack deploy -c /usr/local/gitea/stack.yml gitea
+----
+
+== 初始化
+
+注意修改下面的选项
+
+* 基础URL
+  http://<访问的主机名>:<访问的端口>/
+  这里填写的是浏览器访问输入的基础URL，而不是容器内服务器启动使用的主机名和端口号
+
+image::初始化设置基础URL.png[]
