@@ -59,8 +59,6 @@ version: "3.9"
 services:
   svr:
     image: gitea/gitea
-    #hostname: gitea
-    #container_name: gitea
     volumes:
       - giteadata:/data
     environment:
@@ -71,6 +69,14 @@ services:
       #- "30000:3000"
       # SSH端口
       #- "220:22"
+    deploy:
+      placement:
+        constraints:
+          # 限定部署的节点
+          - node.labels.role==app
+    logging:
+      options:
+        max-size: 50m
 
 volumes:
   giteadata:

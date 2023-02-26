@@ -88,12 +88,6 @@ docker run -d --volumes-from dbdata --name db1 postgres
 
 不要为了数据卷容器而使用 **“最小的镜像”** ，只使用数据镜像本身即可。你已经拥有该镜像，所以不会占用额外的空间。
 
-#### 4.1.2. 备份
-
-```sh
-docker run --rm --volumes-from dbdata -v $(pwd):/backup debian tar cvf /backup/backup.tar /var/lib/postgresql/data
-```
-
 ### 4.2. 权限与许可
 
 通常你需要设置Volume的权限或为Volume初始化一些默认配置和配置文件，需要注意的是，Dockerfile文件中，在 ```VOLUME``` 指令之后的任何语句都不能改变该Volume。
@@ -104,3 +98,16 @@ Volume只有在下列情况下才会被删除
 
 - ```docker rm -v```
 - ```docker run --rm```
+
+## 6. 改名
+
+```sh
+docker volume create --name <new_volume>
+docker run --rm -it -v <old_volume>:/from:ro -v <new_volume>:/to alpine ash -c "cd /from ; cp -av . /to"
+```
+
+## 7. 备份
+
+```sh
+docker run --rm --volumes-from <数据卷的名称> -v $(pwd):/bak alpine tar cvf /bak/backup.tar <数据卷内要备份的目录>
+```

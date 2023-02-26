@@ -75,6 +75,9 @@ services:
     volumes:
       - lokidata:/loki
     command: -config.file=/etc/loki/local-config.yaml
+    logging:
+      options:
+        max-size: 50m
 
   promtail:
     image: grafana/promtail:2.7.0
@@ -88,6 +91,9 @@ services:
     command: -config.file=/etc/promtail/config.yml
     deploy:
       mode: global
+    logging:
+      options:
+        max-size: 50m
 
   grafana:
     image: grafana/grafana:latest
@@ -100,6 +106,9 @@ services:
       - /usr/local/loki/grafana-config.ini:/etc/grafana/grafana.ini
       # grafana数据目录
       - grafanadata:/var/lib/grafana
+    logging:
+      options:
+        max-size: 50m
 
 volumes:
   lokidata:
