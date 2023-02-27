@@ -32,7 +32,6 @@ version: "3.9"
 services:
   zipkin:
     image: openzipkin/zipkin
-    hostname: zipkin
     ports:
       - 9411:9411
     environment:
