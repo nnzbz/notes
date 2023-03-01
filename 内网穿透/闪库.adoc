@@ -1,0 +1,46 @@
+= 闪库
+:scripts: cjk
+:toc:
+:toc-title: 目录
+:toclevels: 4
+
+== 官网
+http://www.ipyingshe.com/
+
+== 登录页
+http://i.ipyingshe.com/
+
+== 使用
+
+. 开通隧道，并获取token
+. linux下载
++
+http://down.ipyingshe.com/sk_linux_64
+. 复制下载的 `sk_linux_64` 文件到服务器
+. 打开linux的文件访问权限
++
+[,shell]
+----
+chmod -R 777 sk_linux_64
+----
+. 执行
+.. 直接执行
++
+[,shell]
+----
+sk_linux_64 -token xxxxxxxx
+----
+.. 后台运行
++
+[,shell]
+----
+mkdir -p /var/log/sk_linux
+nohup sk_linux_64 -token xxxxxxxx >> /var/log/sk_linux/output.log 2>&1 &
+----
+. 查看日志
++
+[,shell]
+----
+/var/log/sk_linux/output.log
+----
+
