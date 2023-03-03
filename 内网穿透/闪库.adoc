@@ -35,7 +35,7 @@ sk_linux_64 -token xxxxxxxx
 [,shell]
 ----
 mkdir -p /var/log/sk_linux
-nohup sk_linux_64 -token xxxxxxxx >> /var/log/sk_linux/output.log 2>&1 &
+nohup sk_linux_64 -token xxxxxxxx > /var/log/sk_linux/output.log 2>&1 &
 ----
 . 查看日志
 +
