@@ -48,8 +48,6 @@ token = ********
 vhost_http_port = 8080
 # 接收 HTTPS 请求
 vhost_https_port = 443
-# 域名
-subdomain_host = frps.com
 
 # 服务端管理界面
 dashboard_port = 7500
@@ -148,13 +146,6 @@ local_ip = 127.0.0.1
 local_port = 22
 # 用户ssh通过服务器访问本机需要配置的端口
 remote_port = 6000
-
-[web]
-type = http
-# 客户端本地开启http的端口号
-local_port = 80
-# 访问的子域名
-subdomain = test
 ----
 
 === 运行
