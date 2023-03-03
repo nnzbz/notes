@@ -142,7 +142,7 @@ remote_port = 7400
 
 [ssh]
 type = tcp
-local_ip = 127.0.0.1
+# 客户端本地开启ssh的端口号
 local_port = 22
 # 用户ssh通过服务器访问本机需要配置的端口
 remote_port = 6000
