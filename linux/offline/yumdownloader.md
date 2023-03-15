@@ -24,7 +24,7 @@
    mkdir httpd
    yumdownloader --resolve --destdir=httpd httpd
    yumdownloader --resolve --destdir=httpd createrepo
-   tar -zcvf httpd.tar.gz ~/httpd
+   tar -zcvf httpd.tar.gz ./httpd
    ```
 
    - --resolve 仅下载，不安装

@@ -8,7 +8,6 @@
 [,shell]
 ----
 mkdir /usr/local/loki
-vi /usr/local/loki/promtail-config.yml
 ----
 
 ./usr/local/loki/promtail-config.yml
@@ -25,20 +24,11 @@ clients:
   - url: http://loki_loki:3100/loki/api/v1/push
 
 scrape_configs:
-- job_name: system
-  static_configs:
-  - targets:
-      - localhost
-    labels:
-      job: varlogs
-      __path__: /var/log/*log
-----
-
-
-
-[,shell]
-----
-vi /usr/local/loki/grafana-config.ini
+  - job_name: system
+    static_configs:
+    - labels:
+        job: varlogs
+        __path__: /var/log/**/*.log
 ----
 
 ./usr/local/loki/grafana-config.ini
@@ -53,11 +43,6 @@ serve_from_sub_path = true
 ====
 注意修改domain的值为实际的域名
 ====
-
-[,shell]
-----
-vi /usr/local/loki/stack.yml
-----
 
 ./usr/local/loki/stack.yml
 [source,yaml,%linenums]
@@ -87,7 +72,7 @@ services:
     volumes:
       - /usr/local/loki/promtail-config.yml:/etc/promtail/config.yml:z
       # 被监视日志存放的路径
-      - /var/log:/var/log
+      - /var/log:/var/log:ro
     command: -config.file=/etc/promtail/config.yml
     deploy:
       mode: global

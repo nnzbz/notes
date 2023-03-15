@@ -1,0 +1,75 @@
+= ttyd应用简介
+:scripts: cjk
+:toc:
+:toc-title: 目录
+:toclevels: 4
+
+== 下载运行
+* 官网下载地址
++
+https://github.com/tsl0922/ttyd/releases
+* 可选择对应系统的版本下载
+* Linux X86_64的下载地址
++
+https://github.com/tsl0922/ttyd/releases/download/1.7.3/ttyd.x86_64
+* 将下载文件复制到 /usr/local/bin (具体目录可按个人习惯放置)
+
+== 做成服务
+=== systemd方式
+./etc/systemd/system/ttyd.service
+[,ini]
+----
+[Unit]
+Description=TTYD
+After=syslog.target
+After=network.target
+
+[Service]
+ExecStart=/usr/local/bin/ttyd.x86_64 -c <登录用户名>:<登录密码> bash
+Type=simple
+Restart=always
+User=root
+Group=root
+
+[Install]
+WantedBy=multi-user.target
+----
+
+[,shell]
+----
+# 启动服务
+systemctl start ttyd.service
+# 设置服务开机启动
+systemctl enable ttyd.service
+----
+
+=== Supervisor方式
+./etc/supervisord.conf
+[,ini]
+----
+....
+
+[include]
+files = supervisord.d/*.ini
+----
+
+./etc/supervisord.d/ttyd.ini
+[,ini]
+----
+[program:ttyd]
+directory = /root/
+command = /usr/local/bin/ttyd.x86_64 -c <登录用户名>:<登录密码> bash
+autostart = true
+startsecs = 10
+autorestart = true
+startretries = 100000
+stdout_logfile = /tmp/ttyd.log
+----
+
+[,shell]
+----
+# 重启服务
+systemctl restart supervisord
+# 查看服务启动状态
+systemctl status supervisord
+----
