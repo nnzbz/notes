@@ -1,0 +1,26 @@
+= /etc/securetty文件
+:scripts: cjk
+:toc:
+:toc-title: 目录
+:toclevels: 4
+
+/etc/securetty 文件允许你规定“root”用户可以从哪个tty设备登录。
+登录程序（通常是/bin/login）需要读取“/etc/securetty”文件。
+
+它的格式：列出来的tty设备都是允许登录的，注释掉或是在这个文件中不存在的都是不允许root登录的。
+用户不能从不存在与该文件中的设备登录为root用户，只能以普通用户的身份登录进来，在用su命令转换为root用户。如果该文件是一个空文件，则root用户就不能从任何的设备登录系统，只能以普通用户登录，在用su命令转换成root用户；如果该文件不存在，那么root用户可以从任何地方登录，这样会引发安全问题，所以该文件是在系统中是一定要存在的。
+#Note：把这个问价改名或者注释掉里面的文件，不会影响ssh应用，因为ssh远程登录使用的是pts，而不是tty，这个文件的修改可以阻止telnet通过root登录。
+
+终端是一种字符型设备，他有多重类型，通常使用tty来简称各种类型的终端设备。
+
+
+tty一般指终端，是最上层的终端，即直接与linux相通信的一个终端。
+
+pts是伪终端，一般来说在窗口型linux里面打开的terminal都是pts，但是这个窗口型的终端（即包含我们所操作的图形界面的这个终端）一般就是个tty。
+
+console好像是指当前的控制台（或者监视器），比如说当你ctrl+alt+x，然后echo “1111”>/dev/console，1111就会显示在你的monitor上。
+
+vc就是virtual console，也可以理解为虚拟的监视器，当你ctrl+alt+x，就会切换到vcx，在/dev/下面没有直接对应的设备文件，不过如果你尝试
+echo “1111”>/dev/vsc1,你在monitor上也能看到，不过要切换到对应的vc。
+
+vt指的是virtual terminal，虚拟终端，一般就是虚拟控制台tty 控制终端 包括（1）tty从虚拟控制台登录（2）pts在X下开的shell窗口则显示为pts1.tty有rs232、rs422、vcon三种设备，平常主要使用rs232借口的串行端口做心跳或者链接串行设备。2.pst每一个远程连接都会产生一个pst设备。3.console当系统安装时，可以直接选择串口终端或者连接显卡。

@@ -33,10 +33,10 @@ tar zxvf frp_0.47.0_linux_amd64.tar.gz
 
 == 部署服务器
 === 上传
-将解压后的以 `frps` 开头的系列文件上传到具有公网 IP 的机器上
+将解压后的以 `frps` 开头的系列文件上传到具有公网 IP 的机器上，建议放置到 `/usr/local/frp/` 目录中
 
 === 配置
-.frps.ini
+./usr/local/frp/frps.ini
 [,ini]
 ----
 [common]
@@ -56,23 +56,20 @@ dashboard_pwd = ********
 ----
 
 === 运行
-* 直接运行
-+
+==== 直接运行
 [,shell]
 ----
 ./frps -c ./frps.ini
 ----
-* 后台运行
-+
+
+==== 后台运行
 [,shell]
 ----
 mkdir -p /var/log/frps
 nohup ./frps -c ./frps.ini > /var/log/frps/output.log 2>&1 &
 ----
-* systemd
-+
-. 编写服务文件
-+
+
+==== systemd方式
 ./etc/systemd/system/frps.service
 [,ini]
 ----
@@ -85,13 +82,12 @@ Wants = network.target
 [Service]
 Type = simple
 # 启动frps的命令，需修改为您的frps的安装路径
-ExecStart = /path/to/frps -c /path/to/frps.ini
+ExecStart = /usr/local/frp/frps -c /usr/local/frp/frps.ini
 
 [Install]
 WantedBy = multi-user.target
 ----
-. 使用 systemd 命令，管理 frps
-+
+
 [,shell]
 ----
 # 启动服务
@@ -102,20 +98,49 @@ systemctl stop frps
 systemctl restart frps
 # 查看服务状态
 systemctl status frps
+# 配置 frps 开机自启
+systemctl enable frps
 ----
-. 配置 frps 开机自启
-+
+
+==== Supervisor方式
+./etc/supervisord.conf
+[,ini]
+----
+....
+
+[include]
+files = supervisord.d/*.ini
+----
+
+./etc/supervisord.d/frps.ini
+[,ini]
+----
+[program:frps]
+directory = /root/
+command = /usr/local/frp/frps -c /usr/local/frp/frps.ini
+autostart = true
+startsecs = 10
+autorestart = true
+startretries = 100000
+stdout_logfile = /tmp/frps.log
+----
+
 [,shell]
 ----
-systemctl enable frps
+# 重启服务
+systemctl restart supervisord
+# 查看服务启动状态
+systemctl status supervisord
+# 配置 supervisord 开机自启
+systemctl enable supervisord
 ----
 
 == 部署客户端
 === 上传
-将解压后的以 `frpc` 开头的系列文件上传到内网服务所在的机器上
+将解压后的以 `frpc` 开头的系列文件上传到内网服务所在的机器上，建议放置到 `/usr/local/frp/` 目录中
 
 === 配置
-.frpc.ini
+./usr/local/frp/frpc.ini
 [,ini]
 ----
 [common]
@@ -123,6 +148,8 @@ systemctl enable frps
 server_addr = unipay
 # 服务器公网访问打开的端口
 server_port = 7000
+# 启用加密(有些网络环境会屏蔽掉未加密的连接)
+tls_enable = true
 # 客户端连接服务器需要用到的令牌
 token = ********
 
@@ -133,14 +160,14 @@ admin_user = admin
 admin_pwd = ********
 
 # 将客户端管理界面暴露到外网
-[admin_ui]
+[xxx_admin_ui]
 type = tcp
 # 对应客户端管理界面的端口
 local_port = 7400
 # 暴露出去的端口
 remote_port = 7400
 
-[ssh]
+[xxx_ssh]
 type = tcp
 # 客户端本地开启ssh的端口号
 local_port = 22
@@ -149,23 +176,20 @@ remote_port = 6000
 ----
 
 === 运行
-* 直接运行
-+
+==== 直接运行
 [,shell]
 ----
 ./frpc -c ./frpc.ini
 ----
-* 后台运行
-+
+
+==== 后台运行
 [,shell]
 ----
 mkdir -p /var/log/frpc
 nohup ./frpc -c ./frpc.ini > /var/log/frpc/output.log 2>&1 &
 ----
-* systemd
-+
-. 编写服务文件
-+
+
+==== systemd方式
 ./etc/systemd/system/frpc.service
 [,ini]
 ----
@@ -178,13 +202,11 @@ Wants = network.target
 [Service]
 Type = simple
 # 启动frpc的命令，需修改为您的frpc的安装路径
-ExecStart = /path/to/frpc -c /path/to/frpc.ini
+ExecStart = /usr/local/frp/frpc -c /usr/local/frp/frpc.ini
 
 [Install]
 WantedBy = multi-user.target
 ----
-. 使用 systemd 命令，管理 frpc
-+
 [,shell]
 ----
 # 启动服务
@@ -195,12 +217,41 @@ systemctl stop frpc
 systemctl restart frpc
 # 查看服务状态
 systemctl status frpc
+# 配置 frpc 开机自启
+systemctl enable frpc
 ----
-. 配置 frpc 开机自启
-+
+
+==== Supervisor方式
+./etc/supervisord.conf
+[,ini]
+----
+....
+
+[include]
+files = supervisord.d/*.ini
+----
+
+./etc/supervisord.d/frpc.ini
+[,ini]
+----
+[program:frpc]
+directory = /root/
+command = /usr/local/frp/frpc -c /usr/local/frp/frpc.ini
+autostart = true
+startsecs = 10
+autorestart = true
+startretries = 100000
+stdout_logfile = /tmp/frpc.log
+----
+
 [,shell]
 ----
-systemctl enable frpc
+# 重启服务
+systemctl restart supervisord
+# 查看服务启动状态
+systemctl status supervisord
+# 配置 supervisord 开机自启
+systemctl enable supervisord
 ----
 
 == 使用
