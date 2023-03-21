@@ -1,0 +1,24 @@
+= ttyd
+:scripts: cjk
+:toc:
+:toc-title: 目录
+:toclevels: 4
+
+== 单机
+[,shell]
+----
+docker run --name ttyd --pid=host --privileged=true -dp7681:7681 -e TINI_SUBREAPER=true -e TZ=CST-8 --restart=always tsl0922/ttyd
+----
+
+* --pid=host
+** 使用宿主机命名空间，方便容器获取到宿主机所有进程信息
+** 把宿主机的/proc文件夹挂载进入容器的/proc路径，其中/proc/1作为nsenter的target，作为容器向宿主机发送命令的关键部分
+* --privileged=true
++
+设置容器内的root拥有宿主机root的权限
+
+
+****
+想从容器内操作宿主机的各种资源，请参考 `nsenter` 操作指南
+****
+

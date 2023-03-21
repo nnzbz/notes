@@ -1,0 +1,84 @@
+= nsenter操作指南
+:scripts: cjk
+:toc:
+:toc-title: 目录
+:toclevels: 4
+
+== nsenter 简介
+nsenter 是一个可以用来进入到目标程序所在 Namespace 中运行命令的工具，其经常用于:
+
+* 在宿主机上操作容器的资源
+* 在容器内操作宿主机的资源
+
+== 在宿主机上操作容器的资源
+docker制作镜像的时候，通常为了轻量，大多不包含较为工具，比如：ip、ping、telnet、ss、tcpdump 等命令，给调试容器带来相当大的麻烦。
+
+nsenter 命令可以很方便的进入指定容器的网络命名空间，使用宿主机的命令调试容器网络环境。
+
+除此以外，nsenter 还可以进入 mnt、uts、ipc、pid、user 等命名空间，以及指定根目录和工作目录。
+
+=== 使用网络命名空间
+
+[,shell]
+----
+# 查看容器pid
+docker inspect -f {{.State.Pid}} <容器ID>
+
+# 使用nsenter进入网络命名空间
+nsenter -n -t<上个命令返回的pid数值>
+
+# 查看网卡ip
+ip a
+
+# 还可以使用宿主机上的多个网络命令 ping、telnet、ss、tcpdump 等
+....
+
+# 退出nsenter进入的空间
+exit
+----
+
+=== 使用多个常用的命名空间
+
+使用过程与上一节类似，具体进入的命令是
+
+[,shell]
+----
+# 使用nsenter进入多个常用的命名空间
+nsenter -m -u -i -n -p -t <pid> <command>
+----
+
+* -m 进入 mount 命名空间，挂载文件系统
+* -u 进入 uts 命名空间，可使用 hostname 和 domainname
+* -i 进入 ipc 命名空间，可使用消息队列，共享内存和信号量
+* -n 进入 network 命名空间，可使用网络环境
+* -p 进入 pid 命名空间
+* -t <pid> 要获取命名空间的目标进程
+
+== 在容器内操作宿主机的资源
+
+=== 创建 docker 容器时要使用的参数
+* --pid=host
++
+使用宿主机命名空间，方便容器获取到宿主机所有进程信息
+把宿主机的/proc文件夹挂载进入容器的/proc路径，其中/proc/1作为nsenter的target，作为容器向宿主机发送命令的关键部分
+* --privileged=true
++
+使得docker容器有root权限执行宿主机命令，确保从容器执行命令的时候不会产生权限不足错误
+
+=== 进入命名空间的具体命令
+[,shell]
+----
+nsenter -a -t 1 <command>
+----
+
+* -a 进入宿主机的所有命名空间
+* -t 1表示获取/proc/1进程，就是pid=1的进程，这个进程是docker使用--pid=host参数挂载进入容器内部的宿主机进程
+
+实际使用过程中可能出现宿主机和容器命名空间不一致问题，主要产生原因是宿主机内核版本和容器
+所默认的加载内核版本不一致
+
+这里可以将 -a 参数改为多个命名空间的参数，方便调整
+[,shell]
+----
+nsenter -m -u -i -n -p -t 1 <command>
+----
