@@ -40,14 +40,28 @@ tar zxvf frp_0.47.0_linux_amd64.tar.gz
 [,ini]
 ----
 [common]
-# 服务器监听端口(须保证打通防火墙，从互联网可以访问这个端口)
-bind_port = 7000
 # 客户端连上来需要用到的令牌
 token = ********
-# 接收 HTTP 请求
-vhost_http_port = 8080
-# 接收 HTTPS 请求
-vhost_https_port = 443
+
+# 服务器监听端口(须保证打通防火墙，从互联网可以访问这个端口)
+bind_port = 7000
+
+# 下面三种udp传输类型同时只能启用一个
+# xtcp用来打洞的监听端口(xtcp 绑定的是 udp 端口，可以和 bind_port 一样)
+# bind_udp_port = 57000
+# 服务器启用kcp(kcp 绑定的是 udp 端口，可以和 bind_port 一样)
+# kcp_bind_port = 57000
+# 服务器启用quic(quic 绑定的是 udp 端口，可以和 bind_port 一样)
+quic_bind_port = 57000
+
+# TLS加密(除了xtcp，否则与use_encryption加密重复了)
+# frpc 校验 frps 身份
+#tls_cert_file = /usr/local/frp/server.crt
+#tls_key_file = /usr/local/frp/server.key
+# frps 验证 frpc 的身份
+#tls_trusted_ca_file = /usr/local/frp/ca.crt
+# 不要求客户端必须用tls来连接(目前在设置tls_trusted_ca_file之后此项设置无效)
+#tls_only = false
 
 # 服务端管理界面
 dashboard_port = 7500
@@ -65,8 +79,8 @@ dashboard_pwd = ********
 ==== 后台运行
 [,shell]
 ----
-mkdir -p /var/log/frps
-nohup ./frps -c ./frps.ini > /var/log/frps/output.log 2>&1 &
+mkdir -p /var/log/frp
+nohup /usr/local/frp/frps -c /usr/local/frp/frps.ini > /usr/local/frp/frps.log 2>&1 &
 ----
 
 ==== systemd方式
@@ -122,9 +136,10 @@ autostart = true
 startsecs = 10
 autorestart = true
 startretries = 100000
-stdout_logfile = /tmp/frps.log
+stdout_logfile = /usr/local/frp/frps.log
 ----
 
+* supervisord 服务管理
 [,shell]
 ----
 # 重启服务
@@ -133,6 +148,23 @@ systemctl restart supervisord
 systemctl status supervisord
 # 配置 supervisord 开机自启
 systemctl enable supervisord
+----
+
+* supervisor 进程管理（监听/启动/停止/重启）
+[,shell]
+----
+# 查看所有进程的状态
+supervisorctl status
+# 停止 frps
+supervisorctl stop frps
+# 启动 frps
+supervisorctl start frps
+# 重启 frps
+supervisorctl restart frps
+# 配置文件修改后可以使用该命令加载新的配置
+supervisorctl update
+# 重新启动配置中的所有程序
+supervisorctl reload
 ----
 
 == 部署客户端
@@ -144,14 +176,27 @@ systemctl enable supervisord
 [,ini]
 ----
 [common]
-# 服务器公网访问的地址
-server_addr = unipay
-# 服务器公网访问打开的端口
-server_port = 7000
-# 启用加密(有些网络环境会屏蔽掉未加密的连接)
-tls_enable = true
 # 客户端连接服务器需要用到的令牌
 token = ********
+
+# 客户端访问服务器的地址
+server_addr = <服务器地址>
+# 客户端访问服务器的端口
+server_port = 7000
+
+# 以下的kcp/quic只能同时启用一个，而且当只有两个都禁用时，才能使用xtcp
+# 启用 kcp 协议(server_port 必须指定为 frps 的 kcp_bind_port)
+# protocol = kcp
+# 启用 QUIC 协议(server_port 必须指定为 frps 的 quic_bind_port)
+protocol = quic
+
+# 启用TLS加密(除了xtcp，否则与use_encryption加密重复了)
+tls_enable = true
+# frps 验证 frpc 的身份
+tls_cert_file = /usr/local/frp/client.crt
+tls_key_file = /usr/local/frp/client.key
+# frpc 校验 frps 身份
+tls_trusted_ca_file = /usr/local/frp/ca.crt
 
 # 客户端管理界面
 admin_addr = 127.0.0.1
@@ -166,6 +211,10 @@ type = tcp
 local_port = 7400
 # 暴露出去的端口
 remote_port = 7400
+# 启用加密
+use_encryption = true
+# 启用压缩
+use_compression = true
 
 [xxx_ssh]
 type = tcp
@@ -173,6 +222,10 @@ type = tcp
 local_port = 22
 # 用户ssh通过服务器访问本机需要配置的端口
 remote_port = 6000
+# 启用加密
+use_encryption = true
+# 启用压缩
+use_compression = true
 ----
 
 === 运行
@@ -185,8 +238,8 @@ remote_port = 6000
 ==== 后台运行
 [,shell]
 ----
-mkdir -p /var/log/frpc
-nohup ./frpc -c ./frpc.ini > /var/log/frpc/output.log 2>&1 &
+mkdir -p /var/log/frp
+nohup /usr/local/frp/frpc -c /usr/local/frp/frpc.ini > /usr/local/frp/frpc.log 2>&1 &
 ----
 
 ==== systemd方式
@@ -222,6 +275,9 @@ systemctl enable frpc
 ----
 
 ==== Supervisor方式
+. 查看默认的配置文件 supervisord.conf
+** linux
++
 ./etc/supervisord.conf
 [,ini]
 ----
@@ -231,7 +287,22 @@ systemctl enable frpc
 files = supervisord.d/*.ini
 ----
 
-./etc/supervisord.d/frpc.ini
+** mac
++
+./usr/local/etc/supervisord.conf
+[,ini]
+----
+....
+
+[include]
+files = /usr/local/etc/supervisor.d/*.ini
+----
+
+. 编辑进程的配置文件
++
+** /etc/supervisord.d/frpc.ini(linux)
+** /usr/local/etc/supervisor.d/frpc.ini(mac)
++
 [,ini]
 ----
 [program:frpc]
@@ -241,9 +312,13 @@ autostart = true
 startsecs = 10
 autorestart = true
 startretries = 100000
-stdout_logfile = /tmp/frpc.log
+stdout_logfile = /usr/local/frp/frpc.log
 ----
 
+. supervisord 服务管理
++
+** linux
++
 [,shell]
 ----
 # 重启服务
@@ -252,6 +327,35 @@ systemctl restart supervisord
 systemctl status supervisord
 # 配置 supervisord 开机自启
 systemctl enable supervisord
+----
+** mac
++
+用brew安装后，会自动生成服务文件 `/usr/local/Cellar/supervisor/4.2.4/homebrew.supervisor.service`
++
+[,shell]
+----
+# 重启服务
+brew services restart supervisor
+# 查看服务启动状态
+brew services info supervisor
+----
+
+. supervisor 进程管理（监听/启动/停止/重启）
++
+[,shell]
+----
+# 查看所有进程的状态
+supervisorctl status
+# 停止 frpc
+supervisorctl stop frpc
+# 启动 frpc
+supervisorctl start frpc
+# 重启 frpc
+supervisorctl restart frpc
+# 配置文件修改后可以使用该命令加载新的配置
+supervisorctl update
+# 重新启动配置中的所有程序
+supervisorctl reload
 ----
 
 == 使用
