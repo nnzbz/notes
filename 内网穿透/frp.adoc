@@ -190,13 +190,15 @@ server_port = 7000
 # 启用 QUIC 协议(server_port 必须指定为 frps 的 quic_bind_port)
 protocol = quic
 
-# 启用TLS加密(除了xtcp，否则与use_encryption加密重复了)
+# 启用TLS加密，减少被嗅探的可能
 tls_enable = true
+disable_custom_tls_first_byte = true
+
 # frps 验证 frpc 的身份
-tls_cert_file = /usr/local/frp/client.crt
-tls_key_file = /usr/local/frp/client.key
+#tls_cert_file = /usr/local/frp/client.crt
+#tls_key_file = /usr/local/frp/client.key
 # frpc 校验 frps 身份
-tls_trusted_ca_file = /usr/local/frp/ca.crt
+#tls_trusted_ca_file = /usr/local/frp/ca.crt
 
 # 客户端管理界面
 admin_addr = 127.0.0.1

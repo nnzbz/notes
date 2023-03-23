@@ -25,7 +25,7 @@ After=syslog.target
 After=network.target
 
 [Service]
-ExecStart=/usr/local/bin/ttyd.x86_64 -c <登录用户名>:<登录密码> bash
+ExecStart=/usr/local/bin/ttyd.x86_64 -t enableZmodem=true -c <登录用户名>:<登录密码> bash
 Type=simple
 Restart=always
 User=root
@@ -58,12 +58,12 @@ files = supervisord.d/*.ini
 ----
 [program:ttyd]
 directory = /root/
-command = /usr/local/bin/ttyd.x86_64 -c <登录用户名>:<登录密码> bash
+command = /usr/local/bin/ttyd.x86_64 -t enableZmodem=true -c <登录用户名>:<登录密码> bash
 autostart = true
 startsecs = 10
 autorestart = true
 startretries = 100000
-stdout_logfile = /tmp/ttyd.log
+stdout_logfile = /var/log/ttyd.log
 ----
 
 [,shell]
