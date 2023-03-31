@@ -1,0 +1,62 @@
+= 自签名证书
+:scripts: cjk
+:toc:
+:toc-title: 目录
+:toclevels: 4
+
+== 基本概念
+=== CA
+*Certificate Authority*，证书授权者，是管理发放数字证书的组织或机构。由它发放的证书就叫 CA 证书，以区别于个人使用工具随意生成的数字证书
+
+常见的有 *Symantec(赛门铁克)*，*Geotrust* 等
+
+=== 自签名证书
+由创建它的人而非受信任的 CA 机构颁发的证书
+
+=== X.509
+证书的一种格式标准。简单来说，X.509就是一张附带了数字签名的信息表，它用 *ASN.1* 来进行描述. 结构如下图：
+
+image::x.509结构图.awebp[x.509结构图]
+
+=== ASN.1
+*Abstract Syntax Notation.1*，抽象语法标记1，是定义抽象数据类型形式的标准，描绘了与任何表示数据的编码技术无关的通用数据结构
+
+=== 证书信任链
+证书是可以有信任关系的, 通过一个证书可以证明另一个证书也是真实可信的。实际上，证书之间的信任关系，是可以嵌套的。比如，C 信任 A1，A1 信任 A2，A2 信任 A3…这个叫做证书的信任链。只要你信任链上的头一个证书，那后续的证书，都是可以信任滴。
+
+== 创建根 CA 证书
+=== 创建根密钥(私钥)
+[,shell]
+----
+openssl ecparam -out ca.key -name prime256v1 -genkey
+----
+=== 生成根证书签名请求 (CSR，certificate signing request)
+[,shell]
+----
+openssl req -new -sha256 -key ca.key -subj "/C=CN/ST=GX/L=NN/O=zbz, Inc./CN=zbz Root CA" -out ca.csr
+----
+=== 使用 *根密钥* 和 *根证书签名请求* 生成根证书，并自签名
+[,shell]
+----
+openssl x509 -req -sha256 -days 365 -in ca.csr -signkey ca.key -out ca.crt
+----
+
+== 创建服务器证书
+=== 创建服务器密钥(私钥)
+[,shell]
+----
+openssl ecparam -out server.key -name prime256v1 -genkey
+----
+=== 生成服务器证书签名请求 (CSR，certificate signing request)
+[,shell]
+----
+openssl req -new -sha256 -key server.key -out server.csr -subj "/C=CN/ST=GX/L=NN/O=abc, Inc./CN=localhost"
+----
+****
+服务器证书的 CN（公用名）必须与颁发者的域不同。 例如，在本例中，颁发者的 CN 是 www.zbz.com，服务器证书的 CN 是 www.abc.com
+****
+=== 使用 *服务器密钥* 和 *服务器证书签名请求* 生成服务器证书，并用根密钥和根证书签名
+[,shell]
+----
+openssl x509 -req -in server.csr -CA  ca.crt -CAkey ca.key -CAcreateserial -out server.crt -days 365 -sha256
+----
