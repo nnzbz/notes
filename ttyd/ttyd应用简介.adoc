@@ -53,6 +53,11 @@ systemctl enable ttyd.service
 files = supervisord.d/*.ini
 ----
 
+[,shell]
+----
+mkdir /var/log/ttyd/
+----
+
 ./etc/supervisord.d/ttyd.ini
 [,ini]
 ----
@@ -63,7 +68,7 @@ autostart = true
 startsecs = 10
 autorestart = true
 startretries = 100000
-stdout_logfile = /var/log/ttyd.log
+stdout_logfile = /var/log/ttyd/ttyd.log
 ----
 
 [,shell]
@@ -73,3 +78,38 @@ systemctl restart supervisord
 # 查看服务启动状态
 systemctl status supervisord
 ----
+
+== SSL/TLS
+=== 生成自签名证书
+[,shell]
+----
+# 生成CA根证书(根证书的完整域名(FQDN)必须不同于服务端/客户端的完整域名)
+openssl genrsa -out ca.key 2048
+openssl req -new -x509 -days 365 -key ca.key -subj "/C=CN/ST=GD/L=SZ/O=Acme, Inc./CN=Acme Root CA" -out ca.crt
+
+# 生成服务端证书(如果有多个域名, subjectAltName可写成: DNS:example.com,DNS:www.example.com)
+openssl req -newkey rsa:2048 -nodes -keyout server.key -subj "/C=CN/ST=GD/L=SZ/O=Acme, Inc./CN=localhost" -out server.csr
+openssl x509 -sha256 -req -extfile <(printf "subjectAltName=DNS:localhost") -days 365 -in server.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out server.crt
+
+# 生成客户端证书(一些客户端可能 p12/pem 格式可能有用)
+openssl req -newkey rsa:2048 -nodes -keyout client.key -subj "/C=CN/ST=GD/L=SZ/O=Acme, Inc./CN=client" -out client.csr
+openssl x509 -req -days 365 -in client.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out client.crt
+openssl pkcs12 -export -clcerts -in client.crt -inkey client.key -out client.p12
+openssl pkcs12 -in client.p12 -out client.pem -clcerts
+----
+
+=== 启动ttyd
+[,shell]
+----
+ttyd --ssl --ssl-cert server.crt --ssl-key server.key --ssl-ca ca.crt bash
+----
+
+用curl进行测试:
+[,shell]
+----
+curl --insecure --cert client.p12[:password] -v https://localhost:7681
+----
+
+****
+如果不想启用验证客户端证书，请删除 *--ssl-ca* 选项
+****
