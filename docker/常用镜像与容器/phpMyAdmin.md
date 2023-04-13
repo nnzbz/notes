@@ -26,7 +26,7 @@ services:
           #- node.hostname == db01
     logging:
       options:
-        max-size: 50m
+        max-size: 8m
 
 networks:
   default:

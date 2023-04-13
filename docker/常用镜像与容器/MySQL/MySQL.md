@@ -166,7 +166,7 @@ services:
     #       - node.hostname == db1
     logging:
       options:
-        max-size: 50m
+        max-size: 8m
 
 
 secrets:
@@ -324,7 +324,7 @@ services:
     #       - node.hostname == db1
     logging:
       options:
-        max-size: 50m
+        max-size: 8m
   mysql2:
     image: mysql:5
     # 注意: 如果是arm架构服务器，请用下面这个镜像
@@ -361,7 +361,7 @@ services:
     #       - node.hostname == db2
     logging:
       options:
-        max-size: 50m
+        max-size: 8m
 
 #secrets:
 #  mysql_root_password:

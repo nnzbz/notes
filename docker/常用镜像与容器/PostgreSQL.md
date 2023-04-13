@@ -37,7 +37,7 @@ services:
           #- node.hostname == db01
     logging:
       options:
-        max-size: 50m
+        max-size: 8m
   adminer:
     image: adminer
     ports:
@@ -53,7 +53,7 @@ services:
           #- node.hostname == db01
     logging:
       options:
-        max-size: 50m
+        max-size: 8m
 volumes:
   pgsqldata:
 

@@ -103,7 +103,7 @@ services:
     command: -config.file=/etc/loki/local-config.yaml
     logging:
       options:
-        max-size: 50m
+        max-size: 8m
 
   promtail:
     image: grafana/promtail:2.7.0
@@ -119,7 +119,7 @@ services:
       mode: global
     logging:
       options:
-        max-size: 50m
+        max-size: 8m
 
   grafana:
     image: grafana/grafana:latest
@@ -134,7 +134,7 @@ services:
       - grafanadata:/var/lib/grafana
     logging:
       options:
-        max-size: 50m
+        max-size: 8m
 
 volumes:
   lokidata:

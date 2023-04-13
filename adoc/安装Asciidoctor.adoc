@@ -25,15 +25,15 @@ $ sudo gem install asciidoctor-pdf
 $ asciidoctor-pdf -v
 $ # 安装中文套件
 $ sudo gem install asciidoctor-pdf-cjk-kai_gen_gothic
-$ # 安装字体
+$ # 安装字体(如果网络不通只能手动下载)
 $ sudo asciidoctor-pdf-cjk-kai_gen_gothic-install
 $ # 复制下载的字体到字体库
-$ sudo cp /usr/local/lib/ruby/gems/3.1.0/gems/asciidoctor-pdf-cjk-kai_gen_gothic-0.1.1/data/fonts/* /usr/local/lib/ruby/gems/3.1.0/gems/asciidoctor-pdf-2.3.4/data/fonts
+$ sudo cp /usr/local/lib/ruby/gems/3.2.0/gems/asciidoctor-pdf-cjk-kai_gen_gothic-0.1.1/data/fonts/* /usr/local/lib/ruby/gems/3.2.0/gems/asciidoctor-pdf-2.3.6/data/fonts
 ----
 
 == 编辑主题以支持中文
 
-./usr/local/lib/ruby/gems/3.1.0/gems/asciidoctor-pdf-2.3.4/data/themes/zh-CN-theme.yml
+./usr/local/lib/ruby/gems/3.2.0/gems/asciidoctor-pdf-2.3.6/data/themes/zh-CN-theme.yml
 [%linenums,yaml]
 ----
 extends: default
@@ -66,7 +66,7 @@ blockquote:
 heading_h6_font_size: 11.5
 ----
 
-./usr/local/lib/ruby/gems/3.1.0/gems/asciidoctor-pdf-2.3.4/data/themes/zh-TW-theme.yml
+./usr/local/lib/ruby/gems/3.2.0/gems/asciidoctor-pdf-2.3.6/data/themes/zh-TW-theme.yml
 [%linenums,yaml]
 ----
 extends: default

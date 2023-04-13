@@ -105,7 +105,7 @@ services:
     #      - node.hostname == db2
     logging:
       options:
-        max-size: 50m
+        max-size: 8m
 
 networks:
   default:

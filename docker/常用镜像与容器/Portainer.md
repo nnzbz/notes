@@ -14,7 +14,7 @@
 ```sh
 mkdir -p /usr/local/portainer
 curl -L https://downloads.portainer.io/portainer-agent-stack.yml \
-    -o /usr/local/portainer/portainer-agent-stack.yml
+    -o /usr/local/portainer/stack.yml
 ```
 
 - 修改 `/usr/local/portainer/portainer-agent-stack.yml`
@@ -31,23 +31,21 @@ curl -L https://downloads.portainer.io/portainer-agent-stack.yml \
     ```
 
   - 最终示例如下
-  
+
 ```yaml
 version: '3.9'
 
 services:
   agent:
-    image: portainer/agent:2.9.2
+    image: portainer/agent:2.17.1
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - /var/lib/docker/volumes:/var/lib/docker/volumes
     deploy:
       mode: global
-      placement:
-        constraints: [node.platform.os == linux]
 
   portainer:
-    image: portainer/portainer-ce:2.9.2
+    image: portainer/portainer-ce:2.17.1
     command: -H tcp://tasks.agent:9001 --tlsskipverify
     ports:
       - "9443:9443"
@@ -73,5 +71,5 @@ networks:
 - 部署
 
 ```sh
-docker stack deploy -c /usr/local/portainer/portainer-agent-stack.yml portainer
+docker stack deploy -c /usr/local/portainer/stack.yml portainer
 ```

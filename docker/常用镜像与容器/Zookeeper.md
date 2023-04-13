@@ -57,7 +57,7 @@ services:
       - zoodatalog:/datalog:z
     logging:
       options:
-        max-size: 50m
+        max-size: 8m
 
 volumes:
   zoodata:
@@ -106,7 +106,7 @@ services:
       - zoo1datalog:/datalog:z
     logging:
       options:
-        max-size: 50m
+        max-size: 8m
   zoo2:
     image: zookeeper
     hostname: zoo2
@@ -125,7 +125,7 @@ services:
       - zoo2datalog:/datalog:z
     logging:
       options:
-        max-size: 50m
+        max-size: 8m
   zoo3:
     image: zookeeper
     hostname: zoo3
@@ -144,7 +144,7 @@ services:
       - zoo3datalog:/datalog:z
     logging:
       options:
-        max-size: 50m
+        max-size: 8m
 
 volumes:
   zoo1data:

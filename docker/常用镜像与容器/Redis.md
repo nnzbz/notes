@@ -65,7 +65,7 @@ services:
     command: redis-server /usr/local/redis/conf/redis.conf --appendonly yes
     logging:
       options:
-        max-size: 50m
+        max-size: 8m
 networks:
   default:
     external: true
@@ -351,7 +351,7 @@ services:
           - node.hostname==app01
     logging:
       options:
-        max-size: 50m
+        max-size: 8m
   master2:
     image: redis:alpine
     hostname: redismaster2
@@ -372,7 +372,7 @@ services:
           - node.hostname==app02
     logging:
       options:
-        max-size: 50m
+        max-size: 8m
   master3:
     image: redis:alpine
     hostname: redismaster3
@@ -393,7 +393,7 @@ services:
           - node.hostname==app03
     logging:
       options:
-        max-size: 50m
+        max-size: 8m
   slave1:
     image: redis:alpine
     hostname: redisslave1
@@ -411,7 +411,7 @@ services:
           - node.hostname==app02
     logging:
       options:
-        max-size: 50m
+        max-size: 8m
   slave2:
     image: redis:alpine
     hostname: redisslave2
@@ -429,7 +429,7 @@ services:
           - node.hostname==app03
     logging:
       options:
-        max-size: 50m
+        max-size: 8m
   slave3:
     image: redis:alpine
     hostname: redisslave3
@@ -447,7 +447,7 @@ services:
           - node.hostname==app01
     logging:
       options:
-        max-size: 50m
+        max-size: 8m
 
 networks:
   default:

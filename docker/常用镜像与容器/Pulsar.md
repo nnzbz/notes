@@ -37,7 +37,7 @@ services:
           #- node.hostname == app01
     logging:
       options:
-        max-size: 50m
+        max-size: 8m
 
 volumes:
   pulsardata:

@@ -39,7 +39,7 @@ services:
       - TZ=CST-8
     logging:
       options:
-        max-size: 50m
+        max-size: 8m
 networks:
   default:
     external: true
