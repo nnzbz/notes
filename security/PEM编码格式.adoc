@@ -1,0 +1,47 @@
+= PEM编码格式
+:scripts: cjk
+:toc:
+:toc-title: 目录
+:toclevels: 4
+
+== 简介
+. 全称
++
+Privacy-Enhanced Mail
+. 规范文档
++
+RFC 1421
+https://www.rfc-editor.org/rfc/rfc1421
+. 与DER区别
++
+其实 `PEM` 就是对 `DER` 的内容做了base64的编码并做了一下格式化的输出而已
+. 常见用处
++
+由于 `DER` 产生的是二进制格式数据，在许多系统（如电子邮件）中传输不便，所以需要使用ASCII表示DER格式的数据，这时候就常常用采用PEM格式
++
+`OpenSSL` 默认采用 `PEM` 格式存放证书
++
+`PEM` 是 `CA`（Certificate Authorities）颁发证书最常用的格式
++
+`Apache` 等服务器常使用 `PEM` 格式的证书
+
+== 格式
+[,pem]
+----
+-----BEGIN <标签>-----
+-----END <标签>-----
+----
+* <标签> 确定了被编码的信息的类型，可以是
+** CERTIFICATE
+** CERTIFICATE REQUEST
+** PRIVATE KEY
+** X509 CRL
+** ....
+* PEM数据的文件扩展名常为
+** .pem
+** .cer
+** .crt
+** .key"
+** ....
+* PEM文件可以包含多段数据实例
+* PEM格式并不管数据的内容和用途，因此PEM文件可以包括 `几乎任何基于base64编码的包夹在BEGIN和END头尾行之间的数据`
