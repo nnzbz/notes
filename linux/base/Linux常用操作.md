@@ -203,6 +203,7 @@ sed -i "s/mahuinan/huinanma/g" 'grep mahuinan -rl /www'
 
 ### 4.8. 批量删除
 
+- 方法1
 批量删除目录下级的多个目录或文件
 
 ```sh
@@ -216,6 +217,12 @@ find 查找目录 -type f -name ".class" -exec rm -rf {} \;
 - ```-name ".class"```：表示文件名与"*.class"匹配，双引号不能少！
 
 - ```rm -f {}``` : 删除时，不提示，{}表示查找到的文件
+
+- 方法2
+
+```sh
+find . -name "*.png" | xargs rm -rf
+```
 
 ## 5. 后台执行程序
 
