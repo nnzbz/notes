@@ -4,7 +4,11 @@
 
 ## 1. 设置
 
-### 1.1. 忽略显示文件/目录
+### 1.1. 修改 properties 文件编码
+
+`Settings...` -> `Editor` -> `File Encodings` -> `Properties Files(*.properties)` -> 下拉改变编码为 `UTF-8`
+
+### 1.2. 忽略显示文件/目录
 
 `Settings...` -> 输入 `file types` 搜索 -> `File Types` -> `Ignore files and folders:` -> 添加
 
@@ -14,25 +18,25 @@
 
 ![隐藏文件](隐藏文件.png)
 
-### 1.2. 竖向对齐
+### 1.3. 竖向对齐
 
 `Settings...` -> `Editor` -> `Code Style` -> `Java` -> `Wrapping and Braces` -> `Group declarations` -> 勾选 `Align fields in columns` 和 `Align variables in columns`
 
-### 1.3. 格式化自动折行
+### 1.4. 格式化自动折行
 
 `Settings...` -> `Editor` -> `Code Style` -> `java` -> `Wrapping and Braces` -> `Hard wrap at`，设置 `180`
 
 `Settings...` -> `Editor` -> `Code Style` -> `XML` -> `Other` -> `Hard wrap at`，设置 `180`
 
-### 1.4. 识别忽略格式化的标记
+### 1.5. 识别忽略格式化的标记
 
 `Settings...` -> `Editor` -> `Code Style` -> `Formatter Control` > 勾选 `Enable formatter markers in comments`
 
-### 1.5. 调试时启用Maven项目中 `provided` 的依赖
+### 1.6. 调试时启用Maven项目中 `provided` 的依赖
 
 `Run` -> `Edit Configurations` -> `Modify options` -> 勾选 `Add dependencies with "provided" scope to classpath`
 
-### 1.6. 热更新
+### 1.7. 热更新
 
 `Run` -> `Edit Configurations` -> `Running Application Update Policies` -> 两项全部选择 `Update classes and resources`
 
