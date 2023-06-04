@@ -25,7 +25,7 @@ nsenter 命令可以很方便的进入指定容器的网络命名空间，使用
 docker inspect -f {{.State.Pid}} <容器ID>
 
 # 使用nsenter进入网络命名空间
-nsenter -n -t<上个命令返回的pid数值>
+nsenter -n -t <上个命令返回的pid数值>
 
 # 查看网卡ip
 ip a

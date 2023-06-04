@@ -10,10 +10,11 @@ docker run -it -p 6650:6650  -p 8080:8080 --mount source=pulsardata,target=/puls
 
 ```sh
 mkdir -p /usr/local/pulsar
-vi /usr/local/pulsar/stack.yml
 ```
 
-```ini
+./usr/local/pulsar/stack.yml
+[,yaml]
+----
 version: '3.9'
 services:
   svr:
@@ -65,11 +66,12 @@ networks:
   default:
     external: true
     name: rebue
-```
+----
 
-```sh
+[,shell]
+----
 docker stack deploy -c /usr/local/pulsar/stack.yml pulsar
-```
+----
 
 == 设置密码
 . 进入容器
@@ -108,5 +110,8 @@ sed -i 's#src=/#src=/subpath/#g' /usr/share/nginx/html/index.html
 sed -i 's#\"static/js/\"#\"subpath/static/js/\"#g' /usr/share/nginx/html/index.html
 sed -i 's#\"static/css/\"#\"subpath/static/css/\"#g' /usr/share/nginx/html/index.html
 sed -i 's#/pulsar-manager#/subpath/pulsar-manager#g' /usr/share/nginx/html/static/js/*
+sed -i 's#\"/admin/#\"/subpath/admin/#g' /usr/share/nginx/html/static/js/*
+sed -i 's#\"/lookup/#\"/subpath/lookup/#g' /usr/share/nginx/html/static/js/*
+sed -i 's#localhost:8080#pulsar:8080#g' /usr/share/nginx/html/static/js/*
 sed -i 's#/static/#/subpath/static/#g' /usr/share/nginx/html/static/css/*
 ----
