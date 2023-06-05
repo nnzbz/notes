@@ -43,8 +43,11 @@ ruler:
   alertmanager_url: http://localhost:9093
 
 # XXX 下面才是修改的内容
+# 参考 https://cloud.tencent.com/developer/article/1822952
 limits_config:
+  # 令牌桶注入token的速率(默认为4)
   ingestion_rate_mb: 32
+  # #令牌桶的容量(默认为6)
   ingestion_burst_size_mb: 64
 ----
 
