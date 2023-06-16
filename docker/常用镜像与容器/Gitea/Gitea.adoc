@@ -111,3 +111,34 @@ docker stack deploy -c /usr/local/gitea/stack.yml gitea
 ****
 
 image::初始化设置基础URL.png[]
+
+== 修改文件并提交
+
+. 进入gitea容器
++
+[,shell]
+----
+docker exec -it <容器ID> bash
+----
+. 进入data目录
++
+[,shell]
+----
+cd /data
+----
+. clone
++
+[,shell]
+----
+git clone http://127.0.0.1:3000/***.git
+----
+. 修改本地文件
+. 提交并推送
++
+[,shell]
+----
+git add .
+git commit -m xxx
+git push
+....
+----

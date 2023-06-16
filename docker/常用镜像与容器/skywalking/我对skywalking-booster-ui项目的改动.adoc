@@ -1,0 +1,36 @@
+= 我对skywalking-booster-ui项目的改动
+
+== vite.config.ts
+[,ts]
+----
+......
+export default ({ mode }: ConfigEnv): UserConfig => {
+  const { VITE_SW_PROXY_TARGET } = loadEnv(mode, process.cwd());
+  return {
+    base: "/skywalking/",   // 添加这一行
+......
+----
+
+== src/graphql/fetch.ts
+[,ts]
+----
+......
+async function query(param: { queryStr: string; conditions: { [key: string]: unknown } }) {
+  const res: AxiosResponse = await axios.post(
+    "/skywalking/graphql",      // 原来是"/graphql"
+......
+----
+
+== src/graphql/index.ts
+[,ts]
+----
+......
+class Graphql {
+  ......
+  public params(variablesData: unknown): AxiosPromise<void> {
+    return axios
+      .post(
+        "/skywalking/graphql",  // 原来是"/graphql"
+......
+----
+
