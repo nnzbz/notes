@@ -1,8 +1,6 @@
-# SkyWalking
+= SkyWalking
 
-[TOC]
-
-## 1. Swarm
+== Swarm
 
 ```sh
 mkdir /usr/local/skywalking
@@ -17,6 +15,8 @@ services:
     image: apache/skywalking-oap-server
     hostname: skywalking-oap
     environment:
+      # 允许更改界面
+      - SW_ENABLE_UPDATE_UI_TEMPLATE=true
       # 默认是H2
       - SW_STORAGE=elasticsearch
       # ElasticSearch服务器地址
