@@ -302,8 +302,8 @@ files = /usr/local/etc/supervisor.d/*.ini
 
 . 编辑进程的配置文件
 +
-** /etc/supervisord.d/frpc.ini(linux)
-** /usr/local/etc/supervisor.d/frpc.ini(mac)
+** linux->/etc/supervisord.d/frpc.ini
+** mac->/usr/local/etc/supervisor.d/frpc.ini
 +
 [,ini]
 ----
