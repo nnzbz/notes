@@ -130,15 +130,22 @@ cd /data
 +
 [,shell]
 ----
-git clone http://127.0.0.1:3000/***.git
+# 克隆(vertx为建的账户，vertx-config为账户下建的仓库)
+git clone http://127.0.0.1:3000/vertx/vertx-config.git
 ----
 . 修改本地文件
 . 提交并推送
 +
 [,shell]
 ----
+# 如果未设置git提交账号和邮箱，请进行设置；如果已经设置过，请忽略下面两行
+git config --global user.email "vertx@qq.com"
+git config --global user.name "vertx"
+# 添加索引
 git add .
+# 提交
 git commit -m xxx
+# 推送
 git push
 ....
 ----
