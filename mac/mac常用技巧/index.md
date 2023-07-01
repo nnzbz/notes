@@ -2,13 +2,21 @@
 
 [TOC]
 
-## 1. 设置开机默认启动MacOS
+## 1. 每次升级MacOS版本后
+
+每次升级MacOS版本后都会导致 `Xcode command line tools` 丢失，所以要重装此工具
+
+```sh
+xcode-select --install
+```
+
+## 2. 设置开机默认启动MacOS
 
 `系统偏好设置` > `启动磁盘` > 选择 `Macintosh HD` > 点击 `重新启动`
 
-## 2. 自动登录
+## 3. 自动登录
 
-## 3. 启用 ```root``` 用户
+## 4. 启用 ```root``` 用户
 
 1. 选取苹果菜单 () >“系统偏好设置”，然后点按“用户与群组”（或“帐户”）。
 2. 点按 锁形图标，然后输入管理员名称和密码。
@@ -19,7 +27,7 @@
 7. 从“目录实用工具”的菜单栏中：
  选取“编辑”>“启用 Root 用户”，然后输入要用于 ```root``` 用户的密码。
 
-## 4. 创建ll命令
+## 5. 创建ll命令
 
 ```sh
 vi ~/.bash_rc
@@ -35,36 +43,36 @@ alias rm='rm -i'
 . ~/.bashrc
 ```
 
-## 5. 设置dock靠左显示
+## 6. 设置dock靠左显示
 
 
-## 6. 设置默认不启用fn功能
+## 7. 设置默认不启用fn功能
 
-## 7. 在Finder中将文件夹加入favorites
+## 8. 在Finder中将文件夹加入favorites
 
 选择文件夹 > ```control-command-T```
 
-## 8. 在Finder中快速进入当前目录的命令行
+## 9. 在Finder中快速进入当前目录的命令行
 
 从 ```Finder``` > ```Services``` > ```Services Preferences``` > 选中 ```New Terminal at Folder``` 和 ```New Terminal Tab at Folder```
 
-## 9. 复制/移动大于2G的文件到FAT32格式的U盘中
+## 10. 复制/移动大于2G的文件到FAT32格式的U盘中
 
 ```sh
 cp/mv DQ11.cia /Volumes/UNTITLED/
 ```
 
-## 10. 设置hosts
+## 11. 设置hosts
 
 ```sh
 sudo vim /etc/hosts
 ```
 
-## 11. 设置 .bash_profile 生效
+## 12. 设置 .bash_profile 生效
 
 Mac下采用 *zsh* 代替 *bash*，而 *zsh* 加载的是 *~/.zshrc* 文件，所以要在 *.zshrc* 文件中增加一行 *source ~/.bash_profile*，这样才能让 *.bash_profile* 中设置的环境变量生效
 
-## 12. 左手鼠标
+## 13. 左手鼠标
 
 `Mousecape`，这东西本来是拿来自定义鼠标指针的，也很贴心的给了换方向的功能
 
@@ -88,7 +96,7 @@ Mac下采用 *zsh* 代替 *bash*，而 *zsh* 加载的是 *~/.zshrc* 文件，�
 OK~~~
 
 
-## 13. 常见问题
+## 14. 常见问题
 
 1. xxx已损坏，打不开，您应该将它移到废纸篓以及来自身份不明的开发者
 
