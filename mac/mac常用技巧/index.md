@@ -60,7 +60,11 @@ cp/mv DQ11.cia /Volumes/UNTITLED/
 sudo vim /etc/hosts
 ```
 
-## 11. 左手鼠标
+## 11. 设置 .bash_profile 生效
+
+Mac下采用 *zsh* 代替 *bash*，而 *zsh* 加载的是 *~/.zshrc* 文件，所以要在 *.zshrc* 文件中增加一行 *source ~/.bash_profile*，这样才能让 *.bash_profile* 中设置的环境变量生效
+
+## 12. 左手鼠标
 
 `Mousecape`，这东西本来是拿来自定义鼠标指针的，也很贴心的给了换方向的功能
 
@@ -84,7 +88,7 @@ sudo vim /etc/hosts
 OK~~~
 
 
-## 12. 常见问题
+## 13. 常见问题
 
 1. xxx已损坏，打不开，您应该将它移到废纸篓以及来自身份不明的开发者
 
