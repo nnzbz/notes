@@ -1,0 +1,61 @@
+= GrallVm入门
+:scripts: cjk
+:toc:
+:toc-title: 目录
+:toclevels: 2
+:doctype: book
+
+== 下载地址
+https://github.com/graalvm/graalvm-ce-builds/releases
+
+== 安装
+=== MAC
+. 参考
+  https://www.graalvm.org/latest/docs/getting-started/macos/
+. 解压
++
+[,shell]
+----
+tar -xzf graalvm-community-jdk-<version>_macos-<architecture>.tar.gz
+----
+. 移动解压后的文件到系统存放JVM的目录
++
+[,shell]
+----
+sudo mv graalvm-community-openjdk-<version> /Library/Java/JavaVirtualMachines
+----
+验证是否成功: 运行 `/usr/libexec/java_home -V`，在列出已安装的JVM列表中查看是否有本次安装的JVM
+. 设置环境变量
+编辑系统配置文件
++
+[,shell]
+----
+vi ~/.bash_profile
+----
++
+..bash_profile
+[,ini]
+----
+....
+export JAVA_HOME=/Library/Java/JavaVirtualMachines/<graalvm>/Contents/Home
+GRAALVM_HOME=$JAVA_HOME
+export PATH=$JAVA_HOME/bin:$PATH
+----
+让配置文件起效
++
+[,shell]
+----
+. ~/.bash_profile
+----
+. 验证是否安装成功
++
+[,shell]
+----
+java -version
+----
+. 安装 `native-image`
++
+[,shell]
+----
+gu install native-image
+----
