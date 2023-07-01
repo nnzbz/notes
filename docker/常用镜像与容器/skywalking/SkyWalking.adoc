@@ -13,7 +13,6 @@ version: "3.9"
 services:
   oap:
     image: apache/skywalking-oap-server
-    hostname: skywalking-oap
     environment:
       # 允许更改界面
       - SW_ENABLE_UPDATE_UI_TEMPLATE=true
@@ -28,6 +27,7 @@ services:
       # 最好使用此设定时区，其它镜像也可以使用
       - TZ=CST-8
     deploy:
+      endpoint_mode: dnsrr
       placement:
         constraints:
           - node.labels.role==app

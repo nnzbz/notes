@@ -43,7 +43,7 @@ version: '3.9'
 services:
   zoo:
     image: zookeeper
-    hostname: zoo
+    # hostname: zoo
     #ports:
     #  - 2181:2181
     environment:
@@ -58,6 +58,8 @@ services:
     logging:
       options:
         max-size: 8m
+    deploy:
+      endpoint_mode: dnsrr
 
 volumes:
   zoodata:
@@ -90,12 +92,12 @@ version: '3.9'
 services:
   zoo1:
     image: zookeeper
-    hostname: zoo1
+    # hostname: zoo1
     #ports:
     #  - 2181:2181
     environment:
       - ZOO_MY_ID=1
-      - ZOO_SERVERS=server.1=zoo1:2888:3888;2181 server.2=zoo2:2888:3888;2181 server.3=zoo3:2888:3888;2181
+      - ZOO_SERVERS=server.1=zookeeper_zoo1:2888:3888;2181 server.2=zookeeper_zoo2:2888:3888;2181 server.3=zookeeper_zoo3:2888:3888;2181
       # 嵌入的Admin服务器，默认为true
       - ZOO_ADMINSERVER_ENABLED=false
       # 开放监控客户端的白名单(EFAK监控需要打开)
@@ -107,14 +109,16 @@ services:
     logging:
       options:
         max-size: 8m
+    deploy:
+      endpoint_mode: dnsrr
   zoo2:
     image: zookeeper
-    hostname: zoo2
+    # hostname: zoo2
     #ports:
     #  - 2182:2181
     environment:
       - ZOO_MY_ID=2
-      - ZOO_SERVERS=server.1=zoo1:2888:3888;2181 server.2=zoo2:2888:3888;2181 server.3=zoo3:2888:3888;2181
+      - ZOO_SERVERS=server.1=zookeeper_zoo1:2888:3888;2181 server.2=zookeeper_zoo2:2888:3888;2181 server.3=zookeeper_zoo3:2888:3888;2181
       # 嵌入的Admin服务器，默认为true
       - ZOO_ADMINSERVER_ENABLED=false
       # 开放监控客户端的白名单(EFAK监控需要打开)
@@ -126,14 +130,16 @@ services:
     logging:
       options:
         max-size: 8m
+    deploy:
+      endpoint_mode: dnsrr
   zoo3:
     image: zookeeper
-    hostname: zoo3
+    # hostname: zoo3
     #ports:
     #  - 2183:2181
     environment:
       - ZOO_MY_ID=3
-      - ZOO_SERVERS=server.1=zoo1:2888:3888;2181 server.2=zoo2:2888:3888;2181 server.3=zoo3:2888:3888;2181
+      - ZOO_SERVERS=server.1=zookeeper_zoo1:2888:3888;2181 server.2=zookeeper_zoo2:2888:3888;2181 server.3=zookeeper_zoo3:2888:3888;2181
       # 嵌入的Admin服务器，默认为true
       - ZOO_ADMINSERVER_ENABLED=false
       # 开放监控客户端的白名单(EFAK监控需要打开)
@@ -145,6 +151,8 @@ services:
     logging:
       options:
         max-size: 8m
+    deploy:
+      endpoint_mode: dnsrr
 
 volumes:
   zoo1data:
