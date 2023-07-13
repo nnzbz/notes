@@ -76,6 +76,7 @@ services:
       # SSH端口
       #- "220:22"
     deploy:
+      endpoint_mode: dnsrr
       placement:
         constraints:
           # 限定部署的节点
