@@ -31,6 +31,7 @@ services:
       - TZ=CST-8
     command: bin/pulsar standalone
     deploy:
+      endpoint_mode: dnsrr
       placement:
         constraints:
           # 部署的节点指定是app角色的
@@ -41,7 +42,7 @@ services:
         max-size: 8m
   manager:
     image: apachepulsar/pulsar-manager
-    hostname: pulsar-manager
+#    hostname: pulsar-manager
 #    ports:
 #      - 9527:9527
 #      - 7750:7750
@@ -50,6 +51,7 @@ services:
       # 最好使用此设定时区，其它镜像也可以使用
       - TZ=CST-8
     deploy:
+      endpoint_mode: dnsrr
       placement:
         constraints:
           # 部署的节点指定是app角色的
@@ -73,6 +75,23 @@ networks:
 docker stack deploy -c /usr/local/pulsar/stack.yml pulsar
 ----
 
+== 管理网站支持子路径
+. 进入docker容器
+. 编辑网页文件，加上子路径(这里假设子路径为/pulsar-manager/)
++
+[,shell]
+----
+sed -i 's#href=/#href=/pulsar-manager/#g' /usr/share/nginx/html/index.html
+sed -i 's#src=/#src=/pulsar-manager/#g' /usr/share/nginx/html/index.html
+sed -i 's#\"static/js/\"#\"pulsar-manager/static/js/\"#g' /usr/share/nginx/html/index.html
+sed -i 's#\"static/css/\"#\"pulsar-manager/static/css/\"#g' /usr/share/nginx/html/index.html
+sed -i 's#/pulsar-manager#/pulsar-manager/pulsar-manager#g' /usr/share/nginx/html/static/js/*
+sed -i 's#\"/admin/#\"/pulsar-manager/admin/#g' /usr/share/nginx/html/static/js/*
+sed -i 's#\"/lookup/#\"/pulsar-manager/lookup/#g' /usr/share/nginx/html/static/js/*
+sed -i 's#localhost:8080#pulsar:8080#g' /usr/share/nginx/html/static/js/*
+sed -i 's#/static/#/pulsar-manager/static/#g' /usr/share/nginx/html/static/css/*
+----
+
 == 设置密码
 . 进入容器
 . 设置密码
@@ -88,7 +107,6 @@ curl \
 ----
 
 == 登录管理界面
-
 * 地址
   http://localhost:9527
 * 默认账号与密码:
@@ -96,22 +114,5 @@ curl \
 * New Environment
   * Environment Name: 随便填
   * Service URL: http://pulsar:8080
-  * Bookie URL: http://pulsar:8080(不知道有什么用，随便填)
+  * Bookie URL: http://pulsar:6650(不知道有什么用)
 
-== 管理网站支持子路径
-
-. 进入docker容器
-. 编辑网页文件，加上子路径
-+
-[,shell]
-----
-sed -i 's#href=/#href=/subpath/#g' /usr/share/nginx/html/index.html
-sed -i 's#src=/#src=/subpath/#g' /usr/share/nginx/html/index.html
-sed -i 's#\"static/js/\"#\"subpath/static/js/\"#g' /usr/share/nginx/html/index.html
-sed -i 's#\"static/css/\"#\"subpath/static/css/\"#g' /usr/share/nginx/html/index.html
-sed -i 's#/pulsar-manager#/subpath/pulsar-manager#g' /usr/share/nginx/html/static/js/*
-sed -i 's#\"/admin/#\"/subpath/admin/#g' /usr/share/nginx/html/static/js/*
-sed -i 's#\"/lookup/#\"/subpath/lookup/#g' /usr/share/nginx/html/static/js/*
-sed -i 's#localhost:8080#pulsar:8080#g' /usr/share/nginx/html/static/js/*
-sed -i 's#/static/#/subpath/static/#g' /usr/share/nginx/html/static/css/*
-----
