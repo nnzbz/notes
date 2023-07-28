@@ -1,0 +1,97 @@
+= Swarm删除节点并重新加入
+:scripts: cjk
+:toc:
+:toc-title: 目录
+:toclevels: 4
+
+== 场景
+在swarm网络中经常出现网络内部连不通的情况，这里就需要删除该节点并重新加入
+[NOTE]
+====
+注意:删除节点再加入后，要记得重新设置节点的role
+====
+
+== 获取 node 信息
+[,shell]
+----
+docker node ls
+----
+
+== 删除节点
+=== 删除manager节点
+删除manager节点要先将manager节点降级为worker节点，再删除
+
+. 将Manager节点降级为worker节点
++
+[,shell]
+----
+docker node demote <node的ID>
+----
+. 同下一节 <删除worker节点> (略)
+
+=== 删除worker节点
+. 在 manager 上操作: 让 node 离开，排空 node 的容器
++
+[,shell]
+----
+docker node update --availability drain <node的ID>
+----
+. 在要删除的 node 上操作: 让 node 主动离开集群，让节点处于down状态
++
+[,shell]
+----
+docker swarm leave
+----
+. 在 manager 上操作: 删除 node节点
++
+[,shell]
+----
+docker node rm <node的ID>
+----
+
+== 加入节点
+=== 加入manager节点
+. 在 manager 上操作:
++
+[,shell]
+----
+# 查看加入的命令
+docker swarm join-token manager
+----
+在运行命令后可以得到加入的指令，形式如下:
++
+[,shell]
+----
+docker swarm join --token xxxxx <集群节点IP>:<PORT>
+----
+. 在要加入的节点下操作:
++
+运行上一步获取的命令
+
+=== 加入worker节点
+. 在 manager 上操作:
++
+[,shell]
+----
+# 查看加入的命令
+docker swarm join-token worker
+----
+在运行命令后可以得到加入的指令，形式如下:
++
+[,shell]
+----
+docker swarm join --token xxxxx <集群节点IP>:<PORT>
+----
+. 在要加入的节点下操作:
++
+运行上一步获取的命令
+
+== 将节点加入角色
+在 manager 上操作:
+[,shell]
+----
+# 将节点加入角色
+docker node update --label-add role=<要加入的角色> <节点ID>
+# 查看节点的角色
+docker node inspect <节点ID> | grep Labels -A 2
+----
