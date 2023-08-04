@@ -89,6 +89,8 @@ cdn_url = http://xxx.xxx.xxx.xx:xxxxx/
 ----
 ****
 * 修改 *domain* 的值为实际的域名
+* *root_url* 后缀后面的 */grafana/* 为子路径，可根据实际情况设置
+* *serve_from_sub_path* 设置为 *true* 将启用子路径
 * 修改 *cdn_url* 的值为CDN的地址
 ** 实际CDN的访问地址会是 http://xxx.xxx.xxx.xx:xxxxx/grafana-oss/10.0.2/public/build/xxxxx.js
 +

@@ -68,6 +68,8 @@ services:
     volumes:
       - giteadata:/data
     environment:
+      # 实际访问gitea的地址
+      - GITEA__server_ROOT_URL=https://xxx.xxx.xxx.xxx:xxxxx/gitea/
       # 最好使用此设定时区，其它镜像也可以使用
       - TZ=CST-8
     #ports:
@@ -93,6 +95,10 @@ networks:
     external: true
     name: rebue
 ----
+
+****
+注意修改 *GITEA__server_ROOT_URL* 的值为实际访问gitea的地址
+****
 
 - 部署
 

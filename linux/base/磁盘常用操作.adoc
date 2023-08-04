@@ -1,0 +1,107 @@
+= 磁盘常见操作
+:scripts: cjk
+:toc:
+:toc-title: 目录
+:toclevels: 4
+:source-highlighter: pygments
+
+== 查看未加载的磁盘
+[,shell]
+----
+lsblk
+----
+示例解析
+[,shell]
+----
+NAME            MAJ:MIN RM   SIZE RO TYPE MOUNTPOINT
+sr0              11:0    1 131.4M  0 rom
+vda             252:0    0    60G  0 disk
+├─vda1          252:1    0   500M  0 part /boot
+└─vda2          252:2    0    59G  0 part
+  ├─centos-root 253:0    0    55G  0 lvm  /
+  └─centos-swap 253:1    0     4G  0 lvm  [SWAP]
+vdb             252:16   0    64M  0 disk
+└─vdb1          252:17   0    63M  0 part
+vdc             252:32   0   200G  0 disk
+└─ez01          253:2    0   180G  0 lvm  /opt/finance
+vdd             252:48   0   250G  0 disk <.>
+----
+<.> 可见示例中 vdd 的类型为 disk，而其下并没有分支，说明 vdd 是未加载的磁盘
+
+== 查看数据盘
+[,shell]
+----
+fdisk -l
+----
+
+== 对磁盘进行分区
+当磁盘小于等于2T时，用fdisk，大于2T时，用parted
+
+[,shell]
+----
+fdisk /dev/vdd
+....
+----
+
+- n 新建分区
+- w 写入(把所有操作都执行完后再写入，如操作有误可以未写入就直接退出)
+- q 退出
+
+== 将新建分区文件系统设为系统所需格式
+[,shell]
+----
+mkfs -t ext4 /dev/vdd
+....
+----
+
+== 挂载
+[,shell]
+----
+mount /dev/vdd <挂载的路径>
+# 查看挂载结果
+df -TH
+----
+
+== 设置开机自动挂载
+. 查询磁盘分区的UUID
++
+不建议直接指定设备名（比如/dev/sdb1），因为云中设备的顺序编码在关闭或者开启云服务器过程中可能发生改变，所以要查出分区的UUID
++
+[,shell]
+----
+blkid
+----
+. 编辑fstab
++
+[,shell]
+----
+vi /etc/fstab
+----
+. 添加如下内容
++
+[,shell]
+----
+UUID=a02994bc-b51c-4120-abee-9527c8fc9212 /usr/local ext4 defaults 0 0
+----
+. 说明
+** 第1列 UUID
+** 第2列 磁盘分区的挂载目录，可以通过 `df -TH` 命令查询
+** 第3列 磁盘分区的文件系统格式，可以通过 `df -TH` 命令查询
+** 第4列 磁盘分区的挂载选项，此处通常设置为defaults即可
+** 第5列 Linux dump备份选项
+*** 0 表示不使用Linux dump备份。现在通常不使用dump备份，此处设置为0即可
+*** 1 表示使用Linux dump备份
+** 第6列 fsck选项，即开机时是否使用fsck检查磁盘
+*** 0 表示不检验
+*** 挂载点为（/）根目录的分区，此处必须填写1；根分区设置为1，其他分区只能从2开始，系统会按照数字从小到大依次检查下去
+. 检查是否设置成功
++
+[,shell]
+----
+# 卸载已挂载的分区
+umount /dev/vdd
+# 将“/etc/fstab”文件所有内容重新加载
+mount -a
+# 检查
+df -TH
+----
