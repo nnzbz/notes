@@ -50,22 +50,25 @@ fdisk /dev/vdd
 == 将新建分区文件系统设为系统所需格式
 [,shell]
 ----
-mkfs -t ext4 /dev/vdd
+mkfs -t ext4 /dev/vdd1
 ....
 ----
 
 == 挂载
 [,shell]
 ----
-mount /dev/vdd <挂载的路径>
+# 挂载分区
+mount /dev/vdd1 <挂载的路径>
 # 查看挂载结果
 df -TH
+# 卸载已挂载的分区
+umount /dev/vdd1
 ----
 
 == 设置开机自动挂载
 . 查询磁盘分区的UUID
 +
-不建议直接指定设备名（比如/dev/sdb1），因为云中设备的顺序编码在关闭或者开启云服务器过程中可能发生改变，所以要查出分区的UUID
+不建议直接指定设备名（比如/dev/vdd1），因为云中设备的顺序编码在关闭或者开启云服务器过程中可能发生改变，所以要查出分区的UUID
 +
 [,shell]
 ----
@@ -99,7 +102,7 @@ UUID=a02994bc-b51c-4120-abee-9527c8fc9212 /usr/local ext4 defaults 0 0
 [,shell]
 ----
 # 卸载已挂载的分区
-umount /dev/vdd
+umount /dev/vdd1
 # 将“/etc/fstab”文件所有内容重新加载
 mount -a
 # 检查
