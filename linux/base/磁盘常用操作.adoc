@@ -108,3 +108,47 @@ mount -a
 # 检查
 df -TH
 ----
+
+== 卸载分区如果报错 `umount target is busy`
+可尝试的方法有三种
+
+=== 使用 `fuser`
+. 查看使用分区的进程
++
+[,shell]
+----
+fuser -mv /dev/vdd1
+----
+. 杀死占用的进程(可能会结束当前bash进程)
++
+[,shell]
+----
+fuser -kv /dev/vdd1
+----
+. 或者
++
+[,shell]
+----
+kill -9 <查看到的PID>
+----
+
+=== 使用 `lsof`
+. 查看使用分区的进程
++
+[,shell]
+----
+lsof /dev/vdd1
+----
+. 杀死占用的进程
++
+[,shell]
+----
+kill -9 <查看到的PID>
+----
+
+=== 重启linux
+重启系统
+[NOTE]
+====
+如果配置了自动挂载，要去掉自动挂载再重启
+====
