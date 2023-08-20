@@ -1,0 +1,32 @@
+= vue模板中定义和使用临时变量
+
+有时候在模板中循环中，需要去计算一个值，并且多次使用。因为是一个循环，所以不太好使用computed，就不得不需要多次计算
+
+[,html]
+----
+<li v-for="(item,index) in list" :key="index">
+  <div>{{method(item.key)}}</div>
+  <div>{{method(item.key)}}</div>
+</li>
+----
+
+这种情况可以在模板中临时定义一个临时变量
+
+[,html]
+----
+<li v-for="(item,index) in list" :key="index" :data-var="value = method(item.key)">
+  <div>{{value}}</div>
+  <div>{{value}}</div>
+</li>
+----
+
+并不是只能使用data-var，这个是随意写的，只是一个承载这个临时变量的载体，你也可以这样写。
+
+[,html]
+----
+<li v-for="(item,index) in list" :key="index">
+  {{ void (value = method(item.key)) }}
+  <div>{{value}}</div>
+  <div>{{value}}</div>
+</li>
+----
