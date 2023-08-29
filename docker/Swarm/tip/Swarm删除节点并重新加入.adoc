@@ -16,6 +16,16 @@
 ----
 docker node ls
 ----
+如果报错
+[,shell]
+----
+Error response from daemon: rpc error: code = Unknown desc = The swarm does not have a leader. It's possible that too few managers are online. Make sure more than half of the managers are online.
+----
+执行下面命令重新初始化swarm
+[,shell]
+----
+docker swarm init --force-new-cluster
+----
 
 == 删除节点
 === 删除manager节点
