@@ -1,0 +1,14 @@
+= curl上传文件
+:toc:
+:toc-title: 目录
+
+== 示例
+[,shell]
+----
+curl -F "file=@/xxx/xxx/xxxxx.doc" \
+-F "param1=1.2" \
+-F "param2=测试文件" \
+-H "Expect:" \
+-H 'Cookie: jsprod=03d2a9be-98bc-4329-6105-f7d61c83a212' \
+http://xxx.xxx.xxx.xxx:xxxxxx/upload
+----
