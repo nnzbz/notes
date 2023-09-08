@@ -33,7 +33,7 @@ do
         default.rsync,
         source = "/usr/local",                      -- 源地址
         target = target .. ":/usr/local",           -- 目的地址
-        exclude = { "logs/*" },                     -- 排除不需要同步的文件或文件夹
+        exclude = { "log/*/*" },                     -- 排除不需要同步的文件或文件夹
         rsync = {
             archive = true,
             compress = true

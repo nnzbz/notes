@@ -320,7 +320,15 @@ cp /usr/local/redis/master1/redis.conf /usr/local/redis/slave2/
 cp /usr/local/redis/master1/redis.conf /usr/local/redis/slave3/
 ```
 
-- 注意修改配置文件中的 `redismaster1` 为对应的主机名(redismaster2/redismaster3/redismslave1/redismslave2/redismslave3)
+- 注意修改配置文件中的 `redismaster1` 为对应的主机名(redismaster2/redismaster3/redisslave1/redisslave2/redisslave3)
+
+```sh
+sed -i "s/redismaster1/redismaster2/g" /usr/local/redis/master2/redis.conf
+sed -i "s/redismaster1/redismaster3/g" /usr/local/redis/master3/redis.conf
+sed -i "s/redismaster1/redisslave1/g" /usr/local/redis/slave1/redis.conf
+sed -i "s/redismaster1/redisslave2/g" /usr/local/redis/slave2/redis.conf
+sed -i "s/redismaster1/redisslave3/g" /usr/local/redis/slave3/redis.conf
+```
 
 ### 4.2. Docker Compose
 
@@ -345,6 +353,7 @@ services:
       - net.core.somaxconn=2048
     command: redis-server /usr/local/redis/redis.conf
     deploy:
+      endpoint_mode: dnsrr
       placement:
         constraints:
           # 部署的节点指定是app角色的
@@ -366,6 +375,7 @@ services:
       - net.core.somaxconn=2048
     command: redis-server /usr/local/redis/redis.conf
     deploy:
+      endpoint_mode: dnsrr
       placement:
         constraints:
           # 部署的节点指定是app角色的
@@ -387,6 +397,7 @@ services:
       - net.core.somaxconn=2048
     command: redis-server /usr/local/redis/redis.conf
     deploy:
+      endpoint_mode: dnsrr
       placement:
         constraints:
           # 部署的节点指定是app角色的
@@ -405,6 +416,7 @@ services:
       - /usr/local/redis/slave1/:/usr/local/redis/:z
     command: redis-server /usr/local/redis/redis.conf
     deploy:
+      endpoint_mode: dnsrr
       placement:
         constraints:
           # 部署的节点指定是app角色的
@@ -423,6 +435,7 @@ services:
       - /usr/local/redis/slave2/:/usr/local/redis/:z
     command: redis-server /usr/local/redis/redis.conf
     deploy:
+      endpoint_mode: dnsrr
       placement:
         constraints:
           # 部署的节点指定是app角色的
@@ -441,6 +454,7 @@ services:
       - /usr/local/redis/slave3/:/usr/local/redis/:z
     command: redis-server /usr/local/redis/redis.conf
     deploy:
+      endpoint_mode: dnsrr
       placement:
         constraints:
           # 部署的节点指定是app角色的

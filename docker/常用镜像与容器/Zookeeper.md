@@ -103,9 +103,9 @@ services:
       # 开放监控客户端的白名单(EFAK监控需要打开)
       - ZOO_4LW_COMMANDS_WHITELIST=*
       - TZ=CST-8
-    volumes:
-      - zoo1data:/data:z
-      - zoo1datalog:/datalog:z
+    # volumes:
+    #   - zoo1data:/data:z
+    #   - zoo1datalog:/datalog:z
     logging:
       options:
         max-size: 8m
@@ -124,9 +124,9 @@ services:
       # 开放监控客户端的白名单(EFAK监控需要打开)
       - ZOO_4LW_COMMANDS_WHITELIST=*
       - TZ=CST-8
-    volumes:
-      - zoo2data:/data:z
-      - zoo2datalog:/datalog:z
+    # volumes:
+    #   - zoo2data:/data:z
+    #   - zoo2datalog:/datalog:z
     logging:
       options:
         max-size: 8m
@@ -145,22 +145,22 @@ services:
       # 开放监控客户端的白名单(EFAK监控需要打开)
       - ZOO_4LW_COMMANDS_WHITELIST=*
       - TZ=CST-8
-    volumes:
-      - zoo3data:/data:z
-      - zoo3datalog:/datalog:z
+    # volumes:
+    #   - zoo3data:/data:z
+    #   - zoo3datalog:/datalog:z
     logging:
       options:
         max-size: 8m
     deploy:
       endpoint_mode: dnsrr
 
-volumes:
-  zoo1data:
-  zoo1datalog:
-  zoo2data:
-  zoo2datalog:
-  zoo3data:
-  zoo3datalog:
+# volumes:
+#   zoo1data:
+#   zoo1datalog:
+#   zoo2data:
+#   zoo2datalog:
+#   zoo3data:
+#   zoo3datalog:
 
 networks:
   default:
