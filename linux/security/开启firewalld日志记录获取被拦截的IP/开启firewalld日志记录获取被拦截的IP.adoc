@@ -1,0 +1,50 @@
+= 开启firewalld日志记录获取被拦截的IP
+:scripts: cjk
+:toc:
+:toc-title: 目录
+:toclevels: 4
+
+. 查看是否记录日志
++
+[,shell]
+----
+firewall-cmd --get-log-denied
+----
+firewalld的默认配置是不记录日志
+. 开启记录日志
++
+[,shell]
+----
+firewall-cmd --set-log-denied=all
+----
+. 触发拒绝事件
+可通过 `curl`、`telnet`、`nc` 等工具触发
++
+[,shell]
+----
+curl -v 10.0.0.17:9200
+----
+或者
++
+[,shell]
+----
+telnet 10.0.0.17 9200
+----
+或者
++
+[,shell]
+----
+nc -vz 10.0.0.17 9200
+----
+. 通过日志来判断出被拒绝的IP
++
+[,shell]
+----
+tail -f /var/log/messages
+----
+或者
++
+[,shell]
+----
+dmesg | grep -i REJECT | grep DPT=9200
+----

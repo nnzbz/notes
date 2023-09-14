@@ -37,10 +37,6 @@ mkdir -p /usr/local/gogs/conf
 ./usr/local/gogs/conf/app.ini
 [source,ini,linenums]
 ----
-BRAND_NAME = Gogs
-RUN_USER   = git
-RUN_MODE   = prod
-
 [database]
 TYPE     = sqlite3
 HOST     = 127.0.0.1:5432
@@ -51,10 +47,6 @@ PASSWORD =
 SSL_MODE = disable
 PATH     = data/gogs.db
 
-[repository]
-ROOT           = /data/git/gogs-repositories
-DEFAULT_BRANCH = master
-
 [server]
 DOMAIN           = localhost
 HTTP_PORT        = 3000
@@ -63,35 +55,12 @@ DISABLE_SSH      = false
 SSH_PORT         = 22
 START_SSH_SERVER = false
 OFFLINE_MODE     = false
-
-[mailer]
-ENABLED = false
-
-[auth]
-REQUIRE_EMAIL_CONFIRMATION  = false
-DISABLE_REGISTRATION        = false
-ENABLE_REGISTRATION_CAPTCHA = true
-REQUIRE_SIGNIN_VIEW         = false
-
-[user]
-ENABLE_EMAIL_NOTIFICATION = false
-
-[picture]
-DISABLE_GRAVATAR        = false
-ENABLE_FEDERATED_AVATAR = false
-
-[session]
-PROVIDER = file
-
-[log]
-MODE      = file
-LEVEL     = Info
-ROOT_PATH = /app/gogs/log
-
-[security]
-INSTALL_LOCK = true
-SECRET_KEY   = qJCeUz5wSkOFIof
 ----
+
+[NOTE]
+====
+注意修改 *EXTERNAL_URL* 的值为外部访问的地址
+====
 
 ./usr/local/gogs/stack.yml
 [source,yaml,linenums]
@@ -125,9 +94,10 @@ networks:
     name: rebue
 ----
 
-****
+[NOTE]
+====
 注意修改 *node.hostname* 的值为实际部署的服务器的主机名
-****
+====
 
 - 部署
 

@@ -31,7 +31,7 @@ docker swarm init --force-new-cluster
 === 删除manager节点
 删除manager节点要先将manager节点降级为worker节点，再删除
 
-. 将Manager节点降级为worker节点
+. 在 manager 上操作: 将Manager节点降级为worker节点
 +
 [,shell]
 ----
