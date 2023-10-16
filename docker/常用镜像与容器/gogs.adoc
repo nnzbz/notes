@@ -103,7 +103,7 @@ networks:
 
 [,shell]
 ----
-
+docker stack deploy -c /usr/local/gogs/stack.yml gogs
 ----
 
 

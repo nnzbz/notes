@@ -1,0 +1,58 @@
+= 安装CentOS后常见操作
+
+== 修改UTF-8
+./etc/locale.conf
+[,ini]
+----
+LANG="en_US.UTF-8"
+----
+
+修改好后执行下面命令
+[,shell]
+----
+. /etc/locale.conf
+----
+
+== 修改hostname
+- 使用hostnamectl命令
++
+[,shell]
+----
+# 查看
+hostname
+# 修改
+hostnamectl set-hostname www.xxx.com
+# 再次查看
+hostname
+----
+
+- 在/etc/hosts文件的127.0.0.1的末尾添加hostname
++
+./etc/hosts
+[,ini]
+----
+....
+127.0.0.1 www.xxx.com
+----
+
+== 查看系统版本
+[,shell]
+----
+cat /etc/*-release
+----
+
+== 安装EPEL
+[,shell]
+----
+yum install epel-release -y
+----
+
+== 升级系统版本
+[,shell]
+----
+yum clean all
+yum update
+reboot
+----
+
+
