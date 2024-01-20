@@ -1,0 +1,25 @@
+= 升级nodejs
+
+. 安装 `n` 包
++
+[,shell]
+----
+npm install -g n
+----
+
+. 升级
++
+[,shell]
+----
+# 升级到最新长期支持版本
+n lts
+# 升级到最新版本
+n latest
+----
+
+. 删除以前安装的版本
++
+[,shell]
+----
+n prune
+----

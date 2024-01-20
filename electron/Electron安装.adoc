@@ -1,0 +1,94 @@
+= Electron安装
+:scripts: cjk
+:toc:
+:toc-title: 目录
+:toclevels: 4
+
+== 设置国内镜像
+[,shell]
+----
+pnpm config set ELECTRON_MIRROR https://npmmirror.com/mirrors/electron/
+----
+
+或者在项目根目录新建 `.npmrc`，内容：
+[,shell]
+----
+electron_mirror=https://npmmirror.com/mirrors/electron/
+----
+
+== 创建Demo项目
+. 进入要创建项目的上层目录
+. 创建项目
++
+[,shell]
+----
+pnpm init electron-app@latest my-app -- --template=vite-typescript
+----
+. 进入项目根目录
++
+[,shell]
+----
+cd my-app
+----
+. 初始化项目
++
+[,shell]
+----
+pnpm i
+----
+
+== 安装Electron
+. 进入项目根目录
++
+[,shell]
+----
+cd my-app
+----
+. 安装
++
+[,shell]
+----
+pnpm -i electron --save-dev
+----
+
+== 运行
+. 进入项目根目录
++
+[,shell]
+----
+cd my-app
+----
+. 运行
++
+[,shell]
+----
+pnpm run start
+----
+
+== 编译
+. 进入项目根目录
++
+[,shell]
+----
+cd my-app
+----
+. 运行
++
+[,shell]
+----
+pnpm run make
+----
+
+== 发布
+. 进入项目根目录
++
+[,shell]
+----
+cd my-app
+----
+. 运行
++
+[,shell]
+----
+pnpm run publish
+----

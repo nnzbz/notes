@@ -1,0 +1,71 @@
+= 使用keytool生成证书
+:scripts: cjk
+:toc:
+:toc-title: 目录
+:toclevels: 4
+
+== 查看证书
+=== 列出keystore存在的所有证书
+[,shell]
+----
+keytool -list -v -keystore ABC.jks
+----
+
+== 生成根证书
+=== 生成密钥对
+[,shell]
+----
+keytool -genkeypair -alias aaa -keyalg RSA -keysize 2048 -validity 3650 -keystore ABC.jks -dname "CN=aaa,OU=dev,O=ABC,L=00,L=00,ST=45,C=CN"
+----
+- 输入仓库密码: xxxxxxxx
+
+=== 生成根证书签名请求(CSR)
+[,shell]
+----
+keytool -certreq -alias aaa -keystore ABC.jks -file aaa.csr
+----
+=== 签名
+. 两种签名方式
+.. 自签名
++
+[,shell]
+----
+keytool -gencert -alias aaa -infile aaa.csr -outfile aaa.cer -keystore ABC.jks
+----
+
+.. 申请CA签名
++
+将CSR文件发送给证书颁发机构(CA)进行签署
+. 签名后，您将获得一个名为 `aaa.crt` 的数字证书文件
+
+=== 导入证书
+[,shell]
+----
+keytool -importcert -alias aaa -file aaa.crt  -keystore ABC.jks
+----
+
+== 生成子证书
+=== 生成子证书的密钥对
+[,shell]
+----
+keytool -genkeypair -alias aaabbb -keyalg RSA -keysize 2048 -validity 3650 -keystore ABC.jks -dname "CN=aaa,OU=dev,O=ABC,L=00,L=00,ST=45,C=CN"
+----
+- 输入仓库密码: xxxxxxxx
+
+=== 生成子证书签名请求(CSR)
+[,shell]
+----
+keytool -certreq -alias aaabbb -file aaabbb.csr -validity 3650 -keystore ABC.jks
+----
+=== 使用根证书签名子证书
+[,shell]
+----
+keytool -gencert -alias aaa -infile aaabbb.csr -outfile aaabbb.cer -keystore ABC.jks
+----
+- 签署后，您将获得一个名为 `aaabbb.cer` 的子数字证书文件
+
+=== 导入子证书
+[,shell]
+----
+keytool -importcert -alias aaabbb -file aaabbb.cer  -keystore ABC.jks
+----

@@ -92,4 +92,28 @@ docker stack deploy -c /usr/local/mongo/stack.yml mongo
 
 ## 4. 管理链接
 
-<http://host-ip:27081>
+<http://mongo-express:27081>
+
+- 用户名: `admin`
+- 密码: `pass`
+- 默认建立的数据库是 `admin`
+
+## 为单个数据库创建用户
+
+```sh
+mongosh
+```
+
+```mongo
+use admin
+db.auth("root","example")
+use Employee
+db.createUser({
+  user: "Employeeadmin",
+  pwd: "password",
+  roles:[{
+    role: "readWrite" , db:"Employee"
+  }]
+})
+```
+

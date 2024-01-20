@@ -1,0 +1,8 @@
+= PDI学习笔记
+
+== PDI
+PDI: Pentho Data Integration，又叫 Kettle
+ETL: Extract-Transform-Load
+
+== PDI下载
+<https://www.hitachivantara.com/en-us/products/pentaho-plus-platform/data-integration-analytics/pentaho-community-edition.html>
