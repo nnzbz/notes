@@ -48,7 +48,7 @@ cd my-app
 +
 [,shell]
 ----
-pnpm -i electron --save-dev
+pnpm i electron --save-dev
 ----
 
 == 运行
