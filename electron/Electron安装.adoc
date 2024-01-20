@@ -22,7 +22,7 @@ electron_mirror=https://npmmirror.com/mirrors/electron/
 +
 [,shell]
 ----
-pnpm init electron-app@latest my-app -- --template=vite-typescript
+pnpm create electron-app@latest my-app -- --template=vite-typescript
 ----
 . 进入项目根目录
 +
