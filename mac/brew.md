@@ -18,13 +18,22 @@ http://brew.sh/
 /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 ```
 
-## 4. 镜像更换为阿里云的源
+## 4. 使用代理
+
+- 每次新的终端都设置一次
+
+```sh
+export ALL_PROXY=socks5://127.0.0.1:1086
+```
+
+## 5. 镜像更换为阿里云的源
 
 <https://developer.aliyun.com/mirror/homebrew>
+<https://mirrors.tuna.tsinghua.edu.cn/help/homebrew/>
 
-## 5. 使用brew
+## 6. 使用brew
 
-### 5.1. 安装软件
+### 6.1. 安装软件
 
 ```sh
 brew install wget
@@ -46,7 +55,7 @@ bin/wget -> ../Cellar/wget/1.16.1/bin/wget
 
 默认Homebrew会将软件安装在/usr/local/Cellar目录下，当然你也可以改变这个默认的路径
 
-### 5.2. 搜索软件
+### 6.2. 搜索软件
 
 ```sh
 brew search /wge*/
@@ -54,7 +63,7 @@ brew search /wge*/
 
 **注意：/wge\*/是个正则表达式**
 
-### 5.3. 其它常用命令
+### 6.3. 其它常用命令
 
 |    命令     |            说明            |
 | :---------- | -------------------------- |
@@ -64,14 +73,22 @@ brew search /wge*/
 | brew info   | 显示软件信息               |
 | brew deps   | 显示包依赖                 |
 
-### 5.4. 卸载软件
+### 6.4. 卸载软件
 
 ```sh
 brew uninstall wget
 ```
 
-### 5.5. 安装常用软件
+### 6.5. 安装常用软件
 
 ```sh
 brew install caskroom/cask/meld
+```
+
+### 文件下载的目录
+
+如果 brew install 工具时下载错误，可以直接从浏览器下载，然后放到下面的目录就可以了。
+
+```sh
+/Users/XXXX/Library/Caches/Homebrew
 ```

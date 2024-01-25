@@ -4,25 +4,13 @@
 :toc-title: 目录
 :toclevels: 4
 
-== 设置国内镜像
-[,shell]
-----
-pnpm config set ELECTRON_MIRROR https://npmmirror.com/mirrors/electron/
-----
-
-或者在项目根目录新建 `.npmrc`，内容：
-[,shell]
-----
-electron_mirror=https://npmmirror.com/mirrors/electron/
-----
-
 == 创建Demo项目
 . 进入要创建项目的上层目录
 . 创建项目
 +
 [,shell]
 ----
-pnpm create electron-app@latest my-app -- --template=vite-typescript
+npm init electron-app@latest my-app -- --template=vite-typescript
 ----
 . 进入项目根目录
 +
@@ -34,7 +22,20 @@ cd my-app
 +
 [,shell]
 ----
-pnpm i
+yarn
+----
+
+== 设置国内镜像
+. 进入项目根目录
++
+[,shell]
+----
+cd my-app
+----
+在项目根目录新建 `.npmrc`，内容：
+[,shell]
+----
+electron_mirror=https://npmmirror.com/mirrors/electron/
 ----
 
 == 安装Electron
@@ -48,7 +49,7 @@ cd my-app
 +
 [,shell]
 ----
-pnpm i electron --save-dev
+yarn add -D electron
 ----
 
 == 运行
@@ -62,7 +63,7 @@ cd my-app
 +
 [,shell]
 ----
-pnpm run start
+yarn start
 ----
 
 == 编译
@@ -72,11 +73,11 @@ pnpm run start
 ----
 cd my-app
 ----
-. 运行
+. 编译
 +
 [,shell]
 ----
-pnpm run make
+yarn make
 ----
 
 == 发布
@@ -86,9 +87,9 @@ pnpm run make
 ----
 cd my-app
 ----
-. 运行
+. 发布
 +
 [,shell]
 ----
-pnpm run publish
+yarn publish
 ----
