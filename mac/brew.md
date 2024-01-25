@@ -85,7 +85,7 @@ brew uninstall wget
 brew install caskroom/cask/meld
 ```
 
-### 文件下载的目录
+### 6.6. 文件下载的目录
 
 如果 brew install 工具时下载错误，可以直接从浏览器下载，然后放到下面的目录就可以了。
 
