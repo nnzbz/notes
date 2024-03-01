@@ -23,7 +23,7 @@ n prune
 ----
 
 == 使用 `nvm` 工具(适用Windows)
-. 一定要卸载已经安装的ndejs
+. 一定要卸载已经安装的nodejs
 . 下载 `nvm`
 +
 <https://github.com/coreybutler/nvm-windows/releases>
