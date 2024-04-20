@@ -1,0 +1,24 @@
+= InfluxDB
+
+[TOC]
+
+== 单机
+----
+mkdir -p /usr/local/influxdb/{data,config}
+----
+
+----
+docker run -d \
+    --name influxdb \
+    -p 8086:8086 \
+    -v "/usr/local/influxdb/data:/var/lib/influxdb2" \
+    -v "/usr/local/influxdb/config:/etc/influxdb2" \
+    -e DOCKER_INFLUXDB_INIT_MODE=setup \
+    -e DOCKER_INFLUXDB_INIT_USERNAME=<USERNAME> \
+    -e DOCKER_INFLUXDB_INIT_PASSWORD=<PASSWORD> \
+    -e DOCKER_INFLUXDB_INIT_ORG=<ORG_NAME> \
+    -e DOCKER_INFLUXDB_INIT_BUCKET=<BUCKET_NAME> \
+    -e DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=my-super-secret-auth-token \
+    --restart=always \
+    influxdb:2-alpine
+----

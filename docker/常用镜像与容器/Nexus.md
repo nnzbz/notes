@@ -6,7 +6,7 @@
 
 - 存放数据在宿主机
   先查看宿主机有没有UID为200的用户
-  
+
   ```sh
   cat /etc/passwd | grep 200
   ```
@@ -16,9 +16,8 @@
     ```sh
     # 添加nexus用户并指定uid为200
     useradd nexus -u 200 --no-create-home
-    mkdir /var/lib/nexus
-    chown -R nexus:nexus /var/lib/nexus
-    docker run -dp 8081:8081 --name nexus -v /var/lib/nexus:/nexus-data --restart=always sonatype/nexus3
+    mkdir /usr/local/nexus-data && chown -R nexus:nexus /usr/local/nexus-data
+    docker run -d -p 8081:8081 --name nexus -v /usr/local/nexus:/nexus-data --restart=always sonatype/nexus3
     ```
 
   - 宿主机已经有UID为200的用户
@@ -89,7 +88,7 @@ docker stack deploy -c /usr/local/nexus/stack.yml nexus
 `admin.password`
 
 - 如果目录影射到宿主机
-  
+
   ```sh
   cat /var/lib/nexus/admin.password
   ```
