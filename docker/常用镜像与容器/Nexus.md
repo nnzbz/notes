@@ -16,7 +16,7 @@
     ```sh
     # 添加nexus用户并指定uid为200
     useradd nexus -u 200 --no-create-home
-    mkdir /usr/local/nexus-data && chown -R nexus:nexus /usr/local/nexus-data
+    mkdir /usr/local/nexus && chown -R nexus:nexus /usr/local/nexus
     docker run -d -p 8081:8081 --name nexus -v /usr/local/nexus:/nexus-data --restart=always sonatype/nexus3
     ```
 

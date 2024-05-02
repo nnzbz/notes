@@ -171,8 +171,9 @@ sudo launchctl load /Library/LaunchDaemons/com.sonatype.nexus.plist
 | name    | type  | url                                                    | remark                   |
 | ------- | ----- | ------------------------------------------------------ | ------------------------ |
 | aliyun  | proxy | <http://maven.aliyun.com/nexus/content/groups/public/> | 阿里国内镜像             |
-| spring  | proxy | <http://repo.spring.io/milestone/>                     | 有 spring 一些较新的 jar |
-| graphql | proxy | https://oss.jfrog.org/artifactory/oss-snapshot-local   | graphql较新的版本        |
+| spring  | proxy | <http://repo.spring.io/milestone/>                     | 有 spring 一些较新的 jar 包 |
+| osgeo | proxy | <https://repo.osgeo.org/repository/release/>   | postgis相关的jar包        |
+| graphql | proxy | <https://oss.jfrog.org/artifactory/oss-snapshot-local>   | graphql较新的版本        |
 
 > 注意： `Maven 2` > `Version policy` > 选择 `Mixed`
 
