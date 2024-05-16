@@ -59,6 +59,12 @@ postgres=# GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO <用户名>;
 postgres=# ALTER USER <用户名> WITH PASSWORD '<新密码>';
 ----
 
+== 修改连接数
+[,shell]
+----
+sed -i 's/max_connections = 100/max_connections = 300/g' /var/lib/postgresql/data/postgresql.conf
+----
+
 == 备份与还原
 === 单库备份
 [,shell]
