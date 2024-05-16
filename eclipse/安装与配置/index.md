@@ -115,7 +115,7 @@ Preferences -> 在左上角用于过滤关键字的输入框输入 `enc` -> 把�
 #org-eclipse-ui-navigator-ProjectExplorer Tree,
 #org-eclipse-ui-views-ContentOutline Tree,
 #PerspectiveSwitcher ToolBar {
-    font-size: 15px; 
+    font-size: 15px;
     background-color: rgb(204,238,205);
 }
 ```
@@ -256,7 +256,7 @@ sudo chmod u+x ~/Desktop/eclipse.desktop
 ### 6.1. 反编译(Enhanced Class Decompiler)
 
 
-### m2e-apt
+### 6.2. m2e-apt
 
 让eclipse的Maven项目支持注解处理器
 
@@ -266,7 +266,7 @@ Eclipse marketplace -> m2e-apt -> Install
 
 ![m2e-apt](m2e-apt.png)
 
-### 6.2. STS(Spring Tools)
+### 6.3. STS(Spring Tools)
 
 **注意:**
 安装STSv3.9.0之后， 与Organize Imports冲突，导致ctrl+shift+o热键失效
@@ -275,17 +275,17 @@ Eclipse marketplace -> m2e-apt -> Install
 > 1. `Preferences` > `General` > `Keys` > `Filters...` > 取消选择 `Filter uncategorized commands` > `OK`
 > 2. `Keys` > `"Go To Symbol in File"` > `Unbind Command` > `Apply and Close`
 
-### 6.3. ~~Docker工具(Eclipse Docker Tooling)~~
+### 6.4. ~~Docker工具(Eclipse Docker Tooling)~~
 
 管理docker的镜像及容器
 
 或docker editor 1.0.0
 
-### 6.4. ~~YEdit~~
+### 6.5. ~~YEdit~~
 
 YAML文件编辑插件
 
-### 6.5. Lombok(必须)
+### 6.6. Lombok(必须)
 
 - 下载
   <https://projectlombok.org/downloads/lombok.jar>
