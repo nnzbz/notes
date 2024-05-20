@@ -7,7 +7,7 @@
 ### 1.1. 格式
 
 ```sh
-docker run -d --net=host -e 'CONSUL_LOCAL_CONFIG={"skip_leave_on_interrupt": true}' consul agent -server -bind=<external ip> -retry-join=<root agent ip> -bootstrap-expect=<number of server agents>
+docker run -dp 8300:8300 -p8500:8500 --name=dev-consul --restart always -e CONSUL_BIND_INTERFACE=eth0 hashicorp/consul:1.18
 ```
 
 部分参数说明
@@ -30,4 +30,36 @@ docker run -d --net=host -e 'CONSUL_LOCAL_CONFIG={"skip_leave_on_interrupt": tru
 docker run -d --net=host -e 'CONSUL_LOCAL_CONFIG={"skip_leave_on_interrupt": true}' consul agent -server -bind=192.168.1.201 -node=server1 -bootstrap-expect 1 -client 0.0.0.0 -ui
 # node
 docker run -d --net=host consul agent -bind=192.168.1.202 -node=client1 -retry-join=192.168.1.201
+```
+
+## Swarm
+
+```sh
+mkdir /usr/local/consul
+vi /usr/local/consul/stack.yml
+```
+
+```yaml{.line-numbers}
+version: "3.9"
+services:
+  svr:
+    image: hashicorp/consul:1.18
+    environment:
+      - CONSUL_BIND_INTERFACE=eth0
+    deploy:
+      placement:
+        constraints:
+          # 部署的节点指定是app角色的
+          - node.labels.role==app
+      # 默认副本数先设置为1，启动好后再用 scale 调整，以防第一次启动初始化时并发建表
+      replicas: 1
+
+networks:
+  default:
+    external: true
+    name: rebue
+```
+
+```sh
+docker stack deploy -c /usr/local/consul/stack.yml consul
 ```
