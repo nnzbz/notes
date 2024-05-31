@@ -1,0 +1,11 @@
+= 开源项目申请授权
+
+== 申请链接
+<https://www.jetbrains.com/shop/eform/opensource>
+
+- No. of required licenses
++
+申请授权的数量: 这项主要看活跃的贡献者有多少人就可以填写多少个
+- A link to your profile on GitHub, etc
++
+你在github中profile的链接，也就是你github账户的连接，登录github后右上角头像下拉 `Your profile` 的地址，例如 <https://github.com/xxxxx>
