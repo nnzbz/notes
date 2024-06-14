@@ -41,71 +41,41 @@ services:
     image: 'bitnami/kafka:latest'
     hostname: kafka1
     environment:
-      # 为开启JMX的端口(efak监控需要开启)
-      - JMX_PORT=1099
-      # 默认为-Xmx1024m -Xms1024m
-      - KAFKA_HEAP_OPTS=-Xmx256m -Xms256m
-      # 给客户端访问的地址
-      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka1:9092
-      # ZooKeeper的连接地址
-      - KAFKA_CFG_ZOOKEEPER_CONNECT=zoo1:2181,zoo2:2181,zoo3:2181
-      # 允许监听器所用明文，只在开发环境中推荐
-      - ALLOW_PLAINTEXT_LISTENER=yes
-      # 最好使用此设定时区，其它镜像也可以使用
-      - TZ=CST-8
-    volumes:
-      - kafka1data:/bitnami/kafka
+      # 节点ID
+      - KAFKA_CFG_NODE_ID=0
+      # KRAFT模式设置集群ID
+      - KAFKA_KRAFT_CLUSTER_ID=abc
+      - KAFKA_CFG_PROCESS_ROLES=controller,broker
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093
+      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=0@kafka1:9093,1@kafka2:9093,2@kafka3:9093
+      - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
   kafka2:
     image: 'bitnami/kafka:latest'
     hostname: kafka2
     environment:
-      # 为开启JMX的端口(efak监控需要开启)
-      - JMX_PORT=1099
-      # 默认为-Xmx1024m -Xms1024m
-      - KAFKA_HEAP_OPTS=-Xmx256m -Xms256m
-      # 给客户端访问的地址
-      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka2:9092
-      # ZooKeeper的连接地址
-      - KAFKA_CFG_ZOOKEEPER_CONNECT=zoo1:2181,zoo2:2181,zoo3:2181
-      # 允许监听器所用明文，只在开发环境中推荐
-      - ALLOW_PLAINTEXT_LISTENER=yes
-      # 最好使用此设定时区，其它镜像也可以使用
-      - TZ=CST-8
-    volumes:
-      - kafka2data:/bitnami/kafka
+      # 节点ID
+      - KAFKA_CFG_NODE_ID=1
+      # KRAFT模式设置集群ID
+      - KAFKA_KRAFT_CLUSTER_ID=abc
+      - KAFKA_CFG_PROCESS_ROLES=controller,broker
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093
+      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=0@kafka1:9093,1@kafka2:9093,2@kafka3:9093
+      - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
   kafka3:
     image: 'bitnami/kafka:latest'
     hostname: kafka3
     environment:
-      # 为开启JMX的端口(efak监控需要开启)
-      - JMX_PORT=1099
-      # 默认为-Xmx1024m -Xms1024m
-      - KAFKA_HEAP_OPTS=-Xmx256m -Xms256m
-      # 给客户端访问的地址
-      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka3:9092
-      # ZooKeeper的连接地址
-      - KAFKA_CFG_ZOOKEEPER_CONNECT=zoo1:2181,zoo2:2181,zoo3:2181
-      # 允许监听器所用明文，只在开发环境中推荐
-      - ALLOW_PLAINTEXT_LISTENER=yes
-      # 最好使用此设定时区，其它镜像也可以使用
-      - TZ=CST-8
-    volumes:
-      - kafka3data:/bitnami/kafka
-  efak:
-    image: nnzbz/efak
-    hostname: efak
-    ports:
-      - 1048:8048
-    environment:
-      # ZooKeeper的连接地址
-      - ZK_HOSTS=zoo1:2181,zoo2:2181,zoo3:2181
-      # 最好使用此设定时区，其它镜像也可以使用
-      - TZ=CST-8
-
-volumes:
-  kafka1data:
-  kafka2data:
-  kafka3data:
+      # 节点ID
+      - KAFKA_CFG_NODE_ID=2
+      # KRAFT模式设置集群ID
+      - KAFKA_KRAFT_CLUSTER_ID=abc
+      - KAFKA_CFG_PROCESS_ROLES=controller,broker
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093
+      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=0@kafka1:9093,1@kafka2:9093,2@kafka3:9093
+      - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
 
 networks:
   default:

@@ -22,3 +22,31 @@ docker run -d \
     --restart=always \
     influxdb:2-alpine
 ----
+
+== swarm
+----
+mkdir -p /usr/local/influxdb/{data,config}
+vi /usr/local/influxdb/stack.yml
+----
+
+```yaml{.line-numbers}
+version: "3.9"
+services:
+  svr:
+    image: influxdb:2-alpine
+    environment:
+      - DOCKER_INFLUXDB_INIT_MODE=setup
+      - DOCKER_INFLUXDB_INIT_USERNAME=<USERNAME>
+      - DOCKER_INFLUXDB_INIT_PASSWORD=<PASSWORD>
+      - DOCKER_INFLUXDB_INIT_ORG=<ORG_NAME>
+      - DOCKER_INFLUXDB_INIT_BUCKET=<BUCKET_NAME>
+      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=my-super-secret-auth-token
+
+networks:
+  default:
+    external: true
+    name: rebue
+```
+
+
+
