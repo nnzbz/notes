@@ -1,0 +1,66 @@
+= PostGis常用语句
+:sectnums:
+:scripts: cjk
+:toc:
+:toc-title: 目录
+:toclevels: 2
+:doctype: book
+:experimental:
+
+== 修改geometry字段为POINT的值？
+[,sql]
+----
+-- 不带SRID的设置
+UPDATE your_table
+SET geom_column = ST_MakePoint(new_x, new_y)
+WHERE condition;
+-- 带SRID的设置
+UPDATE your_table
+SET geom_column = ST_SetSRID(ST_MakePoint(new_x, new_y), your_srid)
+WHERE condition;
+----
+
+== 修改geometry字段为LINESTRING的值？
+[,sql]
+----
+UPDATE your_table
+SET geom_column = ST_SetSRID(ST_MakeLine(ARRAY[ST_MakePoint(new_x1, new_y1, new_z1), ST_MakePoint(new_x2, new_y2, new_z2), ... ]), your_srid)
+WHERE condition;
+----
+
+== 修改geometry字段为POLYGON的值？
+[,sql]
+----
+UPDATE your_table
+SET geom_column = ST_SetSRID(ST_MakePolygon(ST_MakeLine(ARRAY[ST_MakePoint(new_x1, new_y1, new_z1), ST_MakePoint(new_x2, new_y2, new_z2), ... ])), your_srid)
+WHERE condition;
+----
+
+== 修改geometry字段的值做一个坐标偏移？
+[,sql]
+----
+UPDATE your_table
+SET geom_column = ST_Translate(geom_column, x_offset, y_offset)
+WHERE condition;
+----
+
+== 修改geometry字段的SRID
+[,sql]
+----
+SELECT updategeometrysrid('tablename','geom',4490);
+----
+
+== 查询位置点是否落在指定区域内
+[,sql]
+----
+ST_Contains(area, point);
+----
+
+例如
+
+[,sql]
+----
+SELECT ST_Contains((SELECT geom FROM b WHERE gid = 3), st_geometryfromtext('POINT(120.1 30.1)',4326));
+----
+ 以上查询返回latLon是否落在b表的geom字段存储空间几何数据中，是则返回t，否则返回f。
+

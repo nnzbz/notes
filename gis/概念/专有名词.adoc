@@ -1,0 +1,8 @@
+= 专有名词
+
+[options=header]
+|===
+|简称 |全称 |中文
+|SRID |Spatial Reference System Identifier |空间参考识别码
+|EPSG |European Petroleum Survey Group |欧洲石油调查组织
+|===
