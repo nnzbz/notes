@@ -53,7 +53,8 @@ SELECT updategeometrysrid('tablename','geom',4490);
 == 查询位置点是否落在指定区域内
 [,sql]
 ----
-ST_Contains(area, point);
+SELECT ST_Contains(ST_SetSRID(区域几何列, 坐标系), ST_SetSRID(点几何列, 坐标系))
+FROM 表名
 ----
 
 例如
