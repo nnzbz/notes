@@ -65,3 +65,8 @@ SELECT ST_Contains((SELECT geom FROM b WHERE gid = 3), st_geometryfromtext('POIN
 ----
  以上查询返回latLon是否落在b表的geom字段存储空间几何数据中，是则返回t，否则返回f。
 
+== 判断两个点是否相等
+[,sql]
+----
+SELECT ST_Equals(ST_GeomFromText('POINT(1 1)'), ST_GeomFromText('POINT(1 1)'));
+----

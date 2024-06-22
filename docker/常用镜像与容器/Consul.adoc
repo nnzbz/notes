@@ -1,0 +1,124 @@
+# Consul
+:sectnums:
+:scripts: cjk
+:toc:
+:toc-title: 目录
+:toclevels: 2
+:doctype: book
+:experimental:
+
+== 创建并运行容器
+
+[,sh]
+----
+docker run -dp 8300:8300 -p8500:8500 --name=consul --restart always -e CONSUL_BIND_INTERFACE=eth0 hashicorp/consul:1.18
+----
+
+== Swarm
+
+[,sh]
+----
+mkdir -p /usr/local/consul/template
+----
+
+./usr/local/consul/stack.yml
+[,yaml]
+----
+```yaml{.line-numbers}
+version: "3.9"
+services:
+  svr:
+    image: hashicorp/consul:1.18
+    environment:
+      - CONSUL_BIND_INTERFACE=eth0
+    deploy:
+      placement:
+        constraints:
+          # 部署的节点指定是gateway角色的
+          - node.labels.role==gateway
+    logging:
+      options:
+        max-size: 8m
+  template:
+    image: hashicorp/consul-template:0.39
+    volumes:
+      - /usr/local/consul/template:/template
+    args:
+      - "consul-addr=consul_svr:8500"
+      - "template=/template/deregister.tpl"
+    deploy:
+      placement:
+        constraints:
+          # 部署的节点指定是gateway角色的
+          - node.labels.role==gateway
+    logging:
+      options:
+        max-size: 8m
+
+networks:
+  default:
+    external: true
+    name: rebue
+----
+
+./usr/local/consul/template/stack.yml
+[,yaml]
+----
+```yaml{.line-numbers}
+version: "3.9"
+services:
+  template:
+    image: nnzbz/consul-template:0.39
+    volumes:
+      - /usr/local/consul/template:/template
+    command: ["-config=/template/deregister.hcl", "-template=/template/deregister.tpl:/template/deregister.sh"]
+    deploy:
+      placement:
+        constraints:
+          # 部署的节点指定是gateway角色的
+          - node.labels.role==gateway
+    logging:
+      options:
+        max-size: 8m
+
+networks:
+  default:
+    external: true
+    name: shdxgc
+----
+
+./usr/local/consul/template/deregister.hcl
+[,json]
+----
+consul {
+  address = "consul_svr:8500"
+}
+
+template {
+  source = "/template/deregister.tpl"
+  destination = "/template/deregister.sh"
+  command = "/template/deregister.sh"
+  perms = 0775
+}
+----
+
+./usr/local/consul/template/deregister.tpl
+[,json]
+----
+#!/bin/sh
+{{range services}}
+{{range service .Name "any"}}
+#{{.ID}} {{.Name}} {{.Status}}
+{{if ne .Status "passing"}}
+curl -X PUT "http://consul_svr:8500/v1/agent/service/deregister/{{.ID}}"
+{{end}}
+{{end}}
+{{end}}
+----
+
+
+[,sh]
+----
+docker stack deploy -c /usr/local/consul/stack.yml consul
+docker stack deploy -c /usr/local/consul/template/stack.yml consul
+----
