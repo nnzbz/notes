@@ -45,6 +45,9 @@ services:
     environment:
       # 最好使用此设定时区，其它镜像也可以使用
       - TZ=CST-8
+    logging:
+      options:
+        max-size: 8m
 networks:
   default:
     external: true

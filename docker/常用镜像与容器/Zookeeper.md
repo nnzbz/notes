@@ -28,7 +28,7 @@ docker run --name zoo \
 | 3888 | election port    |
 
 
-## Swarm 单机
+## 2. Swarm 单机
 
 ### 2.1. 准备部署文件
 
@@ -77,16 +77,16 @@ networks:
 docker stack deploy -c /usr/local/zookeeper/stack.yml zookeeper
 ```
 
-## 2. Swarm集群
+## 3. Swarm集群
 
-### 2.1. 准备部署文件
+### 3.1. 准备部署文件
 
 ```sh
 mkdir /usr/local/zookeeper/
 vi /usr/local/zookeeper/stack.yml
 ```
 
-```sh{.line-numbers}
+```yml{.line-numbers}
 version: '3.9'
 
 services:
@@ -168,13 +168,46 @@ networks:
     name: rebue
 ```
 
-### 2.2. 部署
+### 3.2. 部署
 
 ```sh
 docker stack deploy -c /usr/local/zookeeper/stack.yml zookeeper
 ```
 
-## 3. Web UI
+## 4. Zoo Navigator
+
+```sh
+mkdir -p /usr/local/zookeeper/navigator/
+vi /usr/local/zookeeper/navigator/stack.yml
+```
+
+```yml{.line-numbers}
+version: '3.9'
+
+services:
+  navigator:
+    image: elkozmon/zoonavigator:1.1.2
+    ports:
+     - 12080:12080
+    environment:
+      - HTTP_PORT=12080
+    logging:
+      options:
+        max-size: 8m
+    deploy:
+      endpoint_mode: dnsrr
+
+networks:
+  default:
+    external: true
+    name: rebue
+```
+
+```sh
+docker stack deploy -c /usr/local/zookeeper/navigator/stack.yml zookeeper
+```
+
+## 5. ~~Web UI~~
 
 - 开发环境
 

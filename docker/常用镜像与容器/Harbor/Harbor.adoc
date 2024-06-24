@@ -1,0 +1,47 @@
+= Harbor
+:sectnums:
+:scripts: cjk
+:toc:
+:toc-title: 目录
+:toclevels: 2
+:doctype: book
+:experimental:
+
+== 安装包地址
+. 查看最新的安装包地址
+<https://github.com/goharbor/harbor/releases/download/>
+. 目前最新的安装包地址
+<https://github.com/goharbor/harbor/releases/download/v2.11.0/harbor-offline-installer-v2.11.0.tgz>
+
+== 下载并解压安装包
+[source,bash]
+----
+mkdir -p /usr/local/harbor/install
+cd /usr/local/harbor/install
+wget https://github.com/goharbor/harbor/releases/download/v2.11.0/harbor-offline-installer-v2.11.0.tgz
+tar -zxvf harbor-offline-installer-v2.11.0.tgz
+ls -al /usr/local/harbor/install
+----
+
+== 修改安装配置
+[source,bash]
+----
+mv /usr/local/harbor/install/harbor.yml.tmpl /usr/local/harbor/install/harbor.yml
+vi /usr/local/harbor/install/harbor.yml
+----
+./usr/local/harbor/install/harbor.yml
+[source,bash]
+----
+
+----
+
+- hostname: 主机名
+- https: 注释掉此代码块，禁用https
+- harbor_admin_password: admin账户的密码
+- database.password: 数据库密码
+
+== 安装
+[source,bash]
+----
+/usr/local/harbor/install/install.sh
+----

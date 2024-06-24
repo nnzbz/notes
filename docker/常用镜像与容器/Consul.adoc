@@ -109,7 +109,7 @@ template {
 {{range services}}
 {{range service .Name "any"}}
 #{{.ID}} {{.Name}} {{.Status}}
-{{if ne .Status "passing"}}
+{{if eq .Status "critical"}}
 curl -X PUT "http://consul_svr:8500/v1/agent/service/deregister/{{.ID}}"
 {{end}}
 {{end}}
