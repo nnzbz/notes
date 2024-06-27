@@ -1,8 +1,11 @@
 = frp
+:sectnums:
 :scripts: cjk
 :toc:
 :toc-title: 目录
-:toclevels: 4
+:toclevels: 2
+:doctype: book
+:experimental:
 
 == frp 简介
 === 文档
@@ -28,7 +31,7 @@ https://github.com/fatedier/frp/releases
 == 解压
 [,shell]
 ----
-tar zxvf frp_0.47.0_linux_amd64.tar.gz
+tar zxvf frp_0.48.1_linux_amd64.tar.gz
 ----
 
 == 部署服务器
@@ -36,51 +39,59 @@ tar zxvf frp_0.47.0_linux_amd64.tar.gz
 将解压后的以 `frps` 开头的系列文件上传到具有公网 IP 的机器上，建议放置到 `/usr/local/frp/` 目录中
 
 === 配置
-./usr/local/frp/frps.ini
-[,ini]
+./usr/local/frp/frps.yml
+[source,yml]
 ----
-[common]
-# 客户端连上来需要用到的令牌
-token = ********
+auth:
+  # 客户端连上来需要用到的令牌
+  token: xxxxxxxx
 
 # 服务器监听端口(须保证打通防火墙，从互联网可以访问这个端口)
-bind_port = 7000
+bindPort: 40070
 
 # 下面三种udp传输类型同时只能启用一个
-# xtcp用来打洞的监听端口(xtcp 绑定的是 udp 端口，可以和 bind_port 一样)
-# bind_udp_port = 57000
-# 服务器启用kcp(kcp 绑定的是 udp 端口，可以和 bind_port 一样)
-# kcp_bind_port = 57000
-# 服务器启用quic(quic 绑定的是 udp 端口，可以和 bind_port 一样)
-quic_bind_port = 57000
+# xtcp用来打洞的监听端口(xtcp 绑定的是 udp 端口，可以和 bindPort 一样)
+# bindUdpPort: 45700
+# 服务器启用kcp(kcp 绑定的是 udp 端口，可以和 bindPort 一样)
+# kcpBindPort: 45700
+# 服务器启用quic(quic 绑定的是 udp 端口，可以和 bindPort 一样)
+quicBindPort: 40070
 
-# TLS加密(除了xtcp，否则与use_encryption加密重复了)
-# frpc 校验 frps 身份
-#tls_cert_file = /usr/local/frp/server.crt
-#tls_key_file = /usr/local/frp/server.key
-# frps 验证 frpc 的身份
-#tls_trusted_ca_file = /usr/local/frp/ca.crt
-# 不要求客户端必须用tls来连接(目前在设置tls_trusted_ca_file之后此项设置无效)
-#tls_only = false
+# 自定义TLS加密(除了xtcp，否则与use_encryption加密重复了)
+transport:
+  tls:
+    # 服务端检验签名是否正确的CA证书(为减少麻烦且适合使用场景，由服务端统一生成)
+    trustedCaFile: /usr/local/frp/ca.crt
+    # 服务端发送数据签名使用的密钥(为减少麻烦且适合使用场景，由服务端统一生成)
+    certFile: /usr/local/frp/server.crt
+    keyFile: /usr/local/frp/server.key
 
 # 服务端管理界面
-dashboard_port = 7500
-dashboard_user = admin
-dashboard_pwd = ********
+# 默认为 127.0.0.1，如果需要公网访问，需要修改为 0.0.0.0。
+webServer:
+  addr: 0.0.0.0
+  port: 40075
+  # dashboard 用户名密码，可选，默认为空
+  user: admin
+  password: xxxxxxxx
+  # 通过配置 TLS 证书来启用 HTTPS
+  tls:
+    certFile: /usr/local/frp/server.crt
+    keyFile: /usr/local/frp/server.key
 ----
 
 === 运行
 ==== 直接运行
 [,shell]
 ----
-./frps -c ./frps.ini
+./frps -c ./frps.yml
 ----
 
 ==== 后台运行
 [,shell]
 ----
 mkdir -p /var/log/frp
-nohup /usr/local/frp/frps -c /usr/local/frp/frps.ini > /usr/local/frp/frps.log 2>&1 &
+nohup /usr/local/frp/frps -c /usr/local/frp/frps.yml > /usr/local/frp/frps.log 2>&1 &
 ----
 
 ==== systemd方式
@@ -96,7 +107,7 @@ Wants = network.target
 [Service]
 Type = simple
 # 启动frps的命令，需修改为您的frps的安装路径
-ExecStart = /usr/local/frp/frps -c /usr/local/frp/frps.ini
+ExecStart = /usr/local/frp/frps -c /usr/local/frp/frps.yml
 
 [Install]
 WantedBy = multi-user.target
@@ -130,8 +141,8 @@ files = supervisord.d/*.ini
 [,ini]
 ----
 [program:frps]
-directory = /root/
-command = /usr/local/frp/frps -c /usr/local/frp/frps.ini
+directory = /usr/local/frp/
+command = /usr/local/frp/frps -c /usr/local/frp/frps.yml
 autostart = true
 startsecs = 10
 autorestart = true
@@ -172,76 +183,84 @@ supervisorctl reload
 将解压后的以 `frpc` 开头的系列文件上传到内网服务所在的机器上，建议放置到 `/usr/local/frp/` 目录中
 
 === 配置
-./usr/local/frp/frpc.ini
-[,ini]
+./usr/local/frp/frpc.yml
+[source,yml]
 ----
-[common]
-# 客户端连接服务器需要用到的令牌
-token = ********
+auth:
+  # 客户端连接服务器需要用到的令牌
+  token: AHiJDS2Q5hmO2G4XkTIl3khjuDPls6lVbVoU9n2lYDE4VIcsVs0P2bzErBKMcWrs
 
 # 客户端访问服务器的地址
-server_addr = <服务器地址>
+serverAddr: <服务端外网地址>
 # 客户端访问服务器的端口
-server_port = 7000
+serverPort: 40070
 
-# 以下的kcp/quic只能同时启用一个，而且当只有两个都禁用时，才能使用xtcp
-# 启用 kcp 协议(server_port 必须指定为 frps 的 kcp_bind_port)
-# protocol = kcp
-# 启用 QUIC 协议(server_port 必须指定为 frps 的 quic_bind_port)
-protocol = quic
 
-# 启用TLS加密，减少被嗅探的可能
-tls_enable = true
-disable_custom_tls_first_byte = true
-
-# frps 验证 frpc 的身份
-#tls_cert_file = /usr/local/frp/client.crt
-#tls_key_file = /usr/local/frp/client.key
-# frpc 校验 frps 身份
-#tls_trusted_ca_file = /usr/local/frp/ca.crt
+# 客户端与服务端之间的传输协议
+transport:
+  # 以下的kcp/quic只能同时启用一个，而且当只有两个都禁用时，才能使用xtcp
+  # 启用 kcp 协议(上面的serverPort 必须指定为 frps 的 kcpBindPort)
+  # protocol: "kcp"
+  # 启用 QUIC 协议(上面的serverPort 必须指定为 frps 的 quicBindPort)
+  # protocol: "quic"
+  tls:
+    # 客户端校验签名是否正确信任(为减少麻烦且适合使用场景，由服务端统一生成)
+    trustedCaFile: /usr/local/frp/ca.crt
+    # 客户端发送数据签名使用的密钥(为减少麻烦且适合使用场景，由服务端统一生成)
+    certFile: /usr/local/frp/client.crt
+    keyFile: /usr/local/frp/client.key
 
 # 客户端管理界面
-admin_addr = 127.0.0.1
-admin_port = 7400
-admin_user = admin
-admin_pwd = ********
+webServer:
+  addr: 127.0.0.1
+  port: 40175
+  user: admin
+  password: xxxxxxxx
+  # 通过配置 TLS 证书来启用 HTTPS
+  tls:
+    certFile: /usr/local/frp/client.crt
+    keyFile: /usr/local/frp/client.key
 
-# 将客户端管理界面暴露到外网
-[xxx_admin_ui]
-type = tcp
-# 对应客户端管理界面的端口
-local_port = 7400
-# 暴露出去的端口
-remote_port = 7400
-# 启用加密
-use_encryption = true
-# 启用压缩
-use_compression = true
+proxies:
+  # 将客户端ssh暴露到外网
+  - name: gateway01-ssh
+    type: tcp
+    localIP: 127.0.0.1
+    # 客户端本地开启ssh的端口号
+    localPort: 10000
+    # 表示在 frps 服务端监听的端口，访问此端口的流量将被转发到本地服务的相应端口
+    remotePort: 40170
+    transport:
+      # 启用加密
+      useEncryption: true
+      # 启用压缩
+      useCompression: true
 
-[xxx_ssh]
-type = tcp
-# 客户端本地开启ssh的端口号
-local_port = 22
-# 用户ssh通过服务器访问本机需要配置的端口
-remote_port = 6000
-# 启用加密
-use_encryption = true
-# 启用压缩
-use_compression = true
+  - name: gateway01-admin-ui
+    type: tcp
+    localIP: 127.0.0.1
+    # 表示在 frps 服务端监听的端口，访问此端口的流量将被转发到本地服务的相应端口
+    localPort: 40175
+    remotePort: 40175
+    transport:
+      # 启用加密
+      useEncryption: true
+      # 启用压缩
+      useCompression: true
 ----
 
 === 运行
 ==== 直接运行
 [,shell]
 ----
-./frpc -c ./frpc.ini
+./frpc -c ./frpc.yml
 ----
 
 ==== 后台运行
 [,shell]
 ----
 mkdir -p /var/log/frp
-nohup /usr/local/frp/frpc -c /usr/local/frp/frpc.ini > /usr/local/frp/frpc.log 2>&1 &
+nohup /usr/local/frp/frpc -c /usr/local/frp/frpc.yml > /usr/local/frp/frpc.log 2>&1 &
 ----
 
 ==== systemd方式
@@ -257,7 +276,7 @@ Wants = network.target
 [Service]
 Type = simple
 # 启动frpc的命令，需修改为您的frpc的安装路径
-ExecStart = /usr/local/frp/frpc -c /usr/local/frp/frpc.ini
+ExecStart = /usr/local/frp/frpc -c /usr/local/frp/frpc.yml
 
 [Install]
 WantedBy = multi-user.target
@@ -309,7 +328,7 @@ files = /usr/local/etc/supervisor.d/*.ini
 ----
 [program:frpc]
 directory = /root/
-command = /usr/local/frp/frpc -c /usr/local/frp/frpc.ini
+command = /usr/local/frp/frpc -c /usr/local/frp/frpc.yml
 autostart = true
 startsecs = 10
 autorestart = true
@@ -362,17 +381,101 @@ supervisorctl reload
 
 == 使用
 === 访问服务端管理页面
-http://x.x.x.x:7500
+http://x.x.x.x:40075
 
 === 访问客户端管理页面
-http://x.x.x.x:7400
+http://x.x.x.x:40175
 
 === ssh访问客户端
 [,shell]
 ----
-ssh -oPort=6000 root@x.x.x.x
+ssh -oPort=40170 root@x.x.x.x
 ----
 [NOTE]
 ====
 服务器防火墙一定要打开6000端口给用户从互联网访问
 ====
+
+== 附录
+=== OpenSSL 生成证书示例
+==== 准备默认 OpenSSL 配置文件于当前目录
+[shell,bash]
+----
+cd /usr/local/frp/
+cp /etc/pki/tls/openssl.cnf ./my-openssl.cnf
+----
+如果不存在可以使用下面的命令来创建
+[shell,bash]
+----
+cat > my-openssl.cnf << EOF
+[ ca ]
+default_ca = CA_default
+[ CA_default ]
+x509_extensions = usr_cert
+[ req ]
+default_bits        = 2048
+default_md          = sha256
+default_keyfile     = privkey.pem
+distinguished_name  = req_distinguished_name
+attributes          = req_attributes
+x509_extensions     = v3_ca
+string_mask         = utf8only
+[ req_distinguished_name ]
+[ req_attributes ]
+[ usr_cert ]
+basicConstraints       = CA:FALSE
+nsComment              = "OpenSSL Generated Certificate"
+subjectKeyIdentifier   = hash
+authorityKeyIdentifier = keyid,issuer
+[ v3_ca ]
+subjectKeyIdentifier   = hash
+authorityKeyIdentifier = keyid:always,issuer
+basicConstraints       = CA:true
+EOF
+----
+
+==== 生成默认 ca
+[shell,bash]
+----
+# frps用下面的命令
+openssl genrsa -out ca.key 2048
+openssl req -x509 -new -nodes -key ca.key -subj "/CN=example.ca.com" -days 5000 -out ca.crt
+----
+
+==== 生成服务端证书
+[shell,bash]
+----
+openssl genrsa -out server.key 2048
+
+openssl req -new -sha256 -key server.key \
+    -subj "/C=XX/ST=DEFAULT/L=DEFAULT/O=DEFAULT/CN=server.com" \
+    -reqexts SAN \
+    -config <(cat my-openssl.cnf <(printf "\n[SAN]\nsubjectAltName=DNS:localhost,IP:127.0.0.1,DNS:example.server.com")) \
+    -out server.csr
+
+openssl x509 -req -days 365 -sha256 \
+	-in server.csr -CA ca.crt -CAkey ca.key -CAcreateserial \
+	-extfile <(printf "subjectAltName=DNS:localhost,IP:127.0.0.1,DNS:example.server.com") \
+	-out server.crt
+----
+
+[NOTE]
+====
+请将 `127.0.0.1` 替换为公网的IP地址
+====
+
+==== 生成客户端的证书
+[shell,bash]
+----
+openssl genrsa -out client.key 2048
+openssl req -new -sha256 -key client.key \
+    -subj "/C=XX/ST=DEFAULT/L=DEFAULT/O=DEFAULT/CN=client.com" \
+    -reqexts SAN \
+    -config <(cat my-openssl.cnf <(printf "\n[SAN]\nsubjectAltName=DNS:client.com,DNS:example.client.com")) \
+    -out client.csr
+
+openssl x509 -req -days 365 -sha256 \
+    -in client.csr -CA ca.crt -CAkey ca.key -CAcreateserial \
+	-extfile <(printf "subjectAltName=DNS:client.com,DNS:example.client.com") \
+	-out client.crt
+----
