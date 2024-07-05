@@ -39,21 +39,6 @@ services:
     logging:
       options:
         max-size: 8m
-  template:
-    image: hashicorp/consul-template:0.39
-    volumes:
-      - /usr/local/consul/template:/template
-    args:
-      - "consul-addr=consul_svr:8500"
-      - "template=/template/deregister.tpl"
-    deploy:
-      placement:
-        constraints:
-          # 部署的节点指定是gateway角色的
-          - node.labels.role==gateway
-    logging:
-      options:
-        max-size: 8m
 
 networks:
   default:

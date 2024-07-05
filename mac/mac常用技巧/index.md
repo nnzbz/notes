@@ -30,7 +30,7 @@ xcode-select --install
 ## 5. 创建ll命令
 
 ```sh
-vi ~/.bash_rc
+vi ~/.bashrc
 ```
 
 ```sh
