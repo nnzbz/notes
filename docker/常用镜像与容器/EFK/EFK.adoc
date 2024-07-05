@@ -1,0 +1,58 @@
+= EFK
+ElasticSearch/FileBeat/Kibana
+:sectnums:
+:chapter-signifier: 章节
+:scripts: cjk
+:toc:
+:toc-title: 目录
+:toclevels: 2
+:doctype: book
+:experimental:
+
+== ElasticSearch
+=== 准备
+==== https://www.elastic.co/guide/en/elasticsearch/reference/8.14/docker.html#docker-prod-prerequisites[官网参考^]
+==== 设置 `vm.max_map_count` 不小于 `262144`(在ES宿主机上进行)
+* 查看
++
+[source,bash]
+----
+grep vm.max_map_count /etc/sysctl.conf
+----
+* 设置
++
+** 临时生效
++
+[source,bash]
+----
+sysctl -w vm.max_map_count=262144
+----
+** 永久生效
++
+./etc/sysctl.conf
+[source,bash]
+----
+....
+vm.max_map_count=262144
+....
+----
+
+=== 安装
+
+=== 配置
+
+=== 使用
+
+== FileBeat
+
+=== 安装
+
+=== 配置
+
+=== 使用
+
+== Kibana
+
+=== 安装
+
+=== 配置
