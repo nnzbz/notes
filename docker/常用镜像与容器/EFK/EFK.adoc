@@ -9,55 +9,15 @@ ElasticSearch/FileBeat/Kibana
 :doctype: book
 :experimental:
 
-== ElasticSearch
-=== https://www.elastic.co/guide/en/elasticsearch/reference/8.14/docker.html#docker-prod-prerequisites[官网参考^]
+== ElasticSearch 与 Kibana
+=== https://www.elastic.co/guide/en/elasticsearch/reference/8.14/docker.html#docker-prod-prerequisites[官方参考^]
 
 === 在Swarm Manager上进行
 ==== 创建目录
 [source,bash]
 ----
-mkdir -p /usr/local/elasticsearch/{config/certs,plugins}
-mkdir -p /var/lib/elasticsearch/data
-mkdir -p /var/log/elasticsearch/
-----
-
-==== 下载插件
-
-==== 准备部署的环境变量文件
-./usr/local/elasticsearch/.env
-[source,ini]
-----
-# https://github.com/elastic/elasticsearch/blob/8.14/docs/reference/setup/install/docker/.env
-
-# Password for the 'elastic' user (at least 6 characters)
-ELASTIC_PASSWORD=xxxxxxxx
-
-# Password for the 'kibana_system' user (at least 6 characters)
-KIBANA_PASSWORD=xxxxxxxx
-
-# Version of Elastic products
-STACK_VERSION=8.14.2
-
-# Set the cluster name
-CLUSTER_NAME=es
-
-# Set to 'basic' or 'trial' to automatically start the 30-day trial
-LICENSE=basic
-#LICENSE=trial
-
-# Port to expose Elasticsearch HTTP API to the host
-ES_PORT=9200
-#ES_PORT=127.0.0.1:9200
-
-# Port to expose Kibana to the host
-KIBANA_PORT=5601
-#KIBANA_PORT=80
-
-# Increase or decrease based on the available host memory (in bytes)
-MEM_LIMIT=1073741824
-
-# Project namespace (defaults to the current folder name if not set)
-#COMPOSE_PROJECT_NAME=myproject
+mkdir -p /usr/local/elasticsearch/
+chmod 775 -R /usr/local/elasticsearch/
 ----
 
 ==== 利用临时容器初始化所需文件
@@ -65,14 +25,24 @@ MEM_LIMIT=1073741824
 +
 [source,bash]
 ----
-docker run --rm -it --env-file /usr/local/elasticsearch/.env --user 0 -v /usr/local/elasticsearch/config/:/usr/share/elasticsearch/config/ docker.elastic.co/elasticsearch/elasticsearch:8.14.2
+docker run --rm -it --net=rebue docker.elastic.co/elasticsearch/elasticsearch:8.14.1 bash
 ----
 . 进入容器内初始化
++
+https://github.com/elastic/elasticsearch/blob/8.14/docs/reference/setup/install/docker/docker-compose.yml[官方参考^]
++
+
 [source,bash]
 ----
+# 安装ik中文分词插件
+bin/elasticsearch-plugin install https://get.infini.cloud/elasticsearch/analysis-ik/8.14.1
+# 安装pinyin插件
+bin/elasticsearch-plugin install https://get.infini.cloud/elasticsearch/analysis-pinyin/8.14.1
+
+# 生成CA证书并解压
 bin/elasticsearch-certutil ca --silent --pem -out config/certs/ca.zip;
 unzip config/certs/ca.zip -d config/certs;
-
+# 生成数字证书
 echo -ne \
           "instances:\n"\
           "  - name: es01\n"\
@@ -96,17 +66,45 @@ echo -ne \
           > config/certs/instances.yml;
 bin/elasticsearch-certutil cert --silent --pem -out config/certs/certs.zip --in config/certs/instances.yml --ca-cert config/certs/ca/ca.crt --ca-key config/certs/ca/ca.key;
 unzip config/certs/certs.zip -d config/certs;
-
-chown -R root:root config/certs;
-find . -type d -exec chmod 750 \{\} \;;
-find . -type f -exec chmod 640 \{\} \;;
-until curl -s --cacert config/certs/ca/ca.crt https://es01:9200 | grep -q "missing authentication credentials"; do sleep 30; done;
-echo "Setting kibana_system password";
-until curl -s -X POST --cacert config/certs/ca/ca.crt -u "elastic:${ELASTIC_PASSWORD}" -H "Content-Type: application/json" https://es01:9200/_security/user/kibana_system/_password -d "{\"password\":\"${KIBANA_PASSWORD}\"}" | grep -q "^{}"; do sleep 10; done;
-echo "All done!";
+# 修改数字证书的访问权限
+#chown -R root:root config/certs;
+#find . -type d -exec chmod 750 \{\} \;;
+#find . -type f -exec chmod 640 \{\} \;;
+----
++
+. 将config和plugins目录复制到宿主机上(在宿主机上进行)
++
+[source,bash]
+----
+docker cp <容器ID>:/usr/share/elasticsearch/config/ /usr/local/elasticsearch/
+docker cp <容器ID>:/usr/share/elasticsearch/plugins/ /usr/local/elasticsearch/
 ----
 
 === 在所有ES宿主机上进行
+==== 同步目录
+同步 Swarm Manager 的 /usr/local/elasticsearch/ 目录到每台ES宿主机
+
+==== 创建目录并配置目录可读写
+ElasticSearch 在容器中运行的用户是 `elasticsearch`，`uid:gid` 是 `1000:0`
+https://www.elastic.co/guide/en/elasticsearch/reference/8.14/docker.html#_configuration_files_must_be_readable_by_the_elasticsearch_user[官方参考^]
+
+[source,bash]
+----
+mkdir -p /var/lib/elasticsearch/data
+mkdir -p /var/lib/kibana/data/
+mkdir -p /var/log/elasticsearch/
+chmod g+rwx -R /usr/local/elasticsearch/config
+chmod g+rwx -R /usr/local/elasticsearch/plugins
+chmod g+rwx -R /var/lib/elasticsearch/data
+chmod g+rwx -R /var/lib/kibana/data
+chmod g+rwx -R /var/log/elasticsearch/
+chgrp 0 -R /usr/local/elasticsearch/config
+chgrp 0 -R /usr/local/elasticsearch/plugins
+chgrp 0 -R /var/lib/elasticsearch/data
+chgrp 0 -R /var/lib/kibana/data
+chgrp 0 -R /var/log/elasticsearch/
+----
+
 ==== 设置 `vm.max_map_count` 不小于 `262144`
 * 查看
 +
@@ -132,94 +130,91 @@ vm.max_map_count=262144
 ....
 ----
 
-==== 同步目录
-同步 Swarm Manager 的 /usr/local/elasticsearch/ 目录到每台ES宿主机
+==== 禁用交换
+https://www.elastic.co/guide/en/elasticsearch/reference/8.14/docker.html#_disable_swapping[官方参考^]
 
-==== 创建目录
 [source,bash]
 ----
-mkdir -p /var/lib/elasticsearch/data
-mkdir -p /var/log/elasticsearch/
+swapoff -a
+----
+
+=== 在所有Kibana宿主机上进行
+
+==== 同步目录
+同步 Swarm Manager 的 /usr/local/elasticsearch/ 目录到每台Kibana宿主机
+
+==== 创建目录并配置目录可读写
+ElasticSearch 在容器中运行的用户是 `elasticsearch`，`uid:gid` 是 `1000:0`
+https://www.elastic.co/guide/en/elasticsearch/reference/8.14/docker.html#_configuration_files_must_be_readable_by_the_elasticsearch_user[官方参考^]
+
+[source,bash]
+----
+mkdir -p /var/lib/kibana/data/
+chmod 775 -R /var/lib/kibana/data/
 ----
 
 === 部署(在Swarm Manager上进行)
-./usr/local/elasticsearch/stack.yml
-[source,yml]
+. https://github.com/elastic/elasticsearch/blob/8.14/docs/reference/setup/install/docker/.env[.env官方参考^]
+. https://github.com/elastic/elasticsearch/blob/8.14/docs/reference/setup/install/docker/docker-compose.yml[docker-compose.yml官方参考^]
+. 准备部署的环境变量文件
++
+
+./usr/local/elasticsearch/.env
+[source,ini]
 ----
-# https://github.com/elastic/elasticsearch/blob/8.14/docs/reference/setup/install/docker/docker-compose.yml
+# network name
+NETWORK_NAME=rebue
+
+# kibana node role
+KIBANA_NODE_ROLE=kibana
+
+# Password for the 'elastic' user (at least 6 characters)
+ELASTIC_PASSWORD=xxxxxxxx
+
+# Password for the 'kibana_system' user (at least 6 characters)
+KIBANA_PASSWORD=xxxxxxxx
+
+# Version of Elastic products
+STACK_VERSION=8.14.1
+
+# Set the cluster name
+CLUSTER_NAME=es
+
+# Set to 'basic' or 'trial' to automatically start the 30-day trial
+LICENSE=basic
+#LICENSE=trial
+
+# Port to expose Elasticsearch HTTP API to the host
+ES_PORT=9200
+#ES_PORT=127.0.0.1:9200
+
+# Port to expose Kibana to the host
+KIBANA_PORT=5601
+#KIBANA_PORT=80
+
+# Increase or decrease based on the available host memory (in bytes)
+MEM_LIMIT=1G
+
+# Project namespace (defaults to the current folder name if not set)
+#COMPOSE_PROJECT_NAME=myproject
+----
+. 准备部署配置的模板文件
++
+./usr/local/elasticsearch/stack.yml.tpl
+[source,yaml]
+----
 version: "3.9"
 services:
-  setup:
-    image: docker.elastic.co/elasticsearch/elasticsearch:${STACK_VERSION}
-    volumes:
-      - certs:/usr/share/elasticsearch/config/certs
-    user: "0"
-    command: >
-      bash -c '
-        if [ x${ELASTIC_PASSWORD} == x ]; then
-          echo "Set the ELASTIC_PASSWORD environment variable in the .env file";
-          exit 1;
-        elif [ x${KIBANA_PASSWORD} == x ]; then
-          echo "Set the KIBANA_PASSWORD environment variable in the .env file";
-          exit 1;
-        fi;
-        if [ ! -f config/certs/ca.zip ]; then
-          echo "Creating CA";
-          bin/elasticsearch-certutil ca --silent --pem -out config/certs/ca.zip;
-          unzip config/certs/ca.zip -d config/certs;
-        fi;
-        if [ ! -f config/certs/certs.zip ]; then
-          echo "Creating certs";
-          echo -ne \
-          "instances:\n"\
-          "  - name: es01\n"\
-          "    dns:\n"\
-          "      - es01\n"\
-          "      - localhost\n"\
-          "    ip:\n"\
-          "      - 127.0.0.1\n"\
-          "  - name: es02\n"\
-          "    dns:\n"\
-          "      - es02\n"\
-          "      - localhost\n"\
-          "    ip:\n"\
-          "      - 127.0.0.1\n"\
-          "  - name: es03\n"\
-          "    dns:\n"\
-          "      - es03\n"\
-          "      - localhost\n"\
-          "    ip:\n"\
-          "      - 127.0.0.1\n"\
-          > config/certs/instances.yml;
-          bin/elasticsearch-certutil cert --silent --pem -out config/certs/certs.zip --in config/certs/instances.yml --ca-cert config/certs/ca/ca.crt --ca-key config/certs/ca/ca.key;
-          unzip config/certs/certs.zip -d config/certs;
-        fi;
-        echo "Setting file permissions"
-        chown -R root:root config/certs;
-        find . -type d -exec chmod 750 \{\} \;;
-        find . -type f -exec chmod 640 \{\} \;;
-        echo "Waiting for Elasticsearch availability";
-        until curl -s --cacert config/certs/ca/ca.crt https://es01:9200 | grep -q "missing authentication credentials"; do sleep 30; done;
-        echo "Setting kibana_system password";
-        until curl -s -X POST --cacert config/certs/ca/ca.crt -u "elastic:${ELASTIC_PASSWORD}" -H "Content-Type: application/json" https://es01:9200/_security/user/kibana_system/_password -d "{\"password\":\"${KIBANA_PASSWORD}\"}" | grep -q "^{}"; do sleep 10; done;
-        echo "All done!";
-      '
-    healthcheck:
-      test: ["CMD-SHELL", "[ -f config/certs/es01/es01.crt ]"]
-      interval: 1s
-      timeout: 5s
-      retries: 120
-
   es01:
-    depends_on:
-      setup:
-        condition: service_healthy
     image: docker.elastic.co/elasticsearch/elasticsearch:${STACK_VERSION}
+    hostname: es01
     volumes:
-      - certs:/usr/share/elasticsearch/config/certs
-      - esdata01:/usr/share/elasticsearch/data
-    ports:
-      - ${ES_PORT}:9200
+      - /usr/local/elasticsearch/config/:/usr/share/elasticsearch/config/
+      - /usr/local/elasticsearch/plugins/:/usr/share/elasticsearch/plugins/
+      - /var/lib/elasticsearch/data/:/usr/share/elasticsearch/data/
+      - /var/log/elasticsearch/:/usr/share/elasticsearch/logs/
+    # ports:
+    #   - ${ES_PORT}:9200
     environment:
       - node.name=es01
       - cluster.name=${CLUSTER_NAME}
@@ -238,11 +233,21 @@ services:
       - xpack.security.transport.ssl.certificate_authorities=certs/ca/ca.crt
       - xpack.security.transport.ssl.verification_mode=certificate
       - xpack.license.self_generated.type=${LICENSE}
-    mem_limit: ${MEM_LIMIT}
+    #  - ES_JAVA_OPTS="-Xms1g -Xmx1g"
     ulimits:
       memlock:
         soft: -1
         hard: -1
+      nofile:
+        soft: 65535
+        hard: 65535
+    deploy:
+      resources:
+        limits:
+          memory: ${MEM_LIMIT}
+      placement:
+        constraints:
+          - node.hostname==es01
     healthcheck:
       test:
         [
@@ -252,19 +257,24 @@ services:
       interval: 10s
       timeout: 10s
       retries: 120
+    logging:
+      options:
+        max-size: 8m
 
   es02:
-    depends_on:
-      - es01
     image: docker.elastic.co/elasticsearch/elasticsearch:${STACK_VERSION}
+    hostname: es02
     volumes:
-      - certs:/usr/share/elasticsearch/config/certs
-      - esdata02:/usr/share/elasticsearch/data
+      - /usr/local/elasticsearch/config/:/usr/share/elasticsearch/config/
+      - /usr/local/elasticsearch/plugins/:/usr/share/elasticsearch/plugins/
+      - /var/lib/elasticsearch/data/:/usr/share/elasticsearch/data/
+      - /var/log/elasticsearch/:/usr/share/elasticsearch/logs/
     environment:
       - node.name=es02
       - cluster.name=${CLUSTER_NAME}
       - cluster.initial_master_nodes=es01,es02,es03
       - discovery.seed_hosts=es01,es03
+      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
       - bootstrap.memory_lock=true
       - xpack.security.enabled=true
       - xpack.security.http.ssl.enabled=true
@@ -277,11 +287,18 @@ services:
       - xpack.security.transport.ssl.certificate_authorities=certs/ca/ca.crt
       - xpack.security.transport.ssl.verification_mode=certificate
       - xpack.license.self_generated.type=${LICENSE}
-    mem_limit: ${MEM_LIMIT}
+    #  - ES_JAVA_OPTS="-Xms1g -Xmx1g"
     ulimits:
       memlock:
         soft: -1
         hard: -1
+    deploy:
+      resources:
+        limits:
+          memory: ${MEM_LIMIT}
+      placement:
+        constraints:
+          - node.hostname==es02
     healthcheck:
       test:
         [
@@ -291,19 +308,24 @@ services:
       interval: 10s
       timeout: 10s
       retries: 120
+    logging:
+      options:
+        max-size: 8m
 
   es03:
-    depends_on:
-      - es02
     image: docker.elastic.co/elasticsearch/elasticsearch:${STACK_VERSION}
+    hostname: es03
     volumes:
-      - certs:/usr/share/elasticsearch/config/certs
-      - esdata03:/usr/share/elasticsearch/data
+      - /usr/local/elasticsearch/config/:/usr/share/elasticsearch/config/
+      - /usr/local/elasticsearch/plugins/:/usr/share/elasticsearch/plugins/
+      - /var/lib/elasticsearch/data/:/usr/share/elasticsearch/data/
+      - /var/log/elasticsearch/:/usr/share/elasticsearch/logs/
     environment:
       - node.name=es03
       - cluster.name=${CLUSTER_NAME}
       - cluster.initial_master_nodes=es01,es02,es03
       - discovery.seed_hosts=es01,es02
+      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
       - bootstrap.memory_lock=true
       - xpack.security.enabled=true
       - xpack.security.http.ssl.enabled=true
@@ -316,11 +338,18 @@ services:
       - xpack.security.transport.ssl.certificate_authorities=certs/ca/ca.crt
       - xpack.security.transport.ssl.verification_mode=certificate
       - xpack.license.self_generated.type=${LICENSE}
-    mem_limit: ${MEM_LIMIT}
+    #  - ES_JAVA_OPTS="-Xms1g -Xmx1g"
     ulimits:
       memlock:
         soft: -1
         hard: -1
+    deploy:
+      resources:
+        limits:
+          memory: ${MEM_LIMIT}
+      placement:
+        constraints:
+          - node.hostname==es03
     healthcheck:
       test:
         [
@@ -330,28 +359,31 @@ services:
       interval: 10s
       timeout: 10s
       retries: 120
+    logging:
+      options:
+        max-size: 8m
 
   kibana:
-    depends_on:
-      es01:
-        condition: service_healthy
-      es02:
-        condition: service_healthy
-      es03:
-        condition: service_healthy
     image: docker.elastic.co/kibana/kibana:${STACK_VERSION}
     volumes:
-      - certs:/usr/share/kibana/config/certs
-      - kibanadata:/usr/share/kibana/data
-    ports:
-      - ${KIBANA_PORT}:5601
+      - /usr/local/elasticsearch/config/certs/:/usr/share/kibana/config/certs
+      - /var/lib/kibana/data/:/usr/share/kibana/data
+    #ports:
+    #  - ${KIBANA_PORT}:5601
     environment:
       - SERVERNAME=kibana
-      - ELASTICSEARCH_HOSTS=https://es01:9200
+      - ELASTICSEARCH_HOSTS=["https://es01:9200","https://es02:9200","https://es03:9200"]
       - ELASTICSEARCH_USERNAME=kibana_system
       - ELASTICSEARCH_PASSWORD=${KIBANA_PASSWORD}
       - ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES=config/certs/ca/ca.crt
-    mem_limit: ${MEM_LIMIT}
+    deploy:
+      resources:
+        limits:
+          memory: ${MEM_LIMIT}
+      mode: global
+      placement:
+        constraints:
+          - node.labels.role==${KIBANA_NODE_ROLE}
     healthcheck:
       test:
         [
@@ -361,19 +393,61 @@ services:
       interval: 10s
       timeout: 10s
       retries: 120
+    logging:
+      options:
+        max-size: 8m
 
-volumes:
-  certs:
-    driver: local
-  esdata01:
-    driver: local
-  esdata02:
-    driver: local
-  esdata03:
-    driver: local
-  kibanadata:
-    driver: local
+networks:
+  default:
+    external: true
+    name: ${NETWORK_NAME}
 ----
+
+. 安装 envsubst
++
+[source,bash]
+----
+yum install -y gettext
+----
+. 生成部署配置文件
++
+[source,bash]
+----
+# 读取环境变量
+source /usr/local/elasticsearch/.env
+# 注入部署配置文件
+envsubst < /usr/local/elasticsearch/stack.yml.tpl > /usr/local/elasticsearch/stack.yml
+----
+. 部署
++
+[source,bash]
+----
+docker stack deploy -c /usr/local/elasticsearch/stack.yml es
+----
+
+=== 在ES中添加kibana访问的账户和密码(在临时容器中进行)
+. 创建并运行临时容器
++
+[source,bash]
+----
+docker run --rm -it --net=rebue --env-file /usr/local/elasticsearch/.env \
+-v /usr/local/elasticsearch/config/certs/:/usr/share/elasticsearch/config/certs/ \
+docker.elastic.co/elasticsearch/elasticsearch:8.14.1 bash
+----
+. 进入容器内初始化
++
+https://github.com/elastic/elasticsearch/blob/8.14/docs/reference/setup/install/docker/docker-compose.yml[官方参考^]
++
+
+[source,bash]
+----
+# 在ES中添加kibana访问的账户和密码(下面的执行要等es部署好后再运行)
+until curl -s --cacert config/certs/ca/ca.crt https://es01:9200 | grep -q "missing authentication credentials"; do sleep 30; done;
+echo "Setting kibana_system password";
+until curl -s -X POST --cacert config/certs/ca/ca.crt -u "elastic:${ELASTIC_PASSWORD}" -H "Content-Type: application/json" https://es01:9200/_security/user/kibana_system/_password -d "{\"password\":\"${KIBANA_PASSWORD}\"}" | grep -q "^{}"; do sleep 10; done;
+echo "All done!";
+----
+
 
 === 安装
 
