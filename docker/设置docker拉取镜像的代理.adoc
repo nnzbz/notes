@@ -1,0 +1,12 @@
+= 设置docker拉取镜像的代理
+
+== 官方参考
+https://docs.docker.com/config/daemon/proxy/#httphttps-proxy
+
+== 两种方式
+. 配置Daemon方式
+. 环境变量方式
+
+== 配置Daemon方式
+
+== 环境变量方式

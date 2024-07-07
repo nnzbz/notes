@@ -70,8 +70,9 @@ unzip config/certs/certs.zip -d config/certs;
 #chown -R root:root config/certs;
 #find . -type d -exec chmod 750 \{\} \;;
 #find . -type f -exec chmod 640 \{\} \;;
+
 ----
-+
+
 . 将config和plugins目录复制到宿主机上(在宿主机上进行)
 +
 [source,bash]
@@ -106,21 +107,13 @@ chgrp 0 -R /var/log/elasticsearch/
 ----
 
 ==== 设置 `vm.max_map_count` 不小于 `262144`
-* 查看
-+
-[source,bash]
-----
-grep vm.max_map_count /etc/sysctl.conf
-----
-* 设置
-+
-** 临时生效
+* 临时生效
 +
 [source,bash]
 ----
 sysctl -w vm.max_map_count=262144
 ----
-** 永久生效
+* 永久生效
 +
 ./etc/sysctl.conf
 [source,bash]
@@ -133,9 +126,21 @@ vm.max_map_count=262144
 ==== 禁用交换
 https://www.elastic.co/guide/en/elasticsearch/reference/8.14/docker.html#_disable_swapping[官方参考^]
 
+* 临时生效
++
 [source,bash]
 ----
 swapoff -a
+----
+* 永久生效
++
+./etc/sysctl.conf
+[source,bash]
+----
+....
+# 禁用内存交换
+vm.swappiness=1
+....
 ----
 
 === 在所有Kibana宿主机上进行
@@ -163,40 +168,40 @@ chmod 775 -R /var/lib/kibana/data/
 [source,ini]
 ----
 # network name
-NETWORK_NAME=rebue
+export NETWORK_NAME=rebue
 
-# kibana node role
-KIBANA_NODE_ROLE=kibana
+# kibana node name
+export KIBANA_NODE_NAME=kibana
 
 # Password for the 'elastic' user (at least 6 characters)
-ELASTIC_PASSWORD=xxxxxxxx
+export ELASTIC_PASSWORD=xxxxxxxx
 
 # Password for the 'kibana_system' user (at least 6 characters)
-KIBANA_PASSWORD=xxxxxxxx
+export KIBANA_PASSWORD=xxxxxxxx
 
 # Version of Elastic products
-STACK_VERSION=8.14.1
+export STACK_VERSION=8.14.1
 
 # Set the cluster name
-CLUSTER_NAME=es
+export CLUSTER_NAME=es
 
 # Set to 'basic' or 'trial' to automatically start the 30-day trial
-LICENSE=basic
-#LICENSE=trial
+export LICENSE=basic
+#export LICENSE=trial
 
 # Port to expose Elasticsearch HTTP API to the host
-ES_PORT=9200
-#ES_PORT=127.0.0.1:9200
+export ES_PORT=9200
+#export ES_PORT=127.0.0.1:9200
 
 # Port to expose Kibana to the host
-KIBANA_PORT=5601
-#KIBANA_PORT=80
+export KIBANA_PORT=5601
+#export KIBANA_PORT=80
 
 # Increase or decrease based on the available host memory (in bytes)
-MEM_LIMIT=1G
+export MEM_LIMIT=1G
 
 # Project namespace (defaults to the current folder name if not set)
-#COMPOSE_PROJECT_NAME=myproject
+#export COMPOSE_PROJECT_NAME=myproject
 ----
 . 准备部署配置的模板文件
 +
@@ -373,14 +378,11 @@ services:
     environment:
       - SERVERNAME=kibana
       - ELASTICSEARCH_HOSTS=["https://es01:9200","https://es02:9200","https://es03:9200"]
+      - SERVER_BASEPATH=/kibana
       - ELASTICSEARCH_USERNAME=kibana_system
       - ELASTICSEARCH_PASSWORD=${KIBANA_PASSWORD}
       - ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES=config/certs/ca/ca.crt
     deploy:
-      resources:
-        limits:
-          memory: ${MEM_LIMIT}
-      mode: global
       placement:
         constraints:
           - node.labels.role==${KIBANA_NODE_ROLE}
