@@ -25,7 +25,7 @@ chmod 775 -R /usr/local/elasticsearch/
 +
 [source,bash]
 ----
-docker run --rm -it --net=rebue docker.elastic.co/elasticsearch/elasticsearch:8.14.1 bash
+docker run --rm -it --net=rebue docker.elastic.co/elasticsearch/elasticsearch:8.14.2 bash
 ----
 . 进入容器内初始化
 +
@@ -35,9 +35,9 @@ https://github.com/elastic/elasticsearch/blob/8.14/docs/reference/setup/install/
 [source,bash]
 ----
 # 安装ik中文分词插件
-bin/elasticsearch-plugin install https://get.infini.cloud/elasticsearch/analysis-ik/8.14.1
+bin/elasticsearch-plugin install https://get.infini.cloud/elasticsearch/analysis-ik/8.14.2
 # 安装pinyin插件
-bin/elasticsearch-plugin install https://get.infini.cloud/elasticsearch/analysis-pinyin/8.14.1
+bin/elasticsearch-plugin install https://get.infini.cloud/elasticsearch/analysis-pinyin/8.14.2
 
 # 生成CA证书并解压
 bin/elasticsearch-certutil ca --silent --pem -out config/certs/ca.zip;
@@ -168,40 +168,40 @@ chmod 775 -R /var/lib/kibana/data/
 [source,ini]
 ----
 # network name
-export NETWORK_NAME=rebue
+NETWORK_NAME=rebue
 
 # kibana node name
-export KIBANA_NODE_NAME=kibana
+KIBANA_NODE_NAME=kibana
 
 # Password for the 'elastic' user (at least 6 characters)
-export ELASTIC_PASSWORD=xxxxxxxx
+ELASTIC_PASSWORD=xxxxxxxx
 
 # Password for the 'kibana_system' user (at least 6 characters)
-export KIBANA_PASSWORD=xxxxxxxx
+KIBANA_PASSWORD=xxxxxxxx
 
 # Version of Elastic products
-export STACK_VERSION=8.14.1
+STACK_VERSION=8.14.2
 
 # Set the cluster name
-export CLUSTER_NAME=es
+CLUSTER_NAME=es
 
 # Set to 'basic' or 'trial' to automatically start the 30-day trial
-export LICENSE=basic
-#export LICENSE=trial
+LICENSE=basic
+#LICENSE=trial
 
 # Port to expose Elasticsearch HTTP API to the host
-export ES_PORT=9200
-#export ES_PORT=127.0.0.1:9200
+ES_PORT=9200
+#ES_PORT=127.0.0.1:9200
 
 # Port to expose Kibana to the host
-export KIBANA_PORT=5601
-#export KIBANA_PORT=80
+KIBANA_PORT=5601
+#KIBANA_PORT=80
 
 # Increase or decrease based on the available host memory (in bytes)
-export MEM_LIMIT=1G
+MEM_LIMIT=1G
 
 # Project namespace (defaults to the current folder name if not set)
-#export COMPOSE_PROJECT_NAME=myproject
+#COMPOSE_PROJECT_NAME=myproject
 ----
 . 准备部署配置的模板文件
 +
@@ -405,13 +405,15 @@ networks:
     name: ${NETWORK_NAME}
 ----
 
-. 安装 envsubst
+. 通过模板生成部署配置文件
+** envsubst方式
+.. 安装 envsubst
 +
 [source,bash]
 ----
 yum install -y gettext
 ----
-. 生成部署配置文件
+.. 生成部署配置文件
 +
 [source,bash]
 ----
@@ -420,6 +422,21 @@ source /usr/local/elasticsearch/.env
 # 注入部署配置文件
 envsubst < /usr/local/elasticsearch/stack.yml.tpl > /usr/local/elasticsearch/stack.yml
 ----
+** envsubst.py方式
+.. https://www.cnblogs.com/leoninew/p/13516223.html[参考^]
+.. 代码
++
+[source,python]
+----
+include::envsubst.py[]
+----
+.. 生成部署配置文件
++
+[source,bash]
+----
+python3 /usr/local/elasticsearch/envsubst.py --env-file /usr/local/elasticsearch/.env -f /usr/local/elasticsearch/stack.yml.tpl > /usr/local/elasticsearch/stack.yml
+----
+
 . 部署
 +
 [source,bash]
@@ -434,9 +451,9 @@ docker stack deploy -c /usr/local/elasticsearch/stack.yml es
 ----
 docker run --rm -it --net=rebue --env-file /usr/local/elasticsearch/.env \
 -v /usr/local/elasticsearch/config/certs/:/usr/share/elasticsearch/config/certs/ \
-docker.elastic.co/elasticsearch/elasticsearch:8.14.1 bash
+docker.elastic.co/elasticsearch/elasticsearch:8.14.2 bash
 ----
-. 进入容器内初始化
+. 进入容器内添加kibana访问的账户和密码
 +
 https://github.com/elastic/elasticsearch/blob/8.14/docs/reference/setup/install/docker/docker-compose.yml[官方参考^]
 +
@@ -444,29 +461,66 @@ https://github.com/elastic/elasticsearch/blob/8.14/docs/reference/setup/install/
 [source,bash]
 ----
 # 在ES中添加kibana访问的账户和密码(下面的执行要等es部署好后再运行)
-until curl -s --cacert config/certs/ca/ca.crt https://es01:9200 | grep -q "missing authentication credentials"; do sleep 30; done;
-echo "Setting kibana_system password";
-until curl -s -X POST --cacert config/certs/ca/ca.crt -u "elastic:${ELASTIC_PASSWORD}" -H "Content-Type: application/json" https://es01:9200/_security/user/kibana_system/_password -d "{\"password\":\"${KIBANA_PASSWORD}\"}" | grep -q "^{}"; do sleep 10; done;
-echo "All done!";
+curl -s -X POST --cacert config/certs/ca/ca.crt -u "elastic:${ELASTIC_PASSWORD}" -H "Content-Type: application/json" https://es01:9200/_security/user/kibana_system/_password -d "{\"password\":\"${KIBANA_PASSWORD}\"}"
 ----
 
-
-=== 安装
-
-=== 配置
-
-=== 使用
-
 == FileBeat
+=== 官方参考
+* https://www.elastic.co/guide/en/beats/filebeat/current/running-on-docker.html[在docker中运行FileBeat^]
+* https://www.elastic.co/guide/en/beats/filebeat/current/filebeat-reference-yml.html[配置文件^]
+* https://www.elastic.co/guide/en/beats/filebeat/current/securing-communication-elasticsearch.html[与ElasticSearch安全通讯^]
 
-=== 安装
+=== 在ES中添加filebeat通讯所需内容(在临时容器中进行)
+. 创建并运行临时容器
++
+[source,bash]
+----
+docker run --rm -it --net=rebue --env-file /usr/local/elasticsearch/.env \
+-v /usr/local/elasticsearch/config/certs/:/usr/share/elasticsearch/config/certs/ \
+docker.elastic.co/elasticsearch/elasticsearch:8.14.2 bash
+----
+. 进入容器内执行下面内容(要等ES部署好后再运行)
++
 
-=== 配置
+[source,bash]
+----
+# 在ES中添加filebeat访问所需的API_KEY(注意修改里面的rebue-*改为实际的名称)
+curl -s -X POST --cacert config/certs/ca/ca.crt -u "elastic:${ELASTIC_PASSWORD}" -H "Content-Type: application/json" https://es01:9200/_security/api_key -d "{\"name\":\"filebeat_system\",\"role_descriptors\":{\"filebeat_writer\":{\"cluster\":[\"monitor\",\"read_ilm\",\"read_pipeline\"],\"index\":[{\"names\":[\"filebeat-*\",\"rebue-*\"],\"privileges\":[\"view_index_metadata\",\"create_doc\",\"auto_configure\"]}]}}}"
 
-=== 使用
+# ....
+# 记录上面返回的id和api_key，字符串格式为 `id:api_key`，后面的配置要用
+# ....
+
+# 在ES中添加名为rebue的pipeline(这里的rebue可以根据实际命名)
+curl -s -X PUT --cacert config/certs/ca/ca.crt -u "elastic:${ELASTIC_PASSWORD}" -H "Content-Type: application/json" https://es01:9200/_ingest/pipeline/rebue -d "{\"description\":\"rebue相关的微服务\",\"processors\":[]}"
+----
+
+=== 创建filebeat的配置文件
+./usr/local/elasticsearch/filebeat/filebeat.docker.yml
+[source,bash]
+----
+filebeat:
+  config:
+    modules:
+      path: ${path.config}/modules.d/*.yml
+      reload:
+        enabled: false
+  autodiscover:
+    providers:
+      - type: docker
+        hints:
+          enabled: true
+
+processors:
+- add_cloud_metadata: ~
+
+output:
+  elasticsearch:
+    hosts: ["https://es01:9200","https://es02:9200","https://es03:9200"]
+    api_key: "xxxxxxxx:xxxxxxxx"  // <.>
+----
+<.> 上一步获取的id和api_key，格式为 `id:api_key`
 
 == Kibana
-
-=== 安装
 
 === 配置
