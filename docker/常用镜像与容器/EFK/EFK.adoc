@@ -492,7 +492,7 @@ curl -s -X POST --cacert config/certs/ca/ca.crt -u "elastic:${ELASTIC_PASSWORD}"
 # ....
 
 # 在ES中添加名为rebue的pipeline(这里的rebue可以根据实际命名)
-curl -s -X PUT --cacert config/certs/ca/ca.crt -u "elastic:${ELASTIC_PASSWORD}" -H "Content-Type: application/json" https://es01:9200/_ingest/pipeline/rebue -d "{\"description\":\"rebue相关的微服务\",\"processors\":[]}"
+curl -s -X PUT --cacert config/certs/ca/ca.crt -u "elastic:${ELASTIC_PASSWORD}" -H "Content-Type: application/json" https://es01:9200/_ingest/pipeline/rebue -d "{\"description\":\"rebue相关的微服务\",\"processors\":[{\"grok\":{\"field\":\"data\",\"patterns\":[(?m)^\\|(?<addr>[a-f0-9]{8})\\|%{GREEDYDATA}\\|(?<netty_decode>[\\s\\S]+)\\|$"]}},{\"script\":{\"source\":\"if(ctx?.netty_decode!=null)ctx.data=ctx.netty_decode;\"}}]}"
 ----
 
 === 创建filebeat的配置文件
