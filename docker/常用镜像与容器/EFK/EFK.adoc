@@ -218,8 +218,6 @@ services:
       - /usr/local/elasticsearch/plugins/:/usr/share/elasticsearch/plugins/
       - /var/lib/elasticsearch/data/:/usr/share/elasticsearch/data/
       - /var/log/elasticsearch/:/usr/share/elasticsearch/logs/
-    # ports:
-    #   - ${ES_PORT}:9200
     environment:
       - node.name=es01
       - cluster.name=${CLUSTER_NAME}
@@ -385,7 +383,7 @@ services:
     deploy:
       placement:
         constraints:
-          - node.labels.role==${KIBANA_NODE_ROLE}
+          - node.hostname==${KIBANA_NODE_NAME}
     healthcheck:
       test:
         [
@@ -492,35 +490,166 @@ curl -s -X POST --cacert config/certs/ca/ca.crt -u "elastic:${ELASTIC_PASSWORD}"
 # ....
 
 # 在ES中添加名为rebue的pipeline(这里的rebue可以根据实际命名)
-curl -s -X PUT --cacert config/certs/ca/ca.crt -u "elastic:${ELASTIC_PASSWORD}" -H "Content-Type: application/json" https://es01:9200/_ingest/pipeline/rebue -d "{\"description\":\"rebue相关的微服务\",\"processors\":[{\"grok\":{\"field\":\"data\",\"patterns\":[(?m)^\\|(?<addr>[a-f0-9]{8})\\|%{GREEDYDATA}\\|(?<netty_decode>[\\s\\S]+)\\|$"]}},{\"script\":{\"source\":\"if(ctx?.netty_decode!=null)ctx.data=ctx.netty_decode;\"}}]}"
+curl -s -X PUT --cacert config/certs/ca/ca.crt -u "elastic:${ELASTIC_PASSWORD}" -H "Content-Type: application/json" https://es01:9200/_ingest/pipeline/rebue -d '{	\"description\":\"rebue相关的微服务\",	\"processors\":[{		\"script\":{			\"source\":\"if(!ctx.appid?.startsWith('gatex')){\nreturn;\n}\n\ndef matcher=/\\|[0-9a-f]{8}\\|[0-9a-f\\x20]+\\|(.+)\\|/.matcher(ctx.message);\ndef mergedMatches=[];\nwhile(matcher.find()){\nif(matcher.groupCount()>0){\nmergedMatches.add(matcher.group(1));\n}\n}\nif(mergedMatches.length>0){\nctx.data=mergedMatches.join('');\n}\n\"}}]}'
+----
+
+. 如果添加pipeline不成功，直接在kibana里面添加
++
+.rebue.painless
+[source,painless]
+----
+if (!ctx.appid?.startsWith('gatex')) {
+    return;
+}
+def matcher = /\|[0-9a-f]{8}\|[0-9a-f\x20]+\|(.+)\|/.matcher(ctx.message);
+def mergedMatches = [];
+while (matcher.find()) {
+    if (matcher.groupCount() > 0) {
+        mergedMatches.add(matcher.group(1));
+    }
+}
+if (mergedMatches.length > 0) {
+    ctx.data = mergedMatches.join('');
+}
 ----
 
 === 创建filebeat的配置文件
-./usr/local/elasticsearch/filebeat/filebeat.docker.yml
-[source,bash]
+./usr/local/elasticsearch/filebeat/filebeat.yml
+[source,yaml]
 ----
-filebeat:
-  config:
-    modules:
-      path: ${path.config}/modules.d/*.yml
-      reload:
-        enabled: false
-  autodiscover:
-    providers:
-      - type: docker
-        hints:
-          enabled: true
+filebeat.inputs:
+  - type: filestream
+    id: rebue
+    # 是否启动
+    enabled: true
+    # 从那个路径收集日志，如果存在多个 input ,则这个 paths 中的收集的日志最好不要重复，否则会出现问题
+    # 日志路径可以写通配符
+    paths:
+      - /var/log/*/current.log
+    field_under_root: true
+    parsers:
+      # 多行日志的合并处理
+      - multiline:
+          pattern: ^[0-9]{4}-[0-9]{2}-[0-9]{2}
+          negate: true
+          match: after
+    # 使用es的ignes node 的pipeline处理数据，这个理论上要配置到output.elasticsearch下方，但是测试的时候发现配置在output.elasticsearch下方不生效。
+    pipeline: rebue
+
+# 队列最小事件数(默认2048，必须小于下面的队列内存缓冲的最大事件数)
+queue.mem.flush.min_events: 128
+# 队列内存缓冲的最大事件数
+queue.mem.events: 256
+# 收割机获取文件的缓冲大小
+harvester_buffer_size: 2M
+# 单条日志最大字节数，单位 B，1M(默认是10M)
+max_bytes: 2M
 
 processors:
-- add_cloud_metadata: ~
+  - script:
+      lang: javascript
+      # 相对当前配置文件所在的路径
+      file: ${path.config}/process.js
+  # https://www.elastic.co/guide/en/beats/filebeat/current/processor-timestamp.html
+  - timestamp:
+      # 格式化时间值 给 时间戳
+      field: start_time
+      timezone: Asia/Shanghai
+      # 这个格式内容是写死的，不能改任何数字
+      layouts:
+        - "2006-01-02 15:04:05"
+        - "2006-01-02 15:04:05.999"
+      test:
+        - "2019-06-22 16:33:51"
+  - drop_fields:
+      # start_time字段的值已经设置到 @timpstamp 了，不用发送此字段
+      fields: [start_time]
 
-output:
-  elasticsearch:
-    hosts: ["https://es01:9200","https://es02:9200","https://es03:9200"]
-    api_key: "xxxxxxxx:xxxxxxxx"  // <.>
+setup:
+  # 自定义索引
+  template:
+    # enabled: true
+    name: "rebue"
+    pattern: "rebue-*"
+  # ilm:
+  #   enabled: false
+
+output.elasticsearch:
+  hosts:
+    - https://es01:9200
+    - https://es02:9200
+    - https://es03:9200
+  ssl.certificate_authorities: /usr/share/filebeat/config/certs/ca/ca.crt
+  api_key: xxxxxxxx // <.>
+  index: shdxgc-%{[appid]}-%{+yyyy.MM.dd}
+  # pipeline: rebue
+
 ----
 <.> 上一步获取的id和api_key，格式为 `id:api_key`
 
-== Kibana
+./usr/local/elasticsearch/filebeat/script/process.js
+[source,js]
+----
+function process(event) {
+    // 从文件路径中解析出appid并保存到字段中
+    var filePath = event.Get('log').file.path;
+    var appIdRegex = /^\/var\/log\/([^\/]+)/;
+    var appIdMatch = filePath.match(appIdRegex);
+    event.Put("appid", appIdMatch[1]);
 
-=== 配置
+    // 解析mssage
+    var message = event.Get("message");
+    // Define message regex pattern
+    var timestampRegex = /^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3})\[(.+?)\]([\s\S]*)---/;
+    var timestampMatch = message.match(timestampRegex); // Match the timestamp in the log message
+    if (timestampMatch) {
+        var start_time = timestampMatch[1];
+        var loglevel = timestampMatch[2];
+        var data = timestampMatch[3];
+        event.Put("start_time", start_time); // Set the parsed timestamp as @timestamp field
+        event.Put("log.level", loglevel); // Set the parsed timestamp as @timestamp field
+        event.Put("data", data); // Set the parsed timestamp as @timestamp field
+    }
+
+    return event;
+}
+----
+
+./usr/local/elasticsearch/filebeat/stack.yml
+[source,yaml]
+----
+version: "3.9"
+services:
+  filebeat:
+    image: docker.elastic.co/beats/filebeat:8.14.2
+    user: root
+    command: filebeat -e -strict.perms=false
+    volumes:
+      - /usr/local/elasticsearch/filebeat/config/filebeat.yml:/usr/share/filebeat/filebeat.yml:ro
+      - /usr/local/elasticsearch/filebeat/script/process.js:/usr/share/filebeat/process.js:ro
+      - /usr/local/elasticsearch/config/certs/:/usr/share/filebeat/config/certs/
+      - /var/log/:/var/log/
+    deploy:
+      mode: global
+      placement:
+        constraints:
+          - node.labels.role!=es
+          - node.labels.role!=redis
+          - node.labels.role!=kafka
+          - node.labels.role!=rabbitmq
+    logging:
+      options:
+        max-size: 8m
+
+networks:
+  default:
+    external: true
+    name: shdxgc
+----
+
+=== 部署
+[source,bash]
+----
+docker stack deploy -c /usr/local/elasticsearch/filebeat/stack.yml es
+----
+
