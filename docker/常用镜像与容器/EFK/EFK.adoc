@@ -498,6 +498,7 @@ curl -s -X PUT --cacert config/certs/ca/ca.crt -u "elastic:${ELASTIC_PASSWORD}" 
 .rebue.painless
 [source,painless]
 ----
+// 此段脚本用于从netty的详细日志中解析出有用的部分重写入data字段中
 if (!ctx.appid?.startsWith('gatex')) {
     return;
 }
@@ -653,3 +654,9 @@ networks:
 docker stack deploy -c /usr/local/elasticsearch/filebeat/stack.yml es
 ----
 
+== 附录
+=== painess
+https://www.elastic.co/guide/en/elasticsearch/painless/current/painless-lang-spec.html[语言^]
+https://www.elastic.co/guide/en/elasticsearch/painless/current/painless-api-reference.html[API^]
+https://www.elastic.co/guide/en/elasticsearch/painless/current/painless-api-reference-shared.html[Shared API^]
+https://www.elastic.co/guide/en/elasticsearch/painless/current/painless-regexes.html[正则^]
