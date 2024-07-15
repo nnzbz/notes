@@ -655,6 +655,13 @@ docker stack deploy -c /usr/local/elasticsearch/filebeat/stack.yml es
 ----
 
 == 附录
+=== filebeat
+https://www.elastic.co/guide/en/beats/filebeat/current/filebeat-reference-yml.html[配置参考^]
+https://www.elastic.co/guide/en/beats/filebeat/8.14/filtering-and-enhancing-data.html#filtering-and-enhancing-data[过滤与增强数据^]
+
+=== grok
+https://github.com/elastic/elasticsearch/blob/8.14/libs/grok/src/main/resources/patterns/ecs-v1/grok-patterns[Grok内置模式^]
+
 === painess
 https://www.elastic.co/guide/en/elasticsearch/painless/current/painless-lang-spec.html[语言^]
 https://www.elastic.co/guide/en/elasticsearch/painless/current/painless-api-reference.html[API^]
