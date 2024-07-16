@@ -28,10 +28,10 @@
     adduser nexus
     cat /etc/passwd|grep nexus # 例如我这里看到UID是1001
     mkdir /var/lib/nexus && chown -R nexus:nexus /var/lib/nexus
-    docker run -dp 8081:8081 --name nexus -v /var/lib/nexus:/nexus-data --user 1001:1001 --restart=always sonatype/nexus3
+    docker run -dp 8081:8081 --name nexus -v /usr/local/nexus:/nexus-data --user 1001:1001 --restart=always sonatype/nexus3
     ```
 
-  - 按上面的方式，Nexus映射到了 `/var/lib/nexus`，但是此路径一般没有分配太大的空间，所以需要更换到有足够容量的空间
+  - 按上面的方式，Nexus映射到了 `/usr/local/nexus`，但是此路径一般没有分配太大的空间，所以需要更换到有足够容量的空间
 
     ```sh
     # 首先保证docker没有启动
