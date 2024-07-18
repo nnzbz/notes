@@ -7,154 +7,70 @@
 == 单机
 [,shell]
 ----
-mkdir /usr/local/gitea
+# 可以用getent group命令查看是否有1001这个ID，如果有，要换一个没有的
+useradd git -u 1001
+mkdir -p /usr/local/gitea/data && chown -R git:git /usr/local/gitea/data
+sudo -u git ssh-keygen
 vi /usr/local/gitea/stack.yml
 ----
 
+. /usr/local/gitea/stack.yml
 [source,yaml,linenums]
 ----
 version: "3.9"
 
 services:
   svr:
-    image: gitea/gitea
-    volumes:
-      - giteadata:/data
-    environment:
-      # 实际访问gitea的地址
-      - GITEA__server_ROOT_URL=https://xxx.xxx.xxx.xxx:xxxxx/gitea/
-      # 最好使用此设定时区，其它镜像也可以使用
-      - TZ=CST-8
+    image: gitea/gitea:1.22.1
+    container_name: gitea
     ports:
-      # Http端口
-      - "30000:3000"
-      # SSH端口
-      - "220:22"
+      - "10004:22"
+      - "10005:3000"
+    environment:
+      # 应用程序名称，在页面标题中使用
+      - APP_NAME=XXX的GIT仓库
+      # 此服务器的域名，用于 Gitea UI 中显示的 http 克隆 URL。
+      - DOMAIN=xxx.xxx.xxx.xxx
+      # 该服务器的域名，ssh 克隆 URL。如果启用了安装页面，则 SSH 域服务器将采用以下形式的 DOMAIN 值（保存时将覆盖此设置）。
+      - SSH_DOMAIN=xxx.xxx.xxx.xxx
+      # 克隆 URL 中显示的 SSH 端口
+      - SSH_PORT=10004
+      # 内置 SSH 服务器的端口
+      - SSH_LISTEN_PORT=22
+      # 覆盖自动生成的公共 URL
+      - ROOT_URL=http://xxx.xxx.xxx.xxx:10005
+      # 启用 git-lfs 支持
+      - LFS_START_SERVER=true
+      # 数据库类型[mysql，postgres，mssql，sqlite3]。
+      - DB_TYPE=mysql
+      # 数据库主机地址和端口
+      - DB_HOST=mysql:3306
+      # 数据库名称
+      - DB_NAME=gitea
+      # 数据库用户名
+      - DB_USER=gitea
+      # 数据库用户密码
+      - DB_PASSWD=xxxxxxxx
+      # 禁止访问安装页面
+      - INSTALL_LOCK=true
+      # 全局密钥(应该是用于锁定安装页面的)
+      - SECRET_KEY=xxxxxxxx
+      # 强制用户登录才能查看任何页面
+      - REQUIRE_SIGNIN_VIEW=true
+    volumes:
+      - gitea:/data
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+    restart: always
 
 volumes:
-  giteadata:
-
-networks:
-  default:
-    external: true
-    name: rebue
+  gitea:
+    driver: local
 ----
-
-****
-注意修改 *GITEA__server_ROOT_URL* 的值为实际访问gitea的地址
-****
 
 * 部署
 
 [,shell]
 ----
-docker-compose -f /usr/local/gitea/stack.yml up -d
-----
-
-== Swarm
-[,shell]
-----
-mkdir /usr/local/gitea
-vi /usr/local/gitea/stack.yml
-----
-
-[source,yaml,linenums]
-----
-version: "3.9"
-
-services:
-  svr:
-    image: gitea/gitea
-    volumes:
-      - giteadata:/data
-    environment:
-      # 实际访问gitea的地址
-      - GITEA__server_ROOT_URL=https://xxx.xxx.xxx.xxx:xxxxx/gitea/
-      # 最好使用此设定时区，其它镜像也可以使用
-      - TZ=CST-8
-    #ports:
-      # Http端口
-      #- "30000:3000"
-      # SSH端口
-      #- "220:22"
-    deploy:
-      endpoint_mode: dnsrr
-      placement:
-        constraints:
-          # 限定部署的节点
-          - node.labels.role==app
-    logging:
-      options:
-        max-size: 8m
-
-volumes:
-  giteadata:
-
-networks:
-  default:
-    external: true
-    name: rebue
-----
-
-****
-注意修改 *GITEA__server_ROOT_URL* 的值为实际访问gitea的地址
-****
-
-- 部署
-
-[,shell]
-----
-docker stack deploy -c /usr/local/gitea/stack.yml gitea
-----
-
-== 初始化
-
-注意修改下面的选项
-****
-* 基础URL
-** http://<访问的主机名>:<访问的端口>/<二级路径>/
-** 这里填写的是浏览器访问输入的基础URL，而不是容器内服务器启动使用的主机名和端口号
-** 如果有二级甚至三级路径前缀，请注意一定要填写
-****
-
-image::初始化设置基础URL.png[]
-
-== 修改文件并提交
-
-. 进入gitea容器
-+
-[,shell]
-----
-docker exec -it <容器ID> bash
-----
-. 进入data目录
-+
-[,shell]
-----
-cd /data
-----
-. clone
-+
-[,shell]
-----
-# 克隆(vertx为建的账户，vertx-config为账户下建的仓库)
-git clone http://127.0.0.1:3000/vertx/vertx-config.git
-# 进入仓库目录
-cd vertx-config/
-# 如果未设置git提交账号和邮箱，请进行设置；如果已经设置过，请忽略下面两行
-git config --global user.email "vertx@qq.com"
-git config --global user.name "vertx"
-----
-. 修改本地文件
-. 提交并推送
-+
-[,shell]
-----
-# 添加索引
-git add .
-# 提交
-git commit -m xxx
-# 推送
-git push
-....
+docker compose -f /usr/local/gitea/stack.yml up -d
 ----

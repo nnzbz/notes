@@ -26,7 +26,7 @@ PATH     = data/gogs.db
 [server]
 DOMAIN           = xxx.xxx.xxx.xxx
 HTTP_PORT        = 3000
-EXTERNAL_URL     = https://xxx.xxx.xxx.xxx:xxxxx/gogs/
+EXTERNAL_URL     = https://xxx.xxx.xxx.xxx:xxxxx/
 DISABLE_SSH      = false
 SSH_PORT         = 10022
 #START_SSH_SERVER = false

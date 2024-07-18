@@ -9,7 +9,7 @@ mkdir -p /usr/local/postgis/data
 
 [,shell]
 ----
-docker run -d -p 5432:5432 --name postgis -e POSTGRES_USER=postgis -e POSTGRES_PASSWORD=postgis -e POSTGRES_DBNAME=postgis -v /usr/local/postgresql/data:/var/lib/postgresql/data -v /usr/local/postgis/data:/var/lib/postgis/data postgis/postgis
+docker run -d -p 5432:5432 --name postgis -e POSTGRES_USER=postgis -e POSTGRES_PASSWORD=postgis -e POSTGRES_DBNAME=postgis -v /usr/local/postgresql/data:/var/lib/postgresql/data -v /usr/local/postgis/data:/var/lib/postgis/data --restart=always postgis/postgis
 ----
 
 == 启用插件
