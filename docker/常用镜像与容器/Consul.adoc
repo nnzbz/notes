@@ -7,28 +7,57 @@
 :doctype: book
 :experimental:
 
-== 创建并运行容器
+== 单机
 
 [,sh]
 ----
-docker run -dp 8300:8300 -p8500:8500 --name=consul --restart always -e CONSUL_BIND_INTERFACE=eth0 hashicorp/consul:1.18
+docker run -dp 8300:8300 -p8500:8500 --name=consul --restart always -e CONSUL_BIND_INTERFACE=eth0 hashicorp/consul:1.19
 ----
-
-== Swarm
-
-[,sh]
+[source,sh]
 ----
-mkdir -p /usr/local/consul/template
+mkdir -p /usr/local/consul/
 ----
 
 ./usr/local/consul/stack.yml
-[,yaml]
+[source,yaml]
 ----
 ```yaml{.line-numbers}
 version: "3.9"
 services:
   svr:
-    image: hashicorp/consul:1.18
+    image: hashicorp/consul:1.19
+    container_name: consul
+    ports:
+      - "8300:8300"
+      - "8500:8500"
+    environment:
+      - CONSUL_BIND_INTERFACE=eth0
+    restart: always
+----
+
+* 部署
+
+[source,shell]
+----
+docker compose -f /usr/local/consul/stack.yml up -d
+----
+
+
+== Swarm
+
+[source,sh]
+----
+mkdir -p /usr/local/consul/template
+----
+
+./usr/local/consul/stack.yml
+[source,yaml]
+----
+```yaml{.line-numbers}
+version: "3.9"
+services:
+  svr:
+    image: hashicorp/consul:1.19
     environment:
       - CONSUL_BIND_INTERFACE=eth0
     deploy:
