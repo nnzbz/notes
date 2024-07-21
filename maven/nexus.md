@@ -168,14 +168,13 @@ sudo launchctl load /Library/LaunchDaemons/com.sonatype.nexus.plist
 1、登录后，进入菜单：`Nexus Repository Manager` > `Repository` > `Repositories`
 
 2、常用的代理仓库如下
-| name    | type  | url                                                    | remark                   |
-| ------- | ----- | ------------------------------------------------------ | ------------------------ |
-| aliyun  | proxy | <http://maven.aliyun.com/nexus/content/groups/public/> | 阿里国内镜像             |
-| oss     | proxy | <https://repo.maven.apache.org/maven2/>                | oss 提供的中央仓库 |
-| oss-snapshots | proxy | <https://oss.sonatype.org/content/repositories/snapshots>                | oss 提供的中央仓库 |
-| spring  | proxy | <http://repo.spring.io/milestone/>                     | 有 spring 一些较新的 jar 包 |
-| osgeo   | proxy | <https://repo.osgeo.org/repository/release/>           | postgis相关的jar包        |
-| graphql | proxy | <https://oss.jfrog.org/artifactory/oss-snapshot-local>   | graphql较新的版本        |
+| name          | type  | url                                                       | remark                      |
+| ------------- | ----- | --------------------------------------------------------- | --------------------------- |
+| aliyun        | proxy | <https://maven.aliyun.com/nexus/content/groups/public/>   | 阿里国内镜像                |
+| oss           | proxy | <https://repo.maven.apache.org/maven2/>                   | oss 提供的中央仓库          |
+| oss-snapshots | proxy | <https://oss.sonatype.org/content/repositories/snapshots> | oss 提供的中央仓库          |
+| spring        | proxy | <https://repo.spring.io/milestone/>                       | 有 spring 一些较新的 jar 包 |
+| osgeo         | proxy | <https://repo.osgeo.org/repository/release/>              | postgis相关的jar包          |
 
 > 注意： `Maven 2` > `Version policy` > 选择 `Mixed`
 
