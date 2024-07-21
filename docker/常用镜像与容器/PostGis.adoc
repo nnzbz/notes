@@ -1,18 +1,53 @@
 = PostGis
 
 == 单机
-[,shell]
+[source,shell]
 ----
 mkdir -p /usr/local/postgresql/data
 mkdir -p /usr/local/postgis/data
+vi /usr/local/postgis/stack.yml
 ----
 
-[,shell]
+./usr/local/postgis/stack.yml
+[source,yaml]
 ----
-docker run -d -p 5432:5432 --name postgis -e POSTGRES_USER=postgis -e POSTGRES_PASSWORD=postgis -e POSTGRES_DBNAME=postgis -v /usr/local/postgresql/data:/var/lib/postgresql/data -v /usr/local/postgis/data:/var/lib/postgis/data --restart=always postgis/postgis
+version: "3.9"
+services:
+  postgis:
+    image: postgis/postgis:16-3.4-alpine
+    container_name: postgis
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=postgis
+      - POSTGRES_PASSWORD=postgis
+      - POSTGRES_DBNAME=postgis
+    volumes:
+      - /usr/local/postgresql/data:/var/lib/postgresql/data
+      - /usr/local/postgis/data:/var/lib/postgis/data
+    restart: always
 ----
 
-== 启用插件
+[source,shell]
+----
+docker-compose -f /usr/local/postgis/stack.yml up -d
+----
+
+== [line-through]#启用postgis插件# postgis的镜像已经默认启用了postgis插件
+. 进入容器
++
+[source,shell]
+----
+docker exec -it postgis bash
+----
+. 进入postgis的shell
++
+[source,shell]
+----
+psql -Upostgis
+----
+. 启用插件
+[source,shell]
 ----
 CREATE EXTENSION postgis;
 CREATE EXTENSION postgis_topology;
