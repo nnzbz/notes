@@ -11,22 +11,42 @@
 ### 2.1. 用于开发
 
 ```sh
-# max_connections设置最大连接数，默认151太小
-# skip-name-resolve设置最大连接数，默认151太小
-docker run --name mysql -dp3306:3306 -p33060:33060 \
-    --network rebue \
-    -h mysql \
-    -e TZ=CST-8 \
-    -e MYSQL_ROOT_PASSWORD=root \
-    -v mysqldata:/var/lib/mysql \
-    --restart=always \
-    mysql:5 \
-        --default-time-zone='+8:00' \
-        --character-set-client-handshake=FALSE \
-        --character-set-server=utf8mb4 \
-        --collation-server=utf8mb4_general_ci \
-        --max_connections=5000 \
-        --skip-name-resolve
+mkdir -p /usr/local/mysql/data
+vi /usr/local/mysql/stack.yaml
+```
+
+```yml
+version: "3.9"
+
+services:
+  svr:
+    image: mysql:5.7
+    container_name: mysql
+    ports:
+      - "3306:3306"
+      - "33060:33060"
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - TZ=CST-8
+      # 强制用户登录才能查看任何页面
+      - REQUIRE_SIGNIN_VIEW=true
+    # max_connections 置最大连接数，默认151太小
+    # skip-name-resolve 服务器是否执行客户端主机名解析，是则跳过对连接客户端的主机名解析，直接使用IP地址进行连接。这可以提高连接速度
+    #                   但是某些情况下无法使用主机名进行连接，例如在授权表中使用主机名进行授权时
+    command:
+      --default-time-zone='+8:00' \
+      --character-set-client-handshake=FALSE \
+      --character-set-server=utf8mb4 \
+      --collation-server=utf8mb4_general_ci \
+      --max_connections=5000 \
+      --skip-name-resolve
+    volumes:
+      - /usr/local/mysql/data:/var/lib/mysql
+    restart: always
+```
+
+```sh
+docker-compose -f /usr/local/mysql/stack.yaml up -d
 ```
 
 ### 2.2. 将数据映射到宿主机路径中保存
