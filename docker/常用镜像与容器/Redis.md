@@ -7,13 +7,25 @@
 - 无密码（开发环境，线上环境不推荐）
 
 ```sh
-docker run -dp6379:6379 \
-  --name redis \
-  -h redis \
-  --network rebue \
-  -e TZ=CST-8 \
-  --restart=always \
-  redis:alpine
+sudo mkdir -p /usr/local/redis/
+vi /usr/local/redis/stack.yml
+```
+
+```yaml
+version: "3.9"
+services:
+  mysql:
+    image: redis:7
+    container_name: redis
+    ports:
+      - "6379:6379"
+    environment:
+      - TZ=CST-8
+    restart: always
+```
+
+```sh
+docker-compose -f /usr/local/redis/stack.yml up -d
 ```
 
 - 配置密码
