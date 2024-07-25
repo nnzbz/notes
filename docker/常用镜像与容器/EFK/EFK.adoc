@@ -495,6 +495,8 @@ curl -s -X PUT --cacert config/certs/ca/ca.crt -u "elastic:${ELASTIC_PASSWORD}" 
 
 . 如果添加pipeline不成功，直接在kibana里面添加
 +
+左上角 `D` -> `Manage Spaces` -> Ingest 下的 `Ingest Pipelines` -> `Create pipeline`
++
 .rebue.painless
 [source,painless]
 ----
@@ -513,6 +515,9 @@ if (mergedMatches.length > 0) {
     ctx.data = mergedMatches.join('');
 }
 ----
+
+. 在 kibana 上设置索引模板保留 3 天数据
+左上角 `D` -> `Manage Spaces` -> Data 下的 `Index Management` -> `Index Templates` -> 找到同名索引 -> `Manage` 下 `Edit` -> 在 `Data retention` 下启用 `Enable data retention` -> 设置保留天数
 
 === 创建filebeat的配置文件
 ./usr/local/elasticsearch/filebeat/filebeat.yml
