@@ -14,14 +14,26 @@ vi /usr/local/redis/stack.yml
 ```yaml
 version: "3.9"
 services:
-  mysql:
+  redis:
     image: redis:7
     container_name: redis
     ports:
-      - "6379:6379"
+      - 6379:6379
     environment:
       - TZ=CST-8
     restart: always
+  redisinsight:
+    image: redis/redisinsight
+    container_name: redisinsight
+    ports:
+      - 5540:5540
+    volumes:
+      - redisinsight:/data
+    environment:
+      - TZ=CST-8
+
+volumes:
+  redisinsight:
 ```
 
 ```sh

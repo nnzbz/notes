@@ -1,0 +1,363 @@
+= OIDC1.0 规范
+:sectnums:
+:sectnumlevels: 5
+:chapter-signifier: 章节
+:scripts: cjk
+:toc:
+:toc-title: 目录
+:toclevels: 5
+:doctype: book
+:experimental:
+
+== 简介
+=== 要求标记与约定
+。。。。
+
+=== 专业术语
+。。。。
+[cols="4,3,7",options="header"]
+|===
+|英文|中文|备注
+|Claim|声明|关于实体的一件声明信息
+|Claims|声明集|包含一系列声明的集合
+|End-User|最终用户|人类参与者
+|Entity|实体|具有独立且独特存在并可在上下文中识别的事物。如最终用户
+|Essential Claim|基础声明|客户端指定的声明，对于用户请求特定任务授权，保证顺畅的体验是必须的
+|Issuer|发行者|发行声明集的实体
+|Issuer Identifier|发行者标识符|发行者可校验的标识符。它是大小写敏感的 URL，使用 https 方案(包含 scheme,host,port(可选) 与 path(可选)，没有 query 与 fragment)
+|JSON Web Token (JWT)|JWT|JWT
+|OpenID Provider (OP)|OpenID 的提供商|OAuth2.0 的认证服务器，能够认证最终用户且提供有关认证事件和最终用户的声明给依赖方。
+|Relying Party (RP)|依赖方|OAuth2.0 客户端应用程序，需要最终用户的认证与从 OP 获取的声明
+|Subject Identifier|主题标识符|发行者为最终用户提供的本地唯一且不会被重新分配的标识符，旨在给客户端使用
+|===
+
+。。。。
+
+=== 概述
+。。。。
+
+  +--------+                                   +--------+
+  |        |                                   |        |
+  |        |---------(1) AuthN Request-------->|        |
+  |        |                                   |        |
+  |        |  +--------+                       |        |
+  |        |  |        |                       |        |
+  |        |  |  End-  |<--(2) AuthN & AuthZ-->|        |
+  |        |  |  User  |                       |        |
+  |   RP   |  |        |                       |   OP   |
+  |        |  +--------+                       |        |
+  |        |                                   |        |
+  |        |<--------(3) AuthN Response--------|        |
+  |        |                                   |        |
+  |        |---------(4) UserInfo Request----->|        |
+  |        |                                   |        |
+  |        |<--------(5) UserInfo Response-----|        |
+  |        |                                   |        |
+  +--------+                                   +--------+
+
+== ID Token
+让 OAuth2.0 认证最终用户启用了 ID Token 数据结构是本规范主要的扩展。ID Token 是一个安全令牌，包含了使用客户端获取授权服务器关于最终用户的声明集，以及其它潜在请求的声明集。ID Token 表示为 JWT。
+
+所有 OAuth2.0 流程中使用的 ID Token 被 OpenID Connect 使用以下的声明集:
+
+[cols="1,2,1,7",options="header"]
+|===
+|英文|中文|必填|备注
+|iss|发行者标识符|必填|参看专业术语部分
+|sub|主题标识符|必填|参看专业术语部分，大小写敏感，不能超出 255 个 ASCII [RFC20] 字符长度。如 `24400320` 或 `AItOawmwtWwcT0k51BayewNvutrJUqsvl6qs7A4`
+|aud|受众|必填|Audience(s)。ID Token 的目的受众。值必须包含 OAuth2.0 依赖方的 client_id。也可以包含其它受众的标识符。一般情况下是一个大小写敏感的字符串数组。当只有一个受众的常见情况时，是一个大小写敏感的单一字符串
+|exp|到期时间|必填|OP 认证 RP 获取的 ID Token 之后不再被接受的到期时间。当前时间必须在到期时间之前。实现时考虑到时钟偏移，可以有一些小偏差，一般不超过几分钟。它是一个 JSON[RFC8259]数值，从 UTC 1970-01-01T00:00:00Z 到这个时间的秒数。关于通用时间与特定 UTC 时间请查看[RFC3339]。注意: ID Token 到期时间与 RP 与 OP 的认证会话的生命周期无关。
+|iat|发行时间|必填|JWT 发行的时间。它是一个 JSON 数值，从 UTC 1970-01-01T00:00:00Z 到这个时间的秒数。
+|auth_time|认证时间|条件|认证最终用户的时间。它是一个 JSON 数值，从 UTC 1970-01-01T00:00:00Z 到这个时间的秒数。当它是一个基础声明(Essential Claim)或设置了 `max_age` 项，那么是必填的；否则选填
+|nonce|随机数|条件|常用于带ID Token关联客户端会话的字符串，以减少重放攻击。该值从认证请求传递到 ID Token 不能修改。如果存在于 ID Token 中，客户端必须校验其是否与发送认证请求时的值相同。如果存在于认证请求中，授权服务器必须包括其值在 ID Token 中。授权服务器不应该做用其值做其它处理。大小写敏感
+|acr|认证上下文类引用|选填|Authentication Context Class Reference。标识满足认证上下文的类指定的字符串。值为 `0` 时表示最终用户认证不符合 `ISO/IEC 29115 [ISO29115] level 1` 的要求。由于历史原因，值为 `0` 常用于表示无法确信同一个人真的在那里。`level 0` 认证不应该用于授权访问任何财务的任意资源。(这与 OpenID 2.0 PAPE [OpenID.PAPE] nist_auth_level 0 相一致)一个绝对的 URI 或 RFC 6711 [RFC6711] 注册名称应该用为 acr 值；被注册的名称必须不能与已注册的有不同的意义；使用声明的多方需要同意使用的意义，可以环境特定。大小写敏感
+|amr|认证方法引用|可选|Authentication Methods References。JSON 字符串数组，认证时使用的认证方法标识符。例如，可以表示密码与 OTP 认证方法都被使用。大小写敏感。。。。
+|azp|授权方|可选|Authorized party。ID Token 发行者。如果存在，必须包含发行者的 OAuth2.0 Client ID。大小写敏感的字符串，包含了字符串或 URI。注意事实上，该声明只用于超过了本规范范围的扩展。因此，鼓励不使用此类扩展的实现不使用 azp 并在发生时忽略它。
+|===
+
+ID Token 可以包含其它的声明集。没弄明白的声明集必须被忽略。 本规范的额外声明集请看 3.1.3.6, 3.3.2.11, 5.1, 7.4 节。
+
+ID Token 必须用 JWS 签名，也可以选择用 JWS 和 JWE 签名和加密，从而提供认证、完整、不可否认性和可选的机密性，16.14 节。如果 ID Token 是加密的，必须先签名再加密，结果是嵌套 JWT。
+
+下面是 ID Token 中声明集(JWT Claims Set)非规范示例
+[source,json]
+----
+{
+  "iss": "https://server.example.com",
+  "sub": "24400320",
+  "aud": "s6BhdRkqt3",
+  "nonce": "n-0S6_WzA2Mj",
+  "exp": 1311281970,
+  "iat": 1311280970,
+  "auth_time": 1311280969,
+  "acr": "urn:mace:incommon:iap:silver"
+}
+----
+
+== 认证
+。。。。
+
+=== 授权码流程认证
+。。。。
+
+==== 授权码流程步骤
+授权码流程经过以下步骤:
+
+. 客户端准备一个包含所需请求参数的认证请求
+. 客户端发送请求到授权服务器
+. 授权服务器认证最终用户
+. 授权服务器获得最终用户许可/授权
+. 授权服务器发送带授权码的最终用户回到客户端
+. 客户端在令牌端点用授权码请求响应
+. 客户端接收包含 ID Token 与 Access Token 的响应
+. 客户端校验 ID Token 并检索最终用户的主题标识符
+
+==== 授权端点
+。。。。
+
+===== 认证请求
+认证请求是 OAuth2.0 授权请求中被授权服务器认证的最终用户的请求。
+
+授权服务器在授权端点必须支持 HTTP 的 GET 和 POST 方法(RFC7231)。客户端可以使用HTTP 的 GET 或 POST 方法认证授权请求到授权服务器。如果使用 GET 方法，使用 URI 查询字符串序列化请求参数(13.1 节)。如果使用 POST 方法，请求参数用表单序列化(13.2 节)。
+
+OIDC 的授权码流程使用 OAuth2.0 中的请求参数如下:
+
+[cols="1,2,1,7",options="header"]
+|===
+|英文|中文|必填|备注
+|scope|范围|必填|必须包含 `openid` 这个值，如果不存在，完全无法确定行为。可以存在其它范围。使用不明白的值会被忽略。本规范中定义的额外范围的值请参看 5.4、11 节
+|response_type|响应类型|必填|OAuth2.0 响应类型，判断使用哪个授权处理流程，包括从端点使用返回的参数。这里请填 `code`
+|client_id|客户端 ID|必填|OAuth2.0 客户端标识符，在授权服务器中有效
+|redirect_uri|重定向 URI|必填|响应时重定向的 URI。必须精确匹配在 OpenID 供应商预注册的客户端的重定向的 URI 的值[RFC3986]的 5.2.1 节(简单字符串比较)。它应该使用 https；然而它被秘密的客户端类型提供也可以使用 http，OAuth2.0 的 2.1 节，这个案例，它被 OP 提供允许使用 http 重定向。同样，如果客户端是一个本地的应用程序，它可以使用 http，使用 `localhost` 或 IP 回环字面量 `127.0.0.1` 或 `[::1]`作为主机名。它可以使用备案，例如标识本地应用程序的回调。
+|state|状态|推荐|非透明值，常用于在请求与回调间保持状态。通常机密通过用浏览器 Cookie 绑定参数的值减少跨站请求伪造攻击 Cross-Site Request Forgery (CSRF, XSRF) 攻击。
+|===
+
+OIDC 还使用了 OAuth2.0 中的其它请求参数如下(OAuth 2.0 Multiple Response Type Encoding Practicesde[OAuth.Responses]):
+[cols="1,2,1,7",options="header"]
+|===
+|英文|中文|必填|备注
+|response_mode|响应模式|可选 a|通知授权服务器从授权端点返回参数的机制。当被请求的响应模式指定了响应类型的默认模式的时候，不推荐使用这个参数。
+
+以下是一些常见的response_mode数值及其作用：
+
+. **query**：这是OAuth 2.0授权码流程的默认响应模式。授权响应参数包含在重定向URI的查询组件中。
+. **fragment**：授权响应参数包含在重定向URI的片段组件中。这通常用于不支持CORS（跨域资源共享）的浏览器。
+. **form_post**：授权响应参数作为POST请求发送，响应参数包含在请求体中。当响应参数过大无法放入URL时，这是一个有用的方式。
+. **jwt**：授权响应作为JWT（JSON Web Token）返回，而不是编码在URL中。这可以用于减少URL中信息泄露的风险。
+|===
+
+本规范也定义了以下的请求参数:
+[cols="1,2,1,7",options="header"]
+|===
+|英文|中文|必填|备注
+|nonce|随机数|选填|Number Used Once。常用于带ID Token关联客户端会话的字符串，以减少重放攻击。该值从认证请求传递到 ID Token 不能修改。必须有足够的熵来预防猜测式的攻击。实现条款请参看 15.5.2 节
+|display|显示|可选 a|ASCII 字符串，指定授权服务器怎么显示认证与用户界面给最终用户。定义了以下的值:
+
+* page: 一个完全的页面视图(默认)
+* popup: 弹出窗口。应该是弹出聚焦登录对话框合适大小的窗口，而不应遮挡整个窗口
+* touch: 触摸界面的设备
+* wap: 功能手机类型
+
+授权服务器也可以尝试检测浏览器的能力采取适合的方式显示
+
+如果 OP 接收到的值不明白为什么超出了定义的范围，可以返回一个错误或者忽略它；实际上不返回错误将有利于扩展使用新值
+
+|prompt|提示|可选 a|空格隔开，ASCII 字符串的大小写敏感的列表，指定授权服务器是否提示最终用户重新认证和许可。定义了以下的值:
+
+* none: 授权服务器必须不显示任何授权或许可用户的界面。如果最终用户未准备认证，或者客户端没有预先配置请求声明的许可，或者为请求未填满其它条件，将返回错误。通常错误码为 `login_required`、`interaction_required`，或者是定义在 3.1.2.6 节的其它编码。这是用于检查认证 与/或 许可是否存在的方法。
+* login: 授权服务器应该提示最终用户重新认证。如果最终用户不能重新认证，返回错误，通常是 `login_required`
+* consent: 授权服务器返回信息给客户端之前应该提示最终用户是否许可。如果没有获得许可，返回错误，通常是 `consent_required`
+* select_account: 授权服务器应该提示最终用户选择一个账户。在授权服务器上有多个账户的最终用户，允许用户选择他们多个账户之中可能拥有当前会话的账户。如果不能获得，返回错误，通常是 `account_selection_required`
+
+它可以被客户端用于确认最终用户仍然处于当前会话中，或者引起请求的注意。如果包含 `none` 还有任何其它值，返回错误。
+
+如果 OP 接收的值超出上面已定义范围且不清楚，可以返回错误或忽略它；实际上不返回错误将有利于扩展使用新值
+|max_age|最大认证年龄|可选|指定上次最终用户通过 OP 激活认证能允许的经过时间，单位秒。如果经过时间大于此值，OP 必须尝试主动重新认证该最终用户。(`max_age` 与 OpenID2.0 PAPE 的 `max_auth_age`一致)。如果用了 `max_age`，ID Token 必须包括 `auth_time`。注意 `max_age=0` is 等同于 `prompt=login`
+|ui_locales||选填|。。。。
+|id_token_hint||选填|。。。。
+|login_hint||选填|。。。。
+|acr_values||选填|。。。。
+|===
+
+。。。。
+
+下面是客户端响应 HTTP 302 重定向的非标准示例，促使浏览器发送认证请求到授权端点(折行只是为了方便显示)
+
+[source,text]
+----
+HTTP/1.1 302 Found
+  Location: https://server.example.com/authorize?
+    response_type=code
+    &scope=openid%20profile%20email
+    &client_id=s6BhdRkqt3
+    &state=af0ifjsldkj
+    &redirect_uri=https%3A%2F%2Fclient.example.org%2Fcb
+----
+
+下面是接收到上面HTTP 302 重定向的响应后，浏览器向授权服务器发出请求的非标准示例(折行只是为了方便显示)
+
+[source,text]
+----
+GET /authorize?
+    response_type=code
+    &scope=openid%20profile%20email
+    &client_id=s6BhdRkqt3
+    &state=af0ifjsldkj
+    &redirect_uri=https%3A%2F%2Fclient.example.org%2Fcb HTTP/1.1
+  Host: server.example.com
+----
+
+===== 认证请求校验
+授权服务器必须如下校验接收到的请求:
+
+. 必须依据 Oauth2.0 规范校验所有 OAuth2.0 参数
+. 校验 `scope` 存在且包含 `openid`(如果没有，可能是一个 OAuth2.0 请求而不是 OIDC 请求)
+. 必须校验必填参数是否存在且符合规范
+. 如果 sub(subject) 声明为 ID Token 带了一个特定值请求，如果通过该值识别的最终用户在授权服务器有一个活动会话，授权服务器必须只能发送一个正面响应，或者做为请求的结果被认证。授权服务器必须不能回复 ID Token 或 Access Token 给不同的用户，哪怕他们在授权服务器上有活动会话。。。。
+. 。。。。。
+
+根据OAuth 2.0 [RFC6749] 中的规定，授权服务器应该忽略无法识别的请求参数。
+
+如果授权服务器遇到任何错误，它必须按照第 3.1.2.6 节返回错误响应。
+
+===== 授权服务器认证最终用户
+。。。。
+
+===== 授权服务器获得最终用户的许可/授权
+。。。。
+
+===== 成功认证的响应
+。。。。
+
+[source,text]
+----
+HTTP/1.1 302 Found
+Location: https://client.example.org/cb?
+  code=SplxlOBeZQQYbYS6WxSbIA
+  &state=af0ifjsldkj
+----
+
+===== 认证错误的响应
+。。。。
+
+[source,text]
+----
+HTTP/1.1 302 Found
+  Location: https://client.example.org/cb?
+    error=invalid_request
+    &error_description=
+      Unsupported%20response_type%20value
+    &state=af0ifjsldkj
+----
+
+===== 认证响应的校验
+。。。。
+
+==== 令牌的端点
+。。。。
+
+===== 令牌的请求
+。。。。
+
+[source,text]
+----
+POST /token HTTP/1.1
+  Host: server.example.com
+  Content-Type: application/x-www-form-urlencoded
+  Authorization: Basic czZCaGRSa3F0MzpnWDFmQmF0M2JW
+
+  grant_type=authorization_code&code=SplxlOBeZQQYbYS6WxSbIA
+    &redirect_uri=https%3A%2F%2Fclient.example.org%2Fcb
+----
+
+===== 令牌请求的校验
+。。。。
+
+===== 成功令牌的响应
+。。。。。
+
+[source,text]
+----
+HTTP/1.1 200 OK
+Content-Type: application/json
+Cache-Control: no-store
+
+{
+  "access_token": "SlAV32hkKG",
+  "token_type": "Bearer",
+  "refresh_token": "8xLOxBtZp8",
+  "expires_in": 3600,
+  "id_token": "eyJhbGciOiJSUzI1NiIsImtpZCI6IjFlOWdkazcifQ.ewogImlzc
+    yI6ICJodHRwOi8vc2VydmVyLmV4YW1wbGUuY29tIiwKICJzdWIiOiAiMjQ4Mjg5
+    NzYxMDAxIiwKICJhdWQiOiAiczZCaGRSa3F0MyIsCiAibm9uY2UiOiAibi0wUzZ
+    fV3pBMk1qIiwKICJleHAiOiAxMzExMjgxOTcwLAogImlhdCI6IDEzMTEyODA5Nz
+    AKfQ.ggW8hZ1EuVLuxNuuIJKX_V8a_OMXzR0EHR9R6jgdqrOOF4daGU96Sr_P6q
+    Jp6IcmD3HP99Obi1PRs-cwh3LO-p146waJ8IhehcwL7F09JdijmBqkvPeB2T9CJ
+    NqeGpe-gccMg4vfKjkM8FcGvnzZUN4_KSP0aAp1tOJ1zZwgjxqGByKHiOtX7Tpd
+    QyHE5lcMiKPXfEIQILVq0pc_E2DzL7emopWoaoZTF_m0_N0YzFC6g6EJbOEoRoS
+    K5hoDalrcvRYLSrQAZZKflyuVCyixEoV9GfNQC3_osjzw2PAithfubEEBLuVVk4
+    XUVrWOLrLl0nx7RkKU8NXNHq-rvKMzqg"
+}
+----
+
+===== 令牌错误的响应
+[source,text]
+----
+HTTP/1.1 400 Bad Request
+Content-Type: application/json
+Cache-Control: no-store
+
+{
+  "error": "invalid_request"
+}
+----
+
+===== 令牌响应的校验
+。。。。
+
+===== ID Token
+。。。。
+
+===== ID Token 的校验
+。。。。
+
+===== Access Token 的校验
+。。。。
+
+
+=== 13.1.  Query String Serialization
+
+In order to serialize the parameters using the Query String Serialization, the Client constructs the string by adding the parameters and values to the query component of a URL using the application/x-www-form-urlencoded format as defined by [W3C.SPSD‑html401‑20180327]. Query String Serialization is typically used in HTTP GET requests. The same serialization method is also used when adding parameters to the fragment component of a URL.
+
+The following is a non-normative example of this serialization (with line wraps within values for display purposes only):
+
+[source,text]
+----
+  GET /authorize?
+    response_type=code
+    &scope=openid
+    &client_id=s6BhdRkqt3
+    &redirect_uri=https%3A%2F%2Fclient.example.org%2Fcb HTTP/1.1
+  Host: server.example.com
+----
+
+=== 13.2.  Form Serialization
+Parameters and their values are Form Serialized by adding the parameter names and values to the entity body of the HTTP request using the application/x-www-form-urlencoded format as defined by [W3C.SPSD‑html401‑20180327]. Form Serialization is typically used in HTTP POST requests.
+
+The following is a non-normative example of this serialization (with line wraps within values for display purposes only):
+
+[source,text]
+----
+  POST /authorize HTTP/1.1
+  Host: server.example.com
+  Content-Type: application/x-www-form-urlencoded
+
+  response_type=code
+    &scope=openid
+    &client_id=s6BhdRkqt3
+    &redirect_uri=https%3A%2F%2Fclient.example.org%2Fcb
+----
+
+==== 15.5.2.  Nonce Implementation Notes
+The nonce parameter value needs to include per-session state and be unguessable to attackers. One method to achieve this for Web Server Clients is to store a cryptographically random value as an HttpOnly session cookie and use a cryptographic hash of the value as the nonce parameter. In that case, the nonce in the returned ID Token is compared to the hash of the session cookie to detect ID Token replay by third parties. A related method applicable to JavaScript Clients and other Browser-Based Clients is to store the cryptographically random value in HTML5 local storage and use a cryptographic hash of this value.
+

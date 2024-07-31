@@ -32,7 +32,14 @@ services:
       - "8500:8500"
     environment:
       - CONSUL_BIND_INTERFACE=eth0
+    volumes:
+      - data:/consul/data
+    command:
+      agent -server -bind 0.0.0.0 -client 0.0.0.0 -ui -bootstrap-expect 1
     restart: always
+
+volumes:
+  data:
 ----
 
 * 部署
@@ -47,6 +54,7 @@ docker compose -f /usr/local/consul/stack.yml up -d
 
 [source,sh]
 ----
+mkdir /var/consul/data
 mkdir -p /usr/local/consul/template
 ----
 
@@ -60,6 +68,10 @@ services:
     image: hashicorp/consul:1.19
     environment:
       - CONSUL_BIND_INTERFACE=eth0
+    volumes:
+      - /var/consul/data:/consul/data
+    command:
+      agent -server -bind 0.0.0.0 -client 0.0.0.0 -ui -bootstrap-expect 1
     deploy:
       placement:
         constraints:
