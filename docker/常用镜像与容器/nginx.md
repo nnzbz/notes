@@ -12,14 +12,35 @@ mkdir -p /usr/local/nginx/{html,conf,logs}
 
 ### 1.2. 创建并运行容器
 
-```sh
-docker run -p80:80 --name nginx -v /usr/local/nginx/html:/usr/share/nginx/html:ro -v /usr/local/nginx/conf:/etc/nginx/nginx.conf:ro -v /usr/local/nginx/logs:/var/log/nginx -d nginx
+```yaml{.line-numbers}
+version: "3.9"
+services:
+  nginx:
+    image: nginx
+    container_name: nginx
+    ports:
+      - 80:80
+      # - 443:443
+    environment:
+      # 最好使用此设定时区，其它镜像也可以使用
+      - TZ=CST-8
+    volumes:
+      # 配置文件，在 1.27.0 版本中不能 mount 成功，只能采用手动复制的方式
+      #- /usr/local/nginx/conf:/etc/nginx/conf.d:z
+      # 日志目录
+      - /usr/local/nginx/logs:/var/log/nginx:z
+      # 网页存放目录，在 1.27.0 版本中不能 mount 成功，只能采用手动复制的方式
+      #- /usr/local/nginx/html:/usr/share/nginx/html:z
+    restart: always
 ```
 
-- p
-  如果要建立自定义的端口号，请修改“:”前面的80
-- :ro
-  在容器内只读
+- p: 如果要建立自定义的端口号，请修改“:”前面的80
+- 手动复制文件到容器中
+
+  ```sh
+  docker cp /usr/local/nginx/conf/default.conf nginx:/etc/nginx/conf.d/
+  docker cp /usr/local/nginx/html/ nginx:/usr/share/nginx/
+  ```
 
 ## 2. Swarm
 
@@ -171,7 +192,7 @@ server {
     location = / {
        rewrite ^/(.*) admin-web/platform-admin-web/ redirect;
     }
-   
+
 }
 ```
 
