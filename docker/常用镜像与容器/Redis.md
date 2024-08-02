@@ -69,6 +69,10 @@ echo 'requirepass xxxxxxxx' >> /usr/local/redis/conf/redis.conf
 # 那么请运行下面这行
 echo 'ignore-warnings ARM64-COW-BUG' >> /usr/local/redis/conf/redis.conf
 
+# 设置内存不足执行清理缓存的策略(带有过期时间最近最少使用)
+echo 'maxmemory 8gb' >> /usr/local/redis/conf/redis.conf
+echo 'maxmemory-policy volatile-lru' >> /usr/local/redis/conf/redis.conf
+
 vi /usr/local/redis/stack-standalone.yml
 ```
 
@@ -314,6 +318,10 @@ vi /usr/local/redis/master1/redis.conf
 # 那么请打开下面这行注释
 # ignore-warnings ARM64-COW-BUG
 
+# 设置内存不足执行清理缓存的策略(带有过期时间最近最少使用)
+maxmemory 3750mb
+maxmemory-policy volatile-lru
+
 # 保护模式，默认值 yes，即开启。
 # 开启保护模式以后，需配置 bind ip 或者设置访问密码
 # 关闭保护模式，外部网络可以直接访问
@@ -344,6 +352,7 @@ cp /usr/local/redis/master1/redis.conf /usr/local/redis/slave2/
 cp /usr/local/redis/master1/redis.conf /usr/local/redis/slave3/
 ```
 
+- 注意修改配置文件中的 `maxmemory` 为实际环境最大内存的合理范围
 - 注意修改配置文件中的 `redismaster1` 为对应的主机名(redismaster2/redismaster3/redisslave1/redisslave2/redisslave3)
 
 ```sh

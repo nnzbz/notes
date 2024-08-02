@@ -16,11 +16,13 @@ https://datatracker.ietf.org/doc/draft-ietf-oauth-v2-1/[OAuth2.1草案]，目前
 [cols="1,1,",options="header"]
 |===
 |英文|中文|备注
+|ABNF|扩展巴科斯范式|Augmented Backus-Naur Form
 |authentication|身份认证|
 |authorization|授权|
 |credential|凭证|
 |credentials|证书|
 |end-user|最终用户|最终使用软件、系统或服务的用户
+|PKCE|最终用户|Proof-Key for Code Exchange
 |resource owner|资源所有者|通常指的是最终用户本人
 |===
 
@@ -338,6 +340,10 @@ Authorization: Basic czZCaGRSa3F0Mzo3RmpmcDBaQnIxS3REUmJuZlZkbUl3
 。。。。
 
 ==== 授权请求
+。。。。
+
+code_verifier 是一个为每一个授权请求生成的高熵加密且随机的字符串，未保留的字符集为: [A-Z] / [a-z] / [0-9] / "-" / "." / "_" / "~"，长度为 43-128。
+
 。。。。
 
 ==== 授权响应
