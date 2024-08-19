@@ -1,0 +1,51 @@
+= mosquitto
+
+== Swarm
+
+[source,sh]
+----
+mkdir -p /usr/local/mosquitto/{config,data}
+----
+
+./usr/local/mosquitto/config/mosquitto.conf
+[source,yaml]
+----
+persistence true
+persistence_location /mosquitto/data/
+log_dest file /mosquitto/log/mosquitto.log
+allow_anonymous true
+listener 1883
+----
+
+./usr/local/mosquitto/stack.yml
+[source,yaml]
+----
+version: "3.9"
+services:
+  svr:
+    image: eclipse-mosquitto:2
+    #ports:
+      #- 1883:1883
+      #- 9001:9001
+    volumes:
+      - /usr/local/mosquitto/config:/mosquitto/config
+      - /usr/local/mosquitto/data:/mosquitto/data
+    deploy:
+      placement:
+        constraints:
+          # 部署的节点指定是 mosquitto角色的
+          - node.labels.role==mqtt
+    logging:
+      options:
+        max-size: 8m
+
+networks:
+  default:
+    external: true
+    name: rebue
+----
+
+[source,shell]
+----
+docker stack deploy -c /usr/local/mosquitto/stack.yml mqtt
+----

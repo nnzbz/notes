@@ -1,0 +1,39 @@
+= node-red
+
+== Swarm
+
+[source,sh]
+----
+mkdir -p /usr/local/nodered/data
+----
+
+./usr/local/nodered/stack.yml
+[source,yaml]
+----
+version: "3.9"
+services:
+  svr:
+    image: nodered/node-red:3.1
+    # ports:
+    #   - 1880:1880
+    volumes:
+      - /usr/local/nodered/data:/data
+    deploy:
+      placement:
+        constraints:
+          # 部署的节点指定是 nodered角色的
+          - node.labels.role==nodered
+    logging:
+      options:
+        max-size: 8m
+
+networks:
+  default:
+    external: true
+    name: rebue
+----
+
+[source,shell]
+----
+docker stack deploy -c /usr/local/nodered/stack.yml nodered
+----

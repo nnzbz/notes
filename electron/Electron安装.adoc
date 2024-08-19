@@ -25,19 +25,6 @@ cd my-app
 yarn
 ----
 
-== 设置国内镜像
-. 进入项目根目录
-+
-[,shell]
-----
-cd my-app
-----
-在项目根目录新建 `.npmrc`，内容：
-[,shell]
-----
-electron_mirror=https://npmmirror.com/mirrors/electron/
-----
-
 == 安装Electron
 . 进入项目根目录
 +
@@ -45,12 +32,44 @@ electron_mirror=https://npmmirror.com/mirrors/electron/
 ----
 cd my-app
 ----
-. 安装
+. 国外安装
 +
 [,shell]
 ----
+# npm 安装
+npm install --save-dev --verbose electron
+# yarn 安装
 yarn add -D electron
 ----
+
+. 国内安装
++
+因为长城防火墙的原因，在国内并不能顺利通过上一步，我们可以使用下面的几种方案安装:
+
+.. 代理
+... 设置环境变量 `ELECTRON_GET_USE_PROXY` 为任意值，如 `true`
+... 设置 `HTTP_PROXY` 与 `HTTPS_PROXY` 为代理的地址
+.. 直接下载
++
+<https://github.com/electron/electron/releases>
+.. 设置国内镜像(不推荐，因为国内镜像往往没有最新版，导致安装报错，除非指定安装版本)
++
+设置 `ELECTRON_MIRROR` 为 `https://npmmirror.com/mirrors/electron/`
++
+目前发现腾讯云的 electron 的版本比较旧，但是阿里云的镜像又会导致 `audit` 错误，可以将注册中心设置为腾讯云，electron 的镜像设置为阿里云；也可以先用阿里云的镜像安装上 electron，报 `audit` 错误再用腾讯云镜像继续安装。
+
+====
+npm 项目设置局部环境变量的方式
+
+. 进入项目根目录
+. 在项目根目录新建 `.npmrc`(yarn 则是`.yarnrc`)，内容示例如下：
++
+[,shell]
+----
+ELECTRON_MIRROR=https://npmmirror.com/mirrors/electron/
+----
+====
+
 
 == 运行
 . 进入项目根目录
