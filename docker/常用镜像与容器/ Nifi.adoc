@@ -1,0 +1,88 @@
+= Apache NiFi
+:scripts: cjk
+:toc:
+:toc-title: 目录
+:toclevels: 4
+
+== 单机
+[,shell]
+----
+mkdir ~/opt/nifi
+----
+
+.~/opt/nifi/stack.yml
+[source,yaml,%linenums]
+----
+services:
+  nifi:
+    image: apache/nifi:1.27.0
+    ports:
+      - "39443:39443"
+    hostname: nifi
+    container_name: nifi
+    environment:
+      - NIFI_WEB_HTTPS_PORT=39443
+      - NIFI_WEB_PROXY_CONTEXT_PATH=/nifi
+      - SINGLE_USER_CREDENTIALS_USERNAME=admin
+      - SINGLE_USER_CREDENTIALS_PASSWORD=ctsBtRBKHRAx69EqUghvvgEvjnaLjFEB
+    logging:
+      options:
+        max-size: 8m
+    restart: always
+----
+
+- 部署
+
+[,shell]
+----
+docker-compose -f ~/opt/nifi/stack.yml up -d
+----
+
+== Swarm
+[,shell]
+----
+mkdir /usr/local/nifi
+----
+
+./usr/local/nifi/stack.yml
+[source,yaml,%linenums]
+----
+services:
+  svr:
+    image: apache/nifi:1.27.0
+    #ports:
+    #  - "39443:39443"
+    hostname: nifi
+    environment:
+      - NIFI_WEB_HTTPS_PORT=39443
+      - NIFI_WEB_PROXY_CONTEXT_PATH=/nifi
+      # - SINGLE_USER_CREDENTIALS_USERNAME=admin
+      # - SINGLE_USER_CREDENTIALS_PASSWORD=ctsBtRBKHRAx69EqUghvvgEvjnaLjFEB
+    deploy:
+      placement:
+        constraints:
+          # 部署的节点指定是nifi角色的
+          - node.labels.role==etl
+    logging:
+      options:
+        max-size: 8m
+
+networks:
+  default:
+    external: true
+    name: rebue
+----
+
+- 部署
+
+[,shell]
+----
+docker stack deploy -c /usr/local/nifi/stack.yml nifi
+----
+
+- 查看自动生成的用户名和密码
+[source,shell]
+----
+# 查看自动生成的用户名和密码
+docker service logs nifi_svr | grep Generated
+----

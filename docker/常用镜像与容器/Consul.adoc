@@ -9,20 +9,14 @@
 
 == 单机
 
-[,sh]
-----
-docker run -dp 8300:8300 -p8500:8500 --name=consul --restart always -e CONSUL_BIND_INTERFACE=eth0 hashicorp/consul:1.19
-----
 [source,sh]
 ----
-mkdir -p /usr/local/consul/
+mkdir -p ~/opt/consul/
 ----
 
-./usr/local/consul/stack.yml
-[source,yaml]
+.~/opt/consul/stack.yml
+[source,yaml,%linenums]
 ----
-```yaml{.line-numbers}
-version: "3.9"
 services:
   consul:
     image: hashicorp/consul:1.19
@@ -35,7 +29,8 @@ services:
     volumes:
       - data:/consul/data
     command:
-      agent -server -bind 0.0.0.0 -client 0.0.0.0 -ui -bootstrap-expect 1
+      # https://developer.hashicorp.com/consul/docs/agent/config/cli-flags
+      agent -server -ui -ui-content-path /consul -bootstrap-expect 1
     restart: always
 
 volumes:
@@ -46,7 +41,7 @@ volumes:
 
 [source,shell]
 ----
-docker compose -f /usr/local/consul/stack.yml up -d
+docker compose -f ~/opt/consul/stack.yml up -d
 ----
 
 
@@ -59,9 +54,8 @@ mkdir -p /usr/local/consul/template
 ----
 
 ./usr/local/consul/stack.yml
-[source,yaml]
+[source,yaml,%linenums]
 ----
-```yaml{.line-numbers}
 version: "3.9"
 services:
   svr:
@@ -69,9 +63,10 @@ services:
     environment:
       - CONSUL_BIND_INTERFACE=eth0
     volumes:
-      - /var/consul/data:/consul/data
+      - data:/consul/data
     command:
-      agent -server -bind 0.0.0.0 -client 0.0.0.0 -ui -bootstrap-expect 1
+      # https://developer.hashicorp.com/consul/docs/agent/config/cli-flags
+      agent -server -bind 0.0.0.0 -bind_addr eth0 -client 0.0.0.0 -ui -ui-content-path /consul -bootstrap-expect 1
     deploy:
       placement:
         constraints:
@@ -81,6 +76,9 @@ services:
       options:
         max-size: 8m
 
+volumes:
+  data:
+
 networks:
   default:
     external: true
@@ -88,9 +86,8 @@ networks:
 ----
 
 ./usr/local/consul/template/stack.yml
-[,yaml]
+[source,yaml,%linenums]
 ----
-```yaml{.line-numbers}
 version: "3.9"
 services:
   template:
@@ -110,7 +107,7 @@ services:
 networks:
   default:
     external: true
-    name: shdxgc
+    name: rebue
 ----
 
 ./usr/local/consul/template/deregister.hcl
