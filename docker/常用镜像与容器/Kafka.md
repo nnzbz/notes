@@ -28,7 +28,7 @@ services:
 ```
 
 ```sh
-docker-compose -f ~/opt/kafka/stack.yml up -d
+docker compose -f ~/opt/kafka/stack.yml up -d
 ```
 
 ## 2. Swarm

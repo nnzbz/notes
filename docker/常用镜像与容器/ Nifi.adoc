@@ -35,7 +35,7 @@ services:
 
 [,shell]
 ----
-docker-compose -f ~/opt/nifi/stack.yml up -d
+docker compose -f ~/opt/nifi/stack.yml up -d
 ----
 
 == Swarm

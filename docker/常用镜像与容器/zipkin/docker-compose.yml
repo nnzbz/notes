@@ -1,13 +1,13 @@
-# This file uses the version 2 docker-compose file format, described here:
+# This file uses the version 2 docker compose file format, described here:
 # https://docs.docker.com/compose/compose-file/#version-2
 #
-# This runs the zipkin and zipkin-mysql containers, using docker-compose's
+# This runs the zipkin and zipkin-mysql containers, using docker compose's
 # default networking to wire the containers together.
 #
 # Note that this file is meant for learning Zipkin, not production deployments.
- 
+
 version: '2'
-services:  
+services:
   zipkin:
     image: openzipkin/zipkin
     container_name: zipkin
@@ -34,7 +34,7 @@ services:
       - STORAGE_TYPE=elasticsearch
       - ES_HOSTS=elasticsearch:9200
     restart: always
-    external_links: 
+    external_links:
       - rabbitmq:rabbitmq
       - es01:elasticsearch
     network_mode: bridge

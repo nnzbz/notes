@@ -33,10 +33,10 @@ networks:
 ```yaml
 networks:
   default:
-    rebue:    
+    rebue:
 ```
 
-## 6. 在 `Docker-Compose` 中配置默认使用已存在的网络
+## 6. 在 `Docker compose` 中配置默认使用已存在的网络
 
 ```yaml
 networks:

@@ -1,4 +1,4 @@
-= Docker-Compose 简介
+= Docker compose 简介
 :scripts: cjk
 :toc:
 :toc-title: 目录
@@ -12,36 +12,36 @@
 [,shell]
 ----
 apt update
-apt install docker-compose-plugin
+apt install docker compose-plugin
 ----
 * CentOS
 +
 [,shell]
 ----
 yum update
-yum install docker-compose-plugin
+yum install docker compose-plugin
 ----
 
-== docker-compose.yml
+== docker compose.yml
 === version
 - 目前为止有三个版本分别为 `1`, `2`, `3`
 - 版本越高支持越多的指令
 - 区分 `1` 和 `2`（Compose 1.6.0+，Docker Engine 1.10.0+）
 
 == 启动服务
-进入到 `docker-compose.yml` 文件所在目录，执行下面的命令
+进入到 `docker compose.yml` 文件所在目录，执行下面的命令
 [,shell]
 ----
 docker compose -f xxx.yml up -d
 ----
 
 == 重新构建服务
-进入到 `docker-compose.yml` 文件所在目录，执行下面的命令
+进入到 `docker compose.yml` 文件所在目录，执行下面的命令
 [,shell]
 ----
 docker compose -f xxx.yml up -d --force-recreate
 # 或者
-docker-compose -f xxx.yml up -d --build
+docker compose -f xxx.yml up -d --build
 ----
 
 == 停止所有服务

@@ -37,7 +37,7 @@ volumes:
 ```
 
 ```sh
-docker-compose -f /usr/local/redis/stack.yml up -d
+docker compose -f /usr/local/redis/stack.yml up -d
 ```
 
 - 配置密码

@@ -10,7 +10,7 @@
 docker run --name nacos-standalone -e MODE=standalone -dp 8848:8848 --restart=always nacos/nacos-server:latest
 ```
 
-## 2. 利用官方 `docker-compose`
+## 2. 利用官方 `docker compose`
 
 - 从github下载nacos示例
 
@@ -25,14 +25,14 @@ cd nacos-docker
 ## 3. 部署单机derby
 
 ```sh
-# 编辑docker-compose文件
+# 编辑docker compose文件
 vi example/standalone-derby.yaml
 # 每个容器下都设置 `restart: always`
 ....
 
 # 创建并运行容器
 
-docker-compose -f example/standalone-derby.yaml up -d
+docker compose -f example/standalone-derby.yaml up -d
 ```
 
 ## 4. Swarm单机
@@ -51,7 +51,7 @@ docker-compose -f example/standalone-derby.yaml up -d
     # 删除容器依赖而改为直接访问本地数据库的mysql
     vi example/standalone-mysql-5.7.yaml
 
-    
+
     # 1. 删除 mysql 节点
     ....
     # 2. 删除 nacos 节点下的 depenOn 节点
@@ -124,7 +124,7 @@ docker-compose -f example/standalone-derby.yaml up -d
 执行 `nacos-mysql.sql`
 
 - github
-  <https://github.com/alibaba/nacos/blob/master/distribution/conf/nacos-mysql.sql> 
+  <https://github.com/alibaba/nacos/blob/master/distribution/conf/nacos-mysql.sql>
 - 国内镜像
   <https://gitee.com/mirrors/Nacos/blob/develop/distribution/conf/nacos-mysql.sql>
 
@@ -144,7 +144,7 @@ vi /usr/local/nacos-docker/example/cluster-hostname.yaml
 - 删除 `volumes` 节点
 - 删除 `restart: always`
 - 每个服务添加
-  
+
   ```yml
   ....
       environment:
@@ -154,7 +154,7 @@ vi /usr/local/nacos-docker/example/cluster-hostname.yaml
   ```
 
 - 添加 `networks` 节点
-  
+
   ```sh
   networks:
     default:

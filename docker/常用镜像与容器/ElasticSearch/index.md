@@ -80,7 +80,7 @@ elasticsearch.version=ElasticSearch当前的版本
 
 ### 2.1. 参考
 
-<https://www.elastic.co/guide/en/elasticsearch/reference/7.16/docker.html#docker-compose-file>
+<https://www.elastic.co/guide/en/elasticsearch/reference/7.16/docker.html#docker compose-file>
 
 ### 2.2. 准备配置文件
 

@@ -81,7 +81,7 @@ ME_CONFIG_MONGODB_AUTH_PASSWORD | 'pass'          | Database password
 - 单机
 
 ```sh
-docker-compose -f /usr/local/mongo/stack.yml up -d
+docker compose -f /usr/local/mongo/stack.yml up -d
 ```
 
 - Swarm

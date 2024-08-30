@@ -30,7 +30,7 @@ services:
 
 [source,shell]
 ----
-docker-compose -f /usr/local/postgis/stack.yml up -d
+docker compose -f /usr/local/postgis/stack.yml up -d
 ----
 
 == [line-through]#启用postgis插件# postgis的镜像已经默认启用了postgis插件

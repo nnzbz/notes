@@ -45,7 +45,7 @@ services:
   服务器是否执行客户端主机名解析，是则跳过对连接客户端的主机名解析，直接使用IP地址进行连接。这可以提高连接速度。但是某些情况下无法使用主机名进行连接，例如在授权表中使用主机名进行授权时
 
 ```sh
-docker-compose -f /usr/local/mysql/stack.yml up -d
+docker compose -f /usr/local/mysql/stack.yml up -d
 ```
 
 ### 2.2. 将数据映射到宿主机路径中保存

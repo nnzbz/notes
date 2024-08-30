@@ -29,7 +29,7 @@ docker run --rm -it --net=rebue docker.elastic.co/elasticsearch/elasticsearch:8.
 ----
 . 进入容器内初始化
 +
-https://github.com/elastic/elasticsearch/blob/8.14/docs/reference/setup/install/docker/docker-compose.yml[官方参考^]
+https://github.com/elastic/elasticsearch/blob/8.14/docs/reference/setup/install/docker/docker compose.yml[官方参考^]
 +
 
 [source,bash]
@@ -160,7 +160,7 @@ chmod 775 -R /var/lib/kibana/data/
 
 === 部署(在Swarm Manager上进行)
 . https://github.com/elastic/elasticsearch/blob/8.14/docs/reference/setup/install/docker/.env[.env官方参考^]
-. https://github.com/elastic/elasticsearch/blob/8.14/docs/reference/setup/install/docker/docker-compose.yml[docker-compose.yml官方参考^]
+. https://github.com/elastic/elasticsearch/blob/8.14/docs/reference/setup/install/docker/docker compose.yml[docker compose.yml官方参考^]
 . 准备部署的环境变量文件
 +
 
@@ -453,7 +453,7 @@ docker.elastic.co/elasticsearch/elasticsearch:8.14.2 bash
 ----
 . 进入容器内添加kibana访问的账户和密码
 +
-https://github.com/elastic/elasticsearch/blob/8.14/docs/reference/setup/install/docker/docker-compose.yml[官方参考^]
+https://github.com/elastic/elasticsearch/blob/8.14/docs/reference/setup/install/docker/docker compose.yml[官方参考^]
 +
 
 [source,bash]

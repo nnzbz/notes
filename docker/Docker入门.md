@@ -16,7 +16,7 @@
   yum-config-manager \
     --add-repo \
     https://download.docker.com/linux/centos/docker-ce.repo
-  yum install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
+  yum install -y docker-ce docker-ce-cli containerd.io docker compose-plugin
   systemctl start docker
   systemctl enable docker
   ```
@@ -95,7 +95,7 @@ systemctl start docker
 ## 升级
 
 ```sh
-yum upgrade -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
+yum upgrade -y docker-ce docker-ce-cli containerd.io docker compose-plugin
 ```
 
 ## 查看docker系统日志

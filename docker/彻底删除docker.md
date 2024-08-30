@@ -23,7 +23,7 @@ yum remove -y docker \
 ## 3. 删除新版本的docker
 
 ```sh
-yum remove -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
+yum remove -y docker-ce docker-ce-cli containerd.io docker compose-plugin
 yum autoremove -y
 ```
 
