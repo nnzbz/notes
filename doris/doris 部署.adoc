@@ -1,0 +1,251 @@
+= doris 部署
+:sectnums:
+:scripts: cjk
+:toc:
+:toc-title: 目录
+:toclevels: 2
+:doctype: book
+:experimental:
+
+== 参考
+https://doris.apache.org/zh-CN/docs/install/cluster-deployment/standard-deployment
+
+== 软硬件环境检查(略)
+
+== 操作系统检查
+=== 关闭 swap 分区(略)
+=== 检测和关闭系统防火墙(略)
+=== 配置 NTP 服务(略)
+=== 设置系统最大打开文件句柄数
+./etc/security/limits.conf
+[source,]
+----
+* soft nofile 1000000
+* hard nofile 1000000
+----
+=== 修改虚拟内存区域数量为
+修改虚拟内存区域至少 **2000000**
+[source,bash]
+----
+sysctl -w vm.max_map_count=2000000
+----
+=== 关闭透明大页
+在部署 Doris 时，建议关闭透明大页。
+
+[source,bash]
+----
+echo never > /sys/kernel/mm/transparent_hugepage/enabled
+echo never > /sys/kernel/mm/transparent_hugepage/defrag
+----
+
+== 集群规划
+=== 端口规划
+[cols="1,2,1,3,4" options="header"]
+|===
+|实例名称	|端口名称	|默认端口	|通信方向	|说明
+|BE	|be_port	|9060	|FE --> BE	|BE 上 thrift server 的端口，用于接收来自 FE 的请求
+|BE	|webserver_port	|8040	|BE <--> BE	|BE 上的 http server 的端口
+|BE	|heartbeat_service_port	|9050	|FE --> BE	|BE 上心跳服务端口（thrift），用于接收来自 FE 的心跳
+|BE	|brpc_port	|8060	|FE <--> BE，BE <--> BE	|BE 上的 brpc 端口，用于 BE 之间通讯
+|FE	|http_port	|8030	|FE <--> FE，Client <--> FE	|FE 上的 http server 端口
+|FE	|rpc_port	|9020	|BE --> FE，FE <--> FE	|FE 上的 thrift server 端口，每个 fe 的配置需要保持一致
+|FE	|query_port	|9030	|Client <--> FE	|FE 上的 MySQL server 端口
+|FE	|edit_log_port	|9010	|FE <--> FE	|FE 上的 bdbje 之间通信用的端口
+|Broker	|broker_ipc_port	|8000	|FE --> Broker，BE --> Broker	|Broker 上的 thrift server，用于接收请求
+|===
+=== 节点数量规划(略)
+== 安装集群
+=== 部署 FE Master 节点
+==== 创建元数据路径
+[source,bash]
+----
+## 选择独立于 BE 数据的硬盘，创建 FE 的元数据目录
+mkdir -p /var/lib/doris/fe/meta
+----
+
+==== 修改 FE 配置文件
+.~/opt/doris/apache-doris-3.0.1-bin-x64/fe/conf/fe.conf
+[source,ini]
+----
+....
+# 指定元数据的存放位置
+meta_dir = /var/lib/doris/fe/meta
+....
+# 绑定集群 IP(多网卡才需设置)
+#priority_networks = 10.1.3.0/24
+....
+# 调整 FE 内存，指定 Xmx 和 Xms 选项
+JAVA_OPTS_FOR_JDK_17="-Djavax.security.auth.useSubjectCredsOnly=false -Xmx7g -Xms7g -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=$LOG_DIR -Xlog:gc*:$LOG_DIR/fe.gc.lo
+g.$CUR_DATE:time,uptime:filecount=10,filesize=50M --add-opens=java.base/java.nio=ALL-UNNAMED --add-opens java.base/jdk.internal.ref=ALL-UNNAMED"
+....
+----
+
+==== 启动 FE 进程
+[source,bash]
+----
+~/opt/doris/apache-doris-3.0.1-bin-x64/fe/bin/start_fe.sh --daemon
+----
+
+* 日志默认存放在 `~/opt/doris/apache-doris-3.0.1-bin-x64/fe/log/` 目录下。如启动失败，可以通过查看 `~/opt/doris/apache-doris-3.0.1-bin-x64/fe/log/fe.log` 或者 `~/opt/doris/apache-doris-3.0.1-bin-x64/fe/log/fe.out` 查看错误信息
+
+==== 检查 FE 启动状态
+通过 MySQL Client 可以链接 Doris 集群。端口号为 `fe_query_port`, 初始化用户为 `root`，密码为空。
+[source,bash]
+----
+mysql -uroot -P<fe_query_port> -h<fe_ip_address>
+----
+链接到 Doris 集群后，可以通过 show frontends 命令查看 FE 的状态，通常要确认以下几项
+
+* Alive 为 true 表示节点存活
+* Join 为 true 表示节点加入到集群中，但不代表当前还在集群内（可能已失联）
+* IsMaster 为 true 表示当前节点为 Master 节点
+
+=== 部署 FE 集群(可选)
+在生产集群中，建议至少部署 3 个 Follower 节点。在部署过 FE Master 节点后，需要再部署两个 FE Follower 节点。
+
+==== 创建元数据目录
+
+参考部署 FE Master 节点，创建 doris-meta 目录
+
+==== 修改 FE Follower 节点配置文件
+
+参考部署 FE Master 节点，修改 FE 配置文件。通常情况下，可以直接复制 FE Master 节点的配置文件。
+
+==== 在 Doris 集群中注册新的 FE Follower 节点
+
+在启动新的 FE 节点前，需要先在 FE 集群中注册新的 FE 节点。
+[source,bash]
+----
+## 链接任一存活的 FE 节点
+mysql -uroot -P<fe_query_port> -h<fe_ip_address>
+
+## 注册 FE Follower 节点
+## fe_edit_log_port 可以从 fe.conf 中查看，默认为 9010
+## 在 MySQL Client 中执行 ALTER SYSTEM 语句
+ALTER SYSTEM ADD FOLLOWER "<fe_ip_address>:<fe_edit_log_port>"
+----
+
+==== 启动 FE Follower 节点
+
+通过以下命令，可以启动 FE Follower 节点，并自动同步元数据。
+
+[source,bash]
+----
+~/opt/doris/apache-doris-3.0.1-bin-x64/fe/bin/start_fe.sh --helper <helper_fe_ip>:<fe_edit_log_port> --daemon
+----
+
+其中，`helper_fe_ip` 为当前 FE 集群中任一存活的节点。`--heper` 参数只应用于第一次启动 FE 时同步元数据，后续重启 FE 的操作不需要指定。
+
+==== 判断 follower 节点状态
+
+与判断 FE master 节点状态的方式相同，添加注册 FE follower 节点后需要通过 show frontends 命令查看 FE 节点状态。与 Master 状态不同，IsMaster 的状态应为 false。
+
+=== 部署 BE
+==== 创建数据目录
+[source,bash]
+----
+## 在每一块数据硬盘上创建 BE 数据存储目录
+mkdir -p /var/lib/doris/be/storage
+----
+==== 修改 BE 配置文件
+.~/opt/doris/apache-doris-3.0.1-bin-x64/be/conf/be.conf
+[source,ini]
+----
+....
+## 修改 Java 环境变量
+JAVA_HOME =  <your-java-home-path>
+....
+# 调整 FE 内存，指定 Xmx 和 Xms 选项
+JAVA_OPTS_FOR_JDK_17="-Xmx15g -Xms15g -DlogPath=$LOG_DIR/jni.log -Xlog:gc*:$LOG_DIR/be.gc.log.$CUR_DATE:time,uptime:filecount=10,filesize=50M -Djavax.security.auth.useSubjectCredsOnly=false -Dsun.security.krb5.debug=true -Dsun.java.command=DorisBE -XX:-CriticalJNINatives -XX:+IgnoreUnrecognizedVMOptions --add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=java.base/java.lang.invoke=ALL-UNNAMED --add-opens=java.base/java.lang.reflect=ALL-UNNAMED --add-opens=java.base/java.io=ALL-UNNAMED --add-opens=java.base/java.net=ALL-UNNAMED --add-opens=java.base/java.nio=ALL-UNNAMED --add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.base/java.util.concurrent=ALL-UNNAMED --add-opens=java.base/java.util.concurrent.atomic=ALL-UNNAMED --add-opens=java.base/sun.nio.ch=ALL-UNNAMED --add-opens=java.base/sun.nio.cs=ALL-UNNAMED --add-opens=java.base/sun.security.action=ALL-UNNAMED --add-opens=java.base/sun.util.calendar=ALL-UNNAMED --add-opens=java.security.jgss/sun.security.krb5=ALL-UNNAMED --add-opens=java.management/sun.management=ALL-UNNAMED"
+....
+# 配置 BE 存储路径(如有冷热数据分级存储需求请看参考链接)
+storage_root_path=/var/lib/doris/be/storage
+# 绑定集群 IP(多网卡才需设置)
+#priority_networks = 10.1.3.0/24
+....
+----
+==== 在 Doris 中注册 BE 节点
+在启动新的 BE 节点前，需要先在 FE 集群中注册新的 BE 节点。
+
+[source,bash]
+----
+## 链接任一存活的 FE 节点
+mysql -uroot -P<fe_query_port> -h<fe_ip_address>
+
+## 注册 BE 节点
+## be_heartbeat_service_port 可以从 be.conf 中查看，默认为 9050
+## 在 MySQL Client 中执行 ALTER SYSTEM 语句
+ALTER SYSTEM ADD BACKEND "<be_ip_address>:<be_heartbeat_service_port>"
+----
+
+==== 启动 BE 进程
+
+通过以下命令可以启动 BE 进程
+
+[source,bash]
+----
+~/opt/doris/apache-doris-3.0.1-bin-x64/be/bin/start_be.sh --daemon
+----
+
+* BE 进程启动进入后台执行。日志默认存放在 log/ 目录下。如启动失败，可以通过查看 log/be.log 或者 log/be.out 查看错误信息
+
+==== 查看 BE 启动状态
+
+在链接到 Doris 集群后，通过 `show backends` 命令查看 BE 的状态。
+
+[source,bash]
+----
+## 链接 Doris 集群
+mysql -uroot -P<fe_query_port> -h<fe_ip_address>
+
+## 查看 BE 状态，在 MySQL Client 中执行 show 命令
+show backends;
+
+----
+
+通常情况下需要注意以下几项状态：
+
+* Alive 为 true 表示节点存活
+* TabletNum 表示该节点上的分片数量，新加入的节点会进行数据均衡，TabletNum 逐渐趋于平均
+
+=== 验证集群正确性
+==== 登录数据库
+
+通过 MySQL Client 登录 Doris 集群。
+
+[source,bash]
+----
+## 链接 Doris 集群
+mysql -uroot -P<fe_query_port> -h<fe_ip_address>
+----
+
+==== 检查 Doris 安装版本
+
+通过 `show frontends` 与 `show backends` 命令可以查看数据库版本情况。
+
+[source,bash]
+----
+## 查看 FE 各实例的版本，在 MySQL Client 中执行 show 命令
+show frontends \G
+
+## 查看 BE 各实例的版本，在 MySQL Client 中执行 show 命令
+show backends \G
+----
+
+==== 修改 Doris 集群密码
+
+在创建 Doris 集群后，系统会自动创建 root 用户，并默认密码为空。建议在创建集群后为 root 用户重置一个新密码。
+
+[source,bash]
+----
+## 确认当前用户为 root，在 MySQL Client 中查看当前用户
+select user();
++------------------------+
+| user()                 |
++------------------------+
+| 'root'@'192.168.88.30' |
++------------------------+
+
+## 修改 root 用户密码，在 MySQL Client 中执行 set password 命令
+SET PASSWORD = PASSWORD('doris_new_passwd');
+----

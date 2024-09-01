@@ -1,0 +1,60 @@
+= doris docker 编译
+:sectnums:
+:scripts: cjk
+:toc:
+:toc-title: 目录
+:toclevels: 2
+:doctype: book
+:experimental:
+
+== 参考
+https://doris.apache.org/zh-CN/docs/install/source-install/compilation-with-docker/
+
+== 下载 Doris 构建镜像
+[source,bash]
+----
+docker pull apache/doris:build-env-ldb-toolchain-latest
+----
+== 下载 Doris 源码
+[source,bash]
+----
+git clone -b branch-3.0 https://github.com/apache/doris.git ~/opt/doris/git/
+----
+== 创建编译容器
+[source,bash]
+----
+# 提前在 host 主机构建 maven 的 .m2 目录，以便将下载的 Java 库可以多次在 Docker 复用
+mkdir ~/.m2
+
+# 运行构建镜像
+docker run -it --rm --network=host --name doris-build -v ~/.m2:/root/.m2 -v ~/opt/doris/git/:/root/doris/ apache/doris:build-env-ldb-toolchain-latest
+
+# 执行成功后，应该自动进入到 Docker 里了
+----
+== 容器内设置环境
+[source,bash]
+----
+export JAVA_HOME=/usr/lib/jvm/jdk-17.0.2/
+export PATH=$JAVA_HOME/bin/:$PATH
+----
+== 查看机器是否支持 AVX2？
+[source,bash]
+----
+cat /proc/cpuinfo | grep avx2
+----
+== 编译
+[source,bash]
+----
+# 默认编译出支持 AVX2 的
+sh /root/doris/build.sh
+
+# 如不支持 AVX2 需要加USE_AVX2=0
+USE_AVX2=0 sh /root/doris/build.sh
+
+# 如需编译 Debug 版本的 BE，增加 BUILD_TYPE=Debug
+BUILD_TYPE=Debug sh /root/doris/build.sh
+----
+[NOTE]
+====
+编译完成后，产出文件在 `output/` 目录中。
+====

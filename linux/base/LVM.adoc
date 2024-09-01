@@ -1,0 +1,95 @@
+= LVM
+:sectnums:
+:scripts: cjk
+:toc:
+:toc-title: 目录
+:toclevels: 2
+:doctype: book
+:experimental:
+
+== 安装
+[source,bash]
+----
+yum install -y lvm2-devel gdisk
+----
+
+== 创建 GPT 分区
+=== 查看分区情况
+[source,bash]
+----
+parted /dev/vdb print
+----
+
+=== 通过 gdisk 创建 GPT 分区
+. 输入命令
+[source,bash]
+----
+gdisk /dev/vdb
+----
+. p 命令查看磁盘当前的状态
++
+输出中的前几行是磁盘的基本信息，比如总大小为 20G，一共有多少个扇区(sector)，每个扇区的大小，当前剩余的空间等等。然后是已经存在的分区信息(上图显示还没有任何分区)：
+第一列 Number 显示了分区的编号，比如 1 号指 /dev/sdd1。
+第二列 Start 表示磁盘分区的起始位置。
+第三列 End 表示磁盘分区的结束位置。
+第四列 Size 显示分区的容量。
+第五列 Code 和第六列 Name 显示分区类型的 ID和名称，比如 Linux filesystem 为 8300，Linux swap 为 8200，Linux LVM 为 8e00。
+. n 命令来创建新分区
++
+[source,bash]
+----
+Command (? for help): n
+Partition number (1-128, default 1):
+First sector (34-2147483614, default = 2048) or {+-}size{KMGTP}:
+Last sector (2048-2147483614, default = 2147483614) or {+-}size{KMGTP}:
+Current type is 'Linux filesystem'
+Hex code or GUID (L to show codes, Enter = 8300): 8e00
+Changed type of partition to 'Linux LVM'
+----
+分区编号和开始/结束的扇区都直接通过回车选择默认值，这样所有的磁盘空间都划分到了一个分区中，然后输入 8e00 说明我们要创建的分区类型为 Linux LVM。
+. w 命令确认执行分区操作
+. p 命令查看磁盘当前的状态
+. 退出查看新设备
+[source,bash]
+----
+ls /dev/vdb1
+----
+
+== 创建物理卷 PV
+[source,bash]
+----
+pvcreate /dev/vdb1
+----
+
+== 创建卷组 VG
+[source,bash]
+----
+vgcreate vg1 /dev/vdb1
+----
+
+== 创建逻辑卷 LV
+[source,bash]
+----
+lvcreate -l 100%FREE -n lv1 vg1
+----
+
+== 格式化逻辑卷(创建文件系统)
+[source,bash]
+----
+mkfs.ext4 /dev/vg1/lv1
+----
+
+== 挂载
+. 临时挂载
++
+[source,bash]
+----
+mount /dev/vg1/lv1 <要挂载的目录>
+----
+. 永久挂载
++
+./etc/fstab
+[source,]
+----
+/dev/mapper/lv1 <要挂载的目录> ext4 defaults 0 0
+----
