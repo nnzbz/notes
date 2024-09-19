@@ -32,6 +32,11 @@ keytool -certreq -alias aaa -keystore ABC.jks -file aaa.csr
 ----
 keytool -gencert -alias aaa -infile aaa.csr -outfile aaa.cer -keystore ABC.jks
 ----
++
+[NOTE]
+====
+如果你只是想制作自签名的证书，到此为止就可以了
+====
 
 .. 申请CA签名
 +
