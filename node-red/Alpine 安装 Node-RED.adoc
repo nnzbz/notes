@@ -1,0 +1,133 @@
+= Alpine 安装 Node-RED
+:toc:
+:toc-title: 目录
+:toclevels: 3
+:sectnums:
+:chapter-signifier: 章节
+:scripts: cjk
+:doctype: book
+:experimental:
+
+== 修改配置文件
+.~/.node-red/settings.js
+[source,js]
+----
+....
+module.exports = {
+    ....
+    /** To password protect the Node-RED editor and admin API, the following
+        * property can be used. See https://nodered.org/docs/security.html for details.
+        */
+    adminAuth: {
+        type: "credentials",
+        // 登录过期时间
+        sessionExpiryTime: 1800,
+        users: [{
+            username: "super",
+            // 可通过 npx node-red-admin hash-pw 命令生成
+            password: "$2y$08$UEeGruTQTGPK2RsJJ.XYMujKB7hGBLXy8Izwmr02Lp20VwaDNdffi",
+            permissions: "*"
+        }],
+        default: {
+            permissions: "read"
+        }
+    },
+    ....
+}
+----
+
+== docker
+[source,bash]
+----
+docker run -d -p1880:1880 -v data:/data -v /etc/localtime:/etc/localtime:ro --restart=always --name nodered docker.io/nnzbz/node-red:4.0.3
+----
+
+== 直接安装
+=== 安装软件
+. apk update && apk upgrade
+. apk add nodejs npm
+. npm config set registry https://registry.npmmirror.com
+. npm install -g --unsafe-perm node-red
+
+
+
+=== 离线添加节点
+[source,bash]
+----
+rsync -avzP  -e 'ssh -p xxxxx' <资源服务器>:/tmp/node-red-contrib-mpi-s7 ~/.node-red/node_modules/
+----
+
+.~/.node-red/.config.nodes.json
+[source,bash]
+----
+    ....
+    "node-red-contrib-mpi-s7": {
+        "name": "node-red-contrib-mpi-s7",
+        "version": "1.0.0-beta.2",
+        "local": true,
+        "user": true,
+        "nodes": {
+            "mpi-s7": {
+                "name": "mpi-s7",
+                "types": [
+                    "mpi-s7 adapter"
+                ],
+                "enabled": true,
+                "local": true,
+                "user": false,
+                "module": "node-red-contrib-mpi-s7",
+                "file": "/root/.node-red/node_modules/node-red-contrib-mpi-s7/red/mpi-s7.js"
+            }
+        }
+    },
+    ....
+----
+
+
+=== 配置服务
+. 服务配置文件
++
+./etc/init.d/nodered
+[source,bash]
+----
+#!/sbin/openrc-run
+command="/usr/local/bin/node-red"
+pidfile="/run/nodered.pid"
+
+start_pre() {
+    # 检查 Node-RED 是否已经在运行
+    if [ -e "$pidfile" ]; then
+        eend 0
+    fi
+}
+
+start() {
+    ebegin "Starting Node-RED"
+    start-stop-daemon --start --make-pidfile --pidfile "$pidfile" --background --exec $command
+    eend $?
+}
+
+stop() {
+    ebegin "Stopping Node-RED"
+    start-stop-daemon --stop --pidfile "$pidfile"
+    eend $?
+}
+----
+. 设置可执行权限
++
+[source,bash]
+----
+chmod +x /etc/init.d/nodered
+----
+. 启动
++
+[source,bash]
+----
+rc-service nodered start
+----
+. 设置开机启动
++
+[source,bash]
+----
+rc-update add nodered default
+----

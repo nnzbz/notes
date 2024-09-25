@@ -1,0 +1,373 @@
+= nftables
+:toc:
+:toc-title: 目录
+:toclevels: 3
+:sectnums:
+:chapter-signifier: 章节
+:scripts: cjk
+:doctype: book
+:experimental:
+
+== 使用简介
+nftables 由表(table)、链(chain)和规则(rule)组成，其中表包含链，链包含规则，规则是真正的动作。
+在 nftables 中，表是链的容器。所以开始使用 nftables 时你首先需要做的是添加至少一个表。然后，你可以向你的表里添加链，然后往链里添加规则。
+
+== 表的管理
+nftables 中没有内置表。表的数量和名称由用户决定。但是，每个表只有一个地址簇，并且只适用于该簇的数据包。nftables 表可以指定为以下五个簇中的一个：
+|===
+|nftables 簇|对应 iptables 的命令行工具
+|ip|iptables
+|ip6|ip6tables
+|inet|iptables 和 ip6tables
+|arp|arptables
+|bridge|ebtables
+|netdev|无
+|===
+
+ip（即 IPv4）是默认簇，如果未指定簇，则使用该簇。如果要创建同时适用于 IPv4 和 IPv6 的规则，请使用 inet 簇 。inet 允许统一 ip 和 ip6 簇，以便更容易地定义规则。
+
+注意: inet 不能用于 nat 类型的链，只能用于 filter 类型的链。
+
+=== 添加表
+[source,bash]
+----
+# 添加表(family 不输入默认就是 ip)
+nft add table [<family>] <name>
+----
+=== 列出表
+[source,bash]
+----
+# 列出所有表
+nft list tables
+# 列出每个族的表
+nft list tables <family>
+# 列出表内容(family 不输入默认就是 ip)
+nft list table [<family>] <name>
+----
+=== 删除表
+[source,bash]
+----
+# 删除表(family 不输入默认就是 ip)
+nft delete table [<family>] <name>
+----
+=== 清空表
+[source,bash]
+----
+# 删除表(family 不输入默认就是 ip)
+nft flush table [<family>] <name>
+----
+
+== 链的管理
+=== 链的类型
+链是用来保存规则的，有以下两种类型：
+
+* 常规链: 主要用来做跳转，不需要指定钩子类型和优先级。从逻辑上对规则进行分类，支持所有的 nftables 簇。
+* 基本链: 来自网络栈数据包的入口点，需要指定钩子类型和优先级，支持 ip 和 ip6 簇。
+
+=== 钩子的类型
+[ditaa]
+....
+                                                 Local process
+                                                             +----------+
+                                                     ^  |    |  Routing |
+                             +------------+          |  |    | Desision |
+                             |            |--->input-/  \--->|          |--->output--\
+--->ingress--->prerouting--->|   Routing  |                  +----------+            |
+                             |  Decision  |                                          +-->postrouting
+                             |            |                                          |
+                             |            |----------------->forward-----------------/
+                             +------------+
+....
+* prerouting: 刚到达并未被 nftables 的其他部分路由所处理的数据包。
+* input: 已经被接收并且已经经过 prerouting 钩子，传入的数据包。
+* forward: 如果数据报将被发送到另一个设备，它将会通过 forward 钩子。
+* output: 从本地传出的数据包。
+* postrouting: 仅仅在离开系统之前，可以对数据包进行进一步处理。
+
+=== 钩子的适用范围
+* ip、ip6 和 inet: prerouting、 input、forward、 output、postrouting
+* arp: input、output
+
+=== 链的优先级
+优先级采用整数值表示，数字较小的链优先处理，并且可以是负数。可以使用的值有：
+
+* NF_IP_PRI_CONNTRACK_DEFRAG (-400)
+* NF_IP_PRI_RAW (-300)
+* NF_IP_PRI_SELINUX_FIRST (-225)
+* NF_IP_PRI_CONNTRACK (-200)
+* NF_IP_PRI_MANGLE (-150)
+* NF_IP_PRI_NAT_DST (-100)
+* NF_IP_PRI_FILTER (0)
+* NF_IP_PRI_SECURITY (50)
+* NF_IP_PRI_NAT_SRC (100)
+* NF_IP_PRI_SELINUX_LAST (225)
+* NF_IP_PRI_CONNTRACK_HELPER (300)
+
+=== 链对报文数据的动作
+* accept
+* drop
+* queue
+* continue
+* return
+
+=== 链的基本语法
+[source,shell]
+----
+nft (add | create) chain [<family>] <table> <name> [ { type <type> hook <hook> [device <device>] priority <priority> \; [policy <policy> \;] } ]
+nft (delete | list | flush) chain [<family>] <table> <name>
+nft rename chain [<family>] <table> <name> <newname>
+----
+
+==== 创建链
+* 常规链
++
+[source,shell]
+----
+# 将名为 tcpchain 的常规链添加到 inet 簇中名为 mytable 的表中
+nft add chain inet mytable tcpchain
+----
+* 基本链
++
+[source,shell]
+----
+# 添加一个筛选输入数据包的基本链
+nft add chain inet mytable input { type filter hook input priority 0\; policy drop\;  # 默认拒绝所有流量}
+----
+
+[NOTE]
+====
+注意：命令中的反斜线 `\` 用来转义，这样 Shell 就不会将分号解释为命令的结尾。
+====
+
+==== 编辑链
+[source,shell]
+----
+# 将默认表中的 input 链策略从 accept 更改为 drop
+nft chain inet mytable input { policy drop \; }
+----
+
+==== 删除链
+[source,shell]
+----
+# 删除指定的链，这里为 input
+nft delete chain inet mytable input
+----
+
+== 规则的管理
+nftables 规则由语句或表达式构成，包含在链中。
+
+=== 规则的基本语法
+[source,shell]
+----
+nft add rule [<family>] <table> <chain> <matches> <statements>
+nft insert rule [<family>] <table> <chain> [position <position>] <matches> <statements>
+nft replace rule [<family>] <table> <chain> [handle <handle>] <matches> <statements>
+nft delete rule [<family>] <table> <chain> [handle <handle>]
+----
+
+==== matches
+matches 是报文需要满足的条件。matches 的内容非常多，可以识别以下多种类型的报文。
+
+* ip          :  ipv4 协议字段
+* ip6         :  ipv6 协议字段
+* tcp         :  tcp 协议字段
+* udp         :  udp 协议字段
+* udplite     :  udp-lite 协议
+* sctp        :  sctp 协议
+* dccp
+* ah
+* esp
+* comp
+* icmp
+* icmpv6
+* ether       :  以太头
+* dst
+* frag        :
+* hbh
+* mh
+* rt
+* vlan        :  vlan
+* arp         :  arp协议
+* ct          :  连接状态
+* meta        :  报文的基本信息
+
+对每一种类型的报文，你又可以同时检查多个字段，例如：
+
+* ip dscp cs1
+* ip dscp != cs1
+* ip dscp 0x38
+* ip dscp != 0x20
+* ip dscp {cs0, cs1, cs2, cs3, cs4, cs5, cs6, cs7, af11, af12, af13, af21,
+* af22, af23, af31, af32, af33, af41, af42, af43, ef}
+
+* ip length 232
+* ip length != 233
+* ip length 333-435
+* ip length != 333-453
+* ip length { 333, 553, 673, 838}
+
+* ip6 flowlabel 22
+* ip6 flowlabel != 233
+* ip6 flowlabel { 33, 55, 67, 88 }
+* ip6 flowlabel { 33-55 }
+
+==== statement
+statement 是报文匹配规则时触发的操作，大致有以下几种：
+
+* Verdict statements :   动作
+* Log                :   记录日志并继续处理请求
+* Reject             :   停止处理并拒绝请求
+* Counter            :   计数
+* Limit              :   如果达到了接收数据包的匹配限制，则根据规则处理数据包
+* Nat                :   NAT
+* Queuea             :   停止处理并发送数据包到用户空间程序
+
+其中 Verdict Statements 是一组动作，大致有以下几种：
+
+* accept: 接受数据包并停止剩余规则评估。
+* drop: 丢弃数据包并停止剩余规则评估。
+* queue: 将数据包排队到用户空间并停止剩余规则评估。
+* continue: 使用下一条规则继续进行规则评估。
+* return: 从当前链返回并继续执行最后一条链的下一条规则。
+* jump: 跳转到指定的规则链，当执行完成或者返回时，返回到调用的规则链。
+* goto: 类似于跳转，发送到指定规则链但不返回
+
+=== 列出规则
+* 列出所有规则
++
+[source,shell]
+----
+nft list ruleset
+----
+* 列出某个表中的所有规则
++
+[source,shell]
+----
+nft list table inet mytable
+----
+* 列出某条链中的所有规则
++
+[source,shell]
+----
+nft list chain inet mytable input
+----
+
+=== 增加规则
+[source,shell]
+----
+nft add rule inet mytable input tcp dport ssh accept
+----
+* add 是添加到末尾
+* 替换成 insert 是添加到开头
+* 无论用 add 还是 insert，都可以通过 index 或 handle 来指定添加的位置，只是 add 是添加到索引或句柄位置的后面，insert 则是前面
+* index 的值是从 0 开始的
+* 通过 handle 的值来指定规则添加的位置，必须先知道现有规则的句柄位置。你可以通过 `nft --handle list ruleset` 来获取当前规则的句柄位置。`#` 号后面的是句柄索引，此索引不会改变
+
+=== 删除规则
+单个规则只能通过句柄值删除，每个规则的句柄值可通过 `nft --handle list ruleset` 命令查看。
+[source,shell]
+----
+# 删除指定句柄值对应的规则
+nft delete rule inet mytable input handle 8
+----
+
+== 集合
+nftables 的语法原生支持集合，可以用来匹配多个 IP 地址、端口号、网卡或其他任何条件。nftables 的集合可分为匿名集合与命名集合:
+
+=== 匿名集合
+匿名集合比较适合用于将来不需要更改的规则。
+[source,shell]
+----
+# 允许来自源 IP 处于 10.10.10.123 ~ 10.10.10.231 这个区间内的主机的流量。
+nft add rule inet mytable input ip saddr { 10.10.10.123, 10.10.10.231 } accept
+
+# 允许指定协义的流量通过
+nft add rule inet mytable input tcp dport { http, nfs, ssh } accept
+----
+匿名集合的缺点是需要修改集合规则时，就得替换原规则。如果需要频繁修改的集合，推荐使用命名集合。
+
+=== 命名集合
+nftables 的命名集合是可以修改的。创建命名集合时需要指定其元素的类型，当前支持的数据类型有:
+
+** ipv4_addr : IPv4 地址
+** ipv6_addr : IPv6 地址
+** ether_addr : 以太网（Ethernet）地址
+** inet_proto : 网络协议
+** inet_service : 网络服务
+** mark : 标记类型
+
+[source,shell]
+----
+# 创建一个空的命名集合
+nft add set inet mytable myset { type ipv4_addr \; }
+# 查看集合
+nft list sets
+# 添加元素
+nft add element inet mytable myset { 10.10.10.22, 10.10.10.33 }
+# 添加规则时使用 @ 引用集合
+nft insert rule inet mytable input ip saddr @myset drop
+----
+
+=== 支持区间
+如果你想在集合中使用区间，需要加上一个 `flag interval`
+[source,shell]
+----
+# 创建一个空的命名集合
+nft add set inet mytable my_rangeset { type ipv4_addr \; flags interval\; }
+# 添加元素(也可以直接使用区间 10.10.10.0-10.10.10.255 来获得相同的效果)
+nft add element inet mytable my_rangeset { 10.10.10.0/24 }
+----
+
+=== 级联不同类型
+命名集合不仅支持同一类型元素，也可以支持对不同类型的元素进行级联。不同类型的元素可以通过级联操作符 `.` 来分隔。
+[source,shell]
+----
+# 创建一个空的命名集合
+nft add set inet mytable my_concatset  { type ipv4_addr . inet_proto . inet_service \; }
+# 添加元素
+nft add element inet mytable my_concatset { 10.30.30.30 . tcp . telnet }
+# 匿名集合也是可以使用级联元素
+nft add rule inet mytable input ip saddr . meta l4proto . udp dport { 10.30.30.30 . udp . bootps } accept
+----
+在规则中引用级联类型的集合和一般类型集合的主要不同之处：主要在于需要标明集合中每个元素对应到规则中的哪个位置，这类似于 ipset 的聚合类型，例如 hash:ip,port
+
+== Map
+Map 是 nftables 的又一个高级特性，它同样可以支持在一条规则上面使用不同类型的数据。
+
+[source,shell]
+----
+# 创建 Map
+nft add map inet mytable my_vmap { type inet_proto : verdict \; }
+# 添加一些元素
+nft add element inet mytable my_vmap { 192.168.0.10 : drop, 192.168.0.11 : accept }
+# 引用 Map 中的元素
+nft add rule inet mytable input ip saddr vmap @my_vmap
+
+# 除了命名 Map，你也可以创建匿名 Map(例如，从逻辑上对 TCP 和 UDP 的数据包拆分开来用两条不同链来处理)
+nft add chain inet mytable my_tcpchain
+nft add chain inet mytable my_udpchain
+nft add rule inet mytable input meta l4proto vmap { tcp : jump my_tcpchain, udp : jump my_udpchain }
+----
+
+== 表与命名空间
+在 nftables 中，每个表都是一个独立的命名空间，这就意味着不同的表中的链、集合、Map等名字可以相同。
+
+有了这个特性后，不同的应用就可以在相互不影响的情况下管理自己的表中的规则。不过使用这个特性前，你需要注意的一点是：由于 nftables 将每个表都被视为独立的防火墙，一个数据包必须被所有表中的规则放行才能真正通过。如果，出现两条链的优先级相同，就会进入竞争状态。
+
+当然，你可以使用 nftables 优先级特性来解决这个问题。优先级值越高的链优先级越低，所以优先级值低的链会比优先级值高的链先执行。
+
+== 备份与恢复
+默认情况下，通过 nftables 用户态工具 nft 直接在终端中加入的规则都是临时的。如果要想永久生效，我们可以将规则备份后并在开机自动加载时进行恢复。
+
+* 备份规则
++
+[source,shell]
+----
+nft list ruleset > /etc/nftables.d/my.nft
+----
+* 恢复规则
++
+[source,shell]
+----
+nft -f /etc/nftables.d/my.nft
+----

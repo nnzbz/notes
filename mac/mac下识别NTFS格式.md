@@ -1,4 +1,4 @@
-# mac下识别NTFS格式
+# ~~mac下识别NTFS格式~~
 
 [TOC]
 
@@ -11,19 +11,21 @@ diskutil list
 ## 2. 配置
 
 ```sh
-sudo nano /etc/fstab
+sudo vi /etc/fstab
 ```
 
 输入
 
 ```ini
-LABEL=BOOTCAMP none ntfs rw,auto,nobrowse
+LABEL=<磁盘名称> none ntfs rw,auto,nobrowse
 ```
 
 ## 3. 重启系统
 
+如果是 MAC 本身分区后的硬盘（譬如windows系统盘），则需要重启电脑才会生效。
+
 ## 4. 创建快捷方式
 
 ```sh
-sudo ln -s /Volumes/BOOTCAMP ~/Desktop/BOOTCAMP
+sudo ln -s /Volumes/<磁盘名称> ~/Desktop/<自定义名称>
 ```

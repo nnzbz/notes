@@ -78,22 +78,22 @@ firewall-cmd --complete-reload
 另一篇解释
 
 - drop（丢弃)
-任何接收的网络数据包都被丢弃，没有任何回复。仅能有发送出去的网络连接。 
-- block（阻塞）  
+任何接收的网络数据包都被丢弃，没有任何回复。仅能有发送出去的网络连接。
+- block（阻塞）
 任何进入的网络连接都被拒绝，并返回 IPv4 的 icmp-host-prohibited 报文或者 IPv6 的 icmp6-adm-prohibited 报文。只允许由该系统初始化的网络连接。
-- public（公开）  
+- public（公开）
 用以可以公开的部分。你认为网络中其他的计算机不可信并且可能伤害你的计算机。只允许选中的连接接入。
-- external（外部）  
+- external（外部）
 用在路由器等启用伪装的外部网络。你认为网络中其他的计算机不可信并且可能伤害你的计算机。只允许选中的连接接入。
-- dmz（隔离区）  
+- dmz（隔离区）
 用以允许隔离区（dmz）中的电脑有限地被外界网络访问。只接受被选中的连接。
-- work（工作）  
+- work（工作）
 用于工作网络。您可以基本相信网络内的其他电脑不会危害您的电脑。仅仅接收经过选择的连接。
-- home（家庭）  
+- home（家庭）
 用于家庭网络。您可以基本信任网络内的其他计算机不会危害您的计算机。仅仅接收经过选择的连接。
-- internal（内部）  
+- internal（内部）
 用于内部网络。您可以基本上信任网络内的其他计算机不会威胁您的计算机。仅仅接受经过选择的连接。
-- trusted（信任）  
+- trusted（信任）
 可接受所有的网络连接。
 
 ### 6.2. 查看防区
@@ -178,17 +178,26 @@ firewall-cmd --permanent --ipset=[ipset_name] --remove-entry=[xx.xx.xx.xx]
 - hash:net,port
 - hash:net,port,net
 
-## 8. 打开端口
+## 8. 加入信任域
 
-### 8.1. 查看所有打开的端口
+```sh
+# IP
+firewall-cmd --zone=trusted --add-source=192.168.1.100 --permanent
+# 或网段
+firewall-cmd --zone=trusted --add-source=192.168.1.0/24 --permanent
+```
+
+## 9. 打开端口
+
+### 9.1. 查看所有打开的端口
 
 ```sh
 firewall-cmd --zone=dmz --list-ports
 ```
 
-### 8.2. 打开端口
+### 9.2. 打开端口
 
-#### 8.2.1. 对指定的防区打开端口
+#### 9.2.1. 对指定的防区打开端口
 
 ```sh
 firewall-cmd --zone=dmz --permanent --add-port=8080/tcp
@@ -197,7 +206,7 @@ firewall-cmd --reload
 
 - --permanent 永久生效
 
-### 8.3. 移除端口
+### 9.3. 移除端口
 
 ```sh
 firewall-cmd --zone=dmz --permanent --remove-port=8080/tcp
@@ -206,7 +215,7 @@ firewall-cmd --reload
 
 - --permanent 永久生效
 
-#### 8.3.1. 允许指定IP访问端口
+#### 9.3.1. 允许指定IP访问端口
 
 ```sh
 # 允许指定IP访问端口
@@ -226,7 +235,7 @@ firewall-cmd --zone=public --list-rich-rules
 vi /etc/firewalld/zones/public.xml
 ```
 
-### 8.4. 打开服务
+### 9.4. 打开服务
 
 打开一个服务，类似于将端口可视化，服务需要在配置文件中添加，/etc/firewalld 目录下有services文件夹，这个不详细说了，详情参考文档
 

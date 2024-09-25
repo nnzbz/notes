@@ -1,0 +1,123 @@
+=  安装 Alpine
+:toc:
+:toc-title: 目录
+:toclevels: 3
+:sectnums:
+:chapter-signifier: 章节
+:scripts: cjk
+:doctype: book
+:experimental:
+
+== 下载 iso 文件
+https://alpinelinux.org/downloads/[官网]
+
+== 刻录 u 盘
+== 安装系统
+=== u 盘启动
+输入 root 账户名称，密码直接回车即可进入
+
+=== setup-alpine
+除以下列出来的，其它均直接回车
+
+. hostname:
+. Root Password:
+. Timezone: Asia -> Shanghai
+. User
+.. Allow root ssh login?: yes
+. Disk &Install
+.. Which disk(s) would you like to use?
+.. How would you like to use it? lvm
+.. How would you like to use it? sys
+.. WARNING: Erase the above disk(s) and continue? y
+.. WARNING: swap signature detected on /dev/vg0/lv_swap at offset 4086. Wipe it? y
+.. WARNING: ext4 signature detected on /dev/vg0/lv_root at offset 1080. Wipe it? y
+
+=== 重启
+reboot，然后记得拔除 U 盘
+
+== 常见初始设置
+=== 修改 ssh 的端口
+./etc/ssh/sshd_config
+[source,ini]
+----
+....
+Port 10000
+....
+----
+[source,shell]
+----
+service sshd restart
+----
+=== 设置 IP
+./etc/network/interfaces
+[source,properties]
+----
+# 静态 IP 设置
+auto eth0
+iface eth0 inet static
+    address 192.168.1.100   # 您希望设置的静态 IP 地址
+    netmask 255.255.255.0   # 子网掩码
+    gateway 192.168.1.1      # 网关
+    dns-nameservers 8.8.8.8  # DNS 服务器
+
+# 动态 IP 设置
+auto eth1
+iface eth1 inet dhcp
+----
+=== 国内源
+./etc/apk/repositories
+[source,text]
+----
+https://mirrors.tuna.tsinghua.edu.cn/alpine/latest-stable/main
+https://mirrors.tuna.tsinghua.edu.cn/alpine/latest-stable/community
+----
+=== 更新源
+[source,shell]
+----
+apk update && apk upgrade
+----
+=== 安装防火墙
+[source,bash]
+----
+apk add nftables
+# 设置开机启动
+rc-update add nftables boot
+# 启动服务
+rc-service nftables start
+# 添加 ip 白名单集合
+nft add set inet filter upset{type ipv4_addr\;flags interval\;}
+# 添加白名单元素
+nft add element inet filter upset{192.168.52.10-192.168.52.12}
+# 添加白名单元素
+nft add element inet filter upset{192.168.3.66/24}
+# 添加白名单规则到 input 链
+nft add rule inet filter input ip saddr @upset accept
+# 添加开通端口集合
+nft add set inet filter portset{type inet_service\;flags interval\;}
+# 添加开通端口元素
+nft add element inet filter portset{1880}
+# 添加开通端口规则到 input 链
+nft add rule inet filter input tcp dport @portset accept
+# 添加启用规则到 forward 链
+nft add rule inet filter forward accept
+# 添加 docker0 规则到 forward 链(这样才能映射 docker 容器暴露的端口出来)
+nft add rule inet filter forward iifname "docker0" accept
+# 添加白名单规则到 forward 链
+nft add rule inet filter forward ip saddr @upset accept
+----
+=== 安装同步软件
+[source,shell]
+----
+apk add rsync
+----
+=== 安装 docker
+[source,bash]
+----
+apk add docker
+# 设置开机启动
+rc-update add docker boot
+# 启动服务
+service docker start
+----
+
+
