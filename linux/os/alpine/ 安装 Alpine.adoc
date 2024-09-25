@@ -22,6 +22,8 @@ https://alpinelinux.org/downloads/[官网]
 . hostname:
 . Root Password:
 . Timezone: Asia -> Shanghai
+. API Mirror
+.. Enter mirror number or URL: f
 . User
 .. Allow root ssh login?: yes
 . Disk &Install
@@ -36,6 +38,16 @@ https://alpinelinux.org/downloads/[官网]
 reboot，然后记得拔除 U 盘
 
 == 常见初始设置
+=== 修改 hostname
+[source,shell]
+----
+hostname <主机名>
+----
+.vi /etc/hostname
+[source,text]
+----
+hostname <主机名>
+----
 === 修改 ssh 的端口
 ./etc/ssh/sshd_config
 [source,ini]
@@ -55,14 +67,24 @@ service sshd restart
 # 静态 IP 设置
 auto eth0
 iface eth0 inet static
-    address 192.168.1.100   # 您希望设置的静态 IP 地址
-    netmask 255.255.255.0   # 子网掩码
-    gateway 192.168.1.1      # 网关
-    dns-nameservers 8.8.8.8  # DNS 服务器
+    address 192.168.1.100            # 您希望设置的静态 IP 地址
+    netmask 255.255.255.0            # 子网掩码
+    gateway 192.168.1.1              # 网关
+    dns-nameservers 114.114.114.114  # DNS 服务器
 
 # 动态 IP 设置
 auto eth1
 iface eth1 inet dhcp
+----
+./etc/resolv.conf
+[source,properties]
+----
+nameserver 114.114.114.114
+----
+* 重启网络
+[source,properties]
+----
+/etc/init.d/networking restart
 ----
 === 国内源
 ./etc/apk/repositories
@@ -98,8 +120,6 @@ nft add set inet filter portset{type inet_service\;flags interval\;}
 nft add element inet filter portset{1880}
 # 添加开通端口规则到 input 链
 nft add rule inet filter input tcp dport @portset accept
-# 添加启用规则到 forward 链
-nft add rule inet filter forward accept
 # 添加 docker0 规则到 forward 链(这样才能映射 docker 容器暴露的端口出来)
 nft add rule inet filter forward iifname "docker0" accept
 # 添加白名单规则到 forward 链
