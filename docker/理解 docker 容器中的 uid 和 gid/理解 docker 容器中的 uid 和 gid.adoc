@@ -1,0 +1,179 @@
+= 理解 docker 容器中的 uid 和 gid
+:toc:
+:toc-title: 目录
+:toclevels: 3
+:sectnums:
+:chapter-signifier: 章节
+:scripts: cjk
+:doctype: book
+:experimental:
+
+== 危险的默认情况
+
+默认情况下，容器中的进程以 root 用户权限运行，并且这个 root 用户和宿主机中的 root 是同一个用户。
+
+====
+**这就意味着一旦容器中的进程有了适当的机会，它就可以控制宿主机上的一切！**
+====
+
+== 先来了解下 uid 和 gid
+
+uid 和 gid 由 Linux 内核负责管理，并通过内核级别的系统调用来决定是否应该为某个请求授予特权。
+
+比如当进程试图写入文件时，内核会检查创建进程的 uid 和 gid，以确定它是否有足够的权限修改文件。
+
+**注意，内核使用的是 uid 和 gid，而不是用户名和组名。**
+
+与虚拟机技术不同，同一主机上运行的所有容器共享同一个内核(主机的内核)。
+
+容器化带来的巨大价值在于所有这些独立的容器(其实是进程)可以共享一个内核。
+
+这意味着即使由成百上千的容器运行在 docker 宿主机上，但内核控制的 uid 和 gid 则仍然只有一套。
+
+所以同一个 uid 在宿主机和容器中代表的是同一个用户(即便在不同的地方显示了不同的用户名)。
+
+====
+**注意，由于普通的用来显示用户名的 Linux 工具并不属于内核(比如 id 等命令)，所以我们可能会看到同一个 uid 在不同的容器中显示为不同的用户名。但是对于相同的 uid 不能有不同的特权，即使在不同的容器中也是如此。**
+====
+
+如果你已经了解了 Linux 的 user namespace 技术，参考《Linux Namespace : User》，你需要注意的是到目前为止，docker 默认并没有启用 user namesapce，这也是本文讨论的情况。笔者会在接下来的文章中介绍如何配置 docker 启用 user namespace。
+
+== 容器中默认使用 root 用户
+
+如果不做相关的设置，容器中的进程默认以 root 用户权限启动。
+
+下面做一下实验:
+
+. 启动并创建ubuntu镜像的容器来运行 sleep 程序
++
+[source,bash]
+----
+docker run -d --name sleepme ubuntu sleep infinity
+----
+注意这里没有使用 `sudo` 升权
+. 查看宿主机的当前uid
++
+[source,bash]
+----
+id
+----
+笔者的 `uid` 是 `501(zbz)`
+. 在宿主机中查看 sleep 进程的信息
++
+[source,bash]
+----
+ps aux | grep sleep
+----
+笔者查看到的是 `zbz`，也就是当前用户
+. 然后进入容器内部看看
++
+[source,bash]
+----
+# 进入容器
+docker exec -it sleepme bash
+....
+# 执行下面的命令
+id
+....
+ps aux | grep sleep
+----
+笔者看到的是 `root`
+
+== 验证权限的实验
+
+(先按 Ctrl+D 从上面的容器中退出到宿主机中)
+
+. 在宿主机上创建一个只有 root 用户可以读写的文件
++
+[source,bash]
+----
+sudo mkdir /test/
+sudo tee /test/file <<-'EOF'
+test file
+EOF
+----
+. 设置只有root 用户才能读写
++
+[source,bash]
+----
+sudo chmod 700 /test/file
+----
+这里宿主机中的当前用户就没有访问的权限了
+. 查看宿主机中的当前用户是否有权限访问
++
+[source,bash]
+----
+cat /test/file # 只有当前用户是 root 或用 sudo 升权，才有权限访问
+----
+. 当前用户不是 `root`，且不指定用户进入容器，查看 `/test/file` 文件
++
+[source,bash]
+----
+docker run --rm -it -w=/test -v /test:/test ubuntu
+....
+id  # 应该显示的是 root 用户
+....
+cat file  # 没有权限访问
+----
+. 当前用户是 `root`，且指定不是 `root` 的用户进入容器，查看 `/test/file` 文件
++
+[source,bash]
+----
+docker run --rm -it --user 1001 -w=/test -v /test:/test ubuntu
+....
+id  # 应该显示的是 1001 用户
+....
+cat file # 没有权限访问
+----
+
+====
+* 从这个实验可以看出，即使容器内是 `root` 账号，但是如果运行容器的用户不是 `root`，是没有权限访问宿主机上 `root` 用户才能访问的文件的；
+但是如果运行容器的是 `root` 用户就可以访问了
+* 而如果运行容器的是 root 用户，进入容器时指定另一个用户，也一样不能访问
+====
+
+== 附录
+=== 查看当前用户
+[source,bash]
+----
+id
+----
+=== 查看所有用户
+[source,bash]
+----
+cat /etc/passwd
+----
+=== 查看所有分组
+[source,bash]
+----
+groups
+# 或查 gid
+cat /etc/group
+----
+=== 添加组
+[source,bash]
+----
+addgroup  -g1001 -S ZHANG
+----
+* g: 指定 gid
+
+=== 添加用户
+[source,bash]
+----
+adduser zbz -SH -u 1001 -G ZHANG
+----
+* S: 建立一个系统用户
+* H: 不在 home 下创建目录
+* u: 指定 uid
+* G: 指定要添加到已有的组
+
+=== 删除用户与分组
+[source,bash]
+----
+# 删除用户
+deluser [--remove-home] zbz
+# 删除分组
+delgroup ZHANG
+# 删除用户的分组
+delgroup zbz ZHANG
+----

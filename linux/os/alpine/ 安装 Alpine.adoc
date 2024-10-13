@@ -139,5 +139,3 @@ rc-update add docker boot
 # 启动服务
 service docker start
 ----
-
-

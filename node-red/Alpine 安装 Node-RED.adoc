@@ -9,7 +9,7 @@
 :experimental:
 
 == 修改配置文件
-.~/.node-red/settings.js
+.~/.node-red/settings.js(docker 容器是在容器内的 `/data` 目录下面)
 [source,js]
 ----
 ....
@@ -37,10 +37,20 @@ module.exports = {
 ----
 
 == docker
+. 正常运行
++
 [source,bash]
 ----
 docker run -d -p1880:1880 -v data:/data -v /etc/localtime:/etc/localtime:ro --restart=always --name nodered docker.io/nnzbz/node-red:4.0.3
 ----
+. 如果要使用串口
+[source,bash]
+----
+# 运行(/dev/ttyS0 为串口设备)
+docker run -d -p1880:1880 --device /dev/ttyS0:/dev/ttyS0 -v data:/data -v /etc/localtime:/etc/localtime:ro --restart=always --name nodered docker.io/nnzbz/node-red:4.0.3
+----
+
+
 
 == 直接安装
 === 安装软件
@@ -48,8 +58,6 @@ docker run -d -p1880:1880 -v data:/data -v /etc/localtime:/etc/localtime:ro --re
 . apk add nodejs npm
 . npm config set registry https://registry.npmmirror.com
 . npm install -g --unsafe-perm node-red
-
-
 
 === 离线添加节点
 [source,bash]
