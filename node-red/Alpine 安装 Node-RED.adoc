@@ -41,13 +41,13 @@ module.exports = {
 +
 [source,bash]
 ----
-docker run -d -p1880:1880 -v data:/data -v /etc/localtime:/etc/localtime:ro --restart=always --name nodered docker.io/nnzbz/node-red:4.0.3
+docker run -d -p1880:1880 -v data:/data --restart=always --name nodered docker.io/nnzbz/node-red:4.0.5
 ----
 . 如果要使用串口
 [source,bash]
 ----
 # 运行(/dev/ttyS0 为串口设备)
-docker run -d -p1880:1880 --device /dev/ttyS0:/dev/ttyS0 -v data:/data -v /etc/localtime:/etc/localtime:ro --restart=always --name nodered docker.io/nnzbz/node-red:4.0.3
+docker run -d -p1880:1880 --device /dev/ttyS0:/dev/ttyS0 -v data:/data --restart=always --name nodered docker.io/nnzbz/node-red:4.0.5
 ----
 
 

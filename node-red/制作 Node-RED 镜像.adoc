@@ -1,0 +1,47 @@
+= 制作 Node-RED 镜像
+:toc:
+:toc-title: 目录
+:toclevels: 3
+:sectnums:
+:scripts: cjk
+:doctype: book
+:experimental:
+
+== 拉取镜像
+[source,bash]
+----
+docker pull nodered/node-red:4.0.5
+----
+
+== 启动容器
+[source,bash]
+----
+docker run -d -p1880:1880 --name nodered docker.io/nodered/node-red:4.0.5
+----
+
+== 打开浏览器
+http://<主机地址>:1880/
+
+== 安装节点
+节点管理 -> 安装 -> 依次安装下面的节点:
+
+* node-red-contrib-loop
+* node-red-contrib-ulid
+* node-red-dashboard
+* node-red-node-serialport
+* node-red-contrib-mpi-s7
+* node-red-contrib-s7
+* node-red-contrib-opcua
+* node-red-contrib-modbus
+
+== 保存镜像
+[source,bash]
+----
+docker commit nodered docker.io/nnzbz/node-red:4.0.5
+----
+
+== 将镜像保存为文件
+[source,bash]
+----
+docker save docker.io/nnzbz/node-red:4.0.5 > docker-image-nnzbz-node-red-4.0.5.tar
+----

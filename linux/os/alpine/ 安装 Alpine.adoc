@@ -14,7 +14,7 @@ https://alpinelinux.org/downloads/[官网]
 == 刻录 u 盘
 == 安装系统
 === u 盘启动
-输入 root 账户名称，密码直接回车即可进入
+输入 `root` 账户名称，密码直接回车即可进入
 
 === setup-alpine
 除以下列出来的，其它均直接回车
