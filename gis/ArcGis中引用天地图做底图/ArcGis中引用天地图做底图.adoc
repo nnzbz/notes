@@ -15,7 +15,7 @@ https://www.tianditu.gov.cn/
 创建新应用: <https://console.tianditu.gov.cn/api/key>
 [NOTE]
 ====
-应用类型要选择服务端
+应用类型要选择 `**服务端**`
 ====
 
 === 天地图API的服务列表
@@ -51,7 +51,7 @@ image::添加WMTS服务器2.png[添加WMTS服务器2]
 [NOTE]
 ====
 - URL: 填写上面天地图API服务的地址(不要加上 `?tk=您的密钥`)
-- 参数tk: 值填上申请服务端应用获得的 `Key`
+- 参数tk: 值填上申请 `**服务端**` 应用获得的 `Key`
 - 获取图层: 连接成功会在下方有数据展示
 ====
 
