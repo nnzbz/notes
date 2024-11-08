@@ -182,7 +182,7 @@ image::Verified.png[Verified]
                                 <!-- 指定密钥的名称(可能会有多个生成的密钥) -->
                                 <keyname>${gpg.keyname}</keyname>
                                 <!-- 如果gpg服务有密钥，在settings.xml文件中配置 -->
-                                <passphraseServerId>gpg</passphraseServerId>
+                                <passphraseServerId>${gpg.keyname}</passphraseServerId>
                             </configuration>
                         </execution>
                     </executions>
