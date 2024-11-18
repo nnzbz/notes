@@ -28,7 +28,5 @@ docker run --rm nginx:latest ls -alR
 <https://github.com/wagoodman/dive>
 [,shell]
 ----
-docker run --rm -it \
-    -v /var/run/docker.sock:/var/run/docker.sock \
-    wagoodman/dive:latest nginx:latest
+docker run --rm -it -v /var/run/docker.sock:/var/run/docker.sock wagoodman/dive:latest nginx:latest
 ----

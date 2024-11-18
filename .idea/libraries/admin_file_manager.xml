@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="admin-file-manager">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/linux/os/deepin/admin-file-manager.zip!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

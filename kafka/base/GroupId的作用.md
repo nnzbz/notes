@@ -1,4 +1,4 @@
-# 基础
+# GroupId 的作用
 
 ## vert.x kafka client 的 group.id 有什么用？是专门消费者用的吗？生产者没有用？如果不设置会怎样？
 

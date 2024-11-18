@@ -586,12 +586,12 @@ output.elasticsearch:
     - https://es02:9200
     - https://es03:9200
   ssl.certificate_authorities: /usr/share/filebeat/config/certs/ca/ca.crt
-  api_key: xxxxxxxx // <.>
+  # 上一步获取的id和api_key，格式为 `id:api_key`
+  api_key: xxxxxxxx
   index: shdxgc-%{[appid]}-%{+yyyy.MM.dd}
   # pipeline: rebue
 
 ----
-<.> 上一步获取的id和api_key，格式为 `id:api_key`
 
 ./usr/local/elasticsearch/filebeat/script/process.js
 [source,js]

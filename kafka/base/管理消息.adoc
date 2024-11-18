@@ -1,0 +1,82 @@
+= 管理消息
+:sectnums:
+:scripts: cjk
+:toc:
+:toc-title: 目录
+:toclevels: 2
+:doctype: book
+:experimental:
+
+== 查看消息
+
+[source,shell]
+----
+kafka-console-consumer.sh --bootstrap-server <kafka_broker> --topic <topic_name> --from-beginning --max-messages <number_of_messages>
+----
+
+* **--bootstrap-server <kafka_broker>**:
++
+指定 Kafka 集群的地址，可以是一个或多个 broker 地址。
+* **--topic <topic_name>**:
++
+指定要查看消息的主题名称。
+* **--from-beginning**
++
+从主题的开始位置读取消息。如果不加此参数，默认是从最新的消息开始读取。
+* **--max-messages <number_of_messages>**:
++
+限制消费的消息数。
+
+== 查看所有主题
+[source,shell]
+----
+kafka-topics.sh --bootstrap-server <kafka_broker> --list
+----
+* **<kafka_broker>**:
++
+Kafka 集群的某个 broker 地址（可以使用多个 broker 地址，以逗号分隔）。
+
+== 查看主题的分区信息
+[source,shell]
+----
+kafka-topics.sh --bootstrap-server <kafka_broker> --describe --topic <topic_name>
+----
+
+== 删除整个主题
+[source,shell]
+----
+kafka-topics.sh --bootstrap-server <kafka_broker> --delete --topic <topic_name>
+----
+
+== 通过设置保留策略删除消息
+* **按时间删除**:
++
+你可以设置主题的保留时间，超过这个时间的消息将被自动删除。假设你想让消息在 1 小时后过期并删除，可以执行以下命令：
++
+[source,shell]
+----
+kafka-configs.sh --bootstrap-server <kafka_broker> --alter --entity-type topics --entity-name <topic_name> --add-config retention.ms=3600000
+----
+* **按大小删除**:
++
+如果你想限制主题的存储大小（比如限制为 1GB），可以执行以下命令：
++
+[source,shell]
+----
+kafka-configs.sh --bootstrap-server <kafka_broker> --alter --entity-type topics --entity-name <topic_name> --add-config retention.bytes=1073741824
+----
+
+== 删除特定分区的消息
+如果你想删除某个分区中的消息，可以通过 **删除日志** 来实现。但需要注意的是，这并不会立即清空分区中的消息，而是通过 Kafka 的 **log segment** 来删除。在 Kafka 配置中，可以通过修改 `log.segment.bytes` 或使用 `kafka-run-class.sh kafka.tools.DeleteRecords` 工具来清理特定偏移量之前的消息。
+
+例如，使用 `kafka.tools.DeleteRecords` 来删除某个分区的特定消息：
+[source,shell]
+----
+kafka-run-class.sh kafka.tools.DeleteRecords --bootstrap-server <kafka_broker> --topic <topic_name> --partition <partition_number> --offset <offset>
+----
+* **--partition <partition_number>**:
++
+指定分区号。
+* **--offset <offset>**:
++
+指定删除该分区中指定偏移量之前的所有消息。
