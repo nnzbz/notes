@@ -1,0 +1,59 @@
+= 动态修改虚拟机配置
+
+== 查看虚拟机配置
+[source,sheel]
+----
+virsh dumpxml <虚拟机名称>
+----
+
+== 动态编辑虚拟机配置
+[source,sheel]
+----
+virsh edit <虚拟机名称>
+----
+
+[source,xml]
+----
+....
+  <!-- 最大内存 -->
+  <memory unit='KiB'>8388608</memory>
+  <!-- 当前内存 -->
+  <currentMemory unit='KiB'>4194304</currentMemory>
+  <!-- 当前及最大逻辑CPU个数 -->
+  <vcpu placement='static' current='24'>32</vcpu>
+....
+----
+
+== 查看宿主机 CPU
+[source,sheel]
+----
+# 总核数 = 物理CPU个数 X 每颗物理CPU的核数
+# 总逻辑CPU数 = 物理CPU个数 X 每颗物理CPU的核数 X 逻辑CPU(超线程数)的个数
+
+# 查看物理CPU个数
+cat /proc/cpuinfo| grep "physical id"| sort| uniq| wc -l
+
+# 查看每个物理CPU的核数
+cat /proc/cpuinfo| grep "cpu cores"| uniq
+
+# 查看总逻辑CPU(超线程数)的个数
+cat /proc/cpuinfo| grep "processor"| wc -l
+----
+
+== 命令行调整 CPU 和内存
+[source,sheel]
+----
+# 设置最大逻辑CPU的个数(此命令重启后才能生效)
+virsh setvcpus <vm-name> --maximum <num-cpus> --config
+# 动态调整当前逻辑CPU的个数
+virsh setvcpus <vm-name> <num-cpus> --config --live
+# 设置最大内存(此命令重启后才能生效)
+virsh setmaxmem <vm-name> <memory-size-in-KiB> --config
+# 动态调整内存
+virsh setmem <vm-name> <memory-size-in-KiB> --config --live
+# 例如将内存动态调整为 2GB
+virsh setmem <vm-name> $((2 * 1024 * 1024)) --config --live
+----
+* --live: 立即生效，无需重启。
+* --config: 更新持久配置（下次重启生效）。
+

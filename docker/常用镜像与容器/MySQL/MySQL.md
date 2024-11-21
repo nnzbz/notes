@@ -11,8 +11,8 @@
 ### 2.1. 单机
 
 ```sh
-mkdir -p /usr/local/mysql/data
-vi /usr/local/mysql/stack.yml
+mkdir -p ~/opt/mysql/data
+vi ~/opt/mysql/stack.yml
 ```
 
 ```yml
@@ -35,7 +35,7 @@ services:
       --max_connections=5000
       --skip-name-resolve
     volumes:
-      - /usr/local/mysql/data:/var/lib/mysql
+      - ~/opt/mysql/data:/var/lib/mysql
     restart: always
 ```
 
@@ -45,7 +45,7 @@ services:
   服务器是否执行客户端主机名解析，是则跳过对连接客户端的主机名解析，直接使用IP地址进行连接。这可以提高连接速度。但是某些情况下无法使用主机名进行连接，例如在授权表中使用主机名进行授权时
 
 ```sh
-docker compose -f /usr/local/mysql/stack.yml up -d
+docker compose -f ~/opt/mysql/stack.yml up -d
 ```
 
 ### 2.2. 将数据映射到宿主机路径中保存
@@ -100,9 +100,9 @@ docker run --name mysql -dp3306:3306 -p33060:33060 -e MYSQL_ROOT_PASSWORD=root -
 # 首先保证docker没有启动
 service docker stop
 # 然后移动整个/var/lib/mysql目录到目的路径
-sudo mv /var/lib/mysql /usr/local/lib/mysql
+sudo mv /var/lib/mysql ~/opt/lib/mysql
 # 添加软链
-sudo ln -s /usr/local/lib/mysql /var/lib/mysql
+sudo ln -s ~/opt/lib/mysql /var/lib/mysql
 ```
 
 ### 2.3. ~~将数据映射到数据卷中保存~~(推荐使用上面映射到宿主机中的方式)
@@ -129,8 +129,8 @@ echo "xxxxxxxx" | docker secret create mysql_root_password -
 #### 2.4.2. 准备 `my.cnf` 文件
 
 ```sh
-mkdir -p /usr/local/mysql
-vi /usr/local/mysql/mysql-my.cnf
+mkdir -p ~/opt/mysql
+vi ~/opt/mysql/mysql-my.cnf
 ```
 
 ```ini
@@ -147,14 +147,13 @@ sync_binlog=1
 #### 2.4.3. `Docker Compose`
 
 ```sh
-vi /usr/local/mysql/stack.yml
+vi ~/opt/mysql/stack.yml
 ```
 
 ```yaml{.line-numbers}
-version: "3.9"
 services:
   mysql:
-    image: mysql:5
+    image: mysql:5.7
     # 注意: 如果是arm架构服务器，请用下面这个镜像
     # image: biarms/mysql:5
     hostname: mysql
@@ -164,7 +163,7 @@ services:
     secrets:
       - mysql_root_password
     volumes:
-      - /usr/local/mysql/mysql-my.cnf:/etc/mysql/my.cnf
+      - ~/opt/mysql/mysql-my.cnf:/etc/mysql/my.cnf
       - mysqldata:/var/lib/mysql
     environment:
       # 最好使用此设定时区，其它镜像也可以使用
@@ -203,7 +202,7 @@ networks:
 #### 2.4.4. 部署
 
 ```sh
-docker stack deploy -c /usr/local/mysql/stack.yml mysql
+docker stack deploy -c ~/opt/mysql/stack.yml mysql
 ```
 
 ### 2.5. Swarm集群
@@ -229,17 +228,17 @@ cat /run/secrets/mysql_root_password
 
 #### 2.5.2. 准备 `my.cnf` 文件
 
-- mysql1的 `my.cnf`
+- mysql0的 `my.cnf`
 
 ```sh
-mkdir -p /usr/local/mysql
-vi /usr/local/mysql/mysql1-my.cnf
+mkdir -p ~/opt/mysql
+vi ~/opt/mysql/mysql0-my.cnf
 ```
 
 ```ini
 [mysqld]
 # 为服务器分配id，可以自定义，不区分大小，起标识作用。不同数据库节点分配不同的id
-server_id=1
+server_id=0
 # 打开Mysql 日志，日志格式为二进制
 log-bin=mysql-bin
 # 每1次在事务提交前会将二进制日志同步到磁盘上，保证在服务器崩溃时不会丢失事件
@@ -258,16 +257,16 @@ binlog_format=mixed
 #replicate-ignore-db=performance_schema
 ```
 
-- mysql2的 `my.cnf`
+- mysql1的 `my.cnf`
 
 ```sh
-vi /usr/local/mysql/mysql2-my.cnf
+vi ~/opt/mysql/mysql1-my.cnf
 ```
 
 ```ini
 [mysqld]
 #为服务器分配id，可以自定义，不区分大小，起标识作用。不同数据库节点分配不同的id
-server_id=2
+server_id=1
 # 打开Mysql 日志，日志格式为二进制
 log-bin=mysql-bin
 # 当启用时，服务器通过只允许执行可以使用GTID安全地记录的语句来强制GTID一致性。
@@ -303,38 +302,39 @@ read_only=on
 #### 2.5.4. `Docker Compose`
 
 ```sh
-vi /usr/local/mysql/stack.yml
+vi ~/opt/mysql/stack.yml
 ```
 
 ```yaml{.line-numbers}
-version: "3.9"
 services:
-  mysql1:
-    image: mysql:5
+  mysql0:
+    image: mysql:5.7
     # 注意: 如果是arm架构服务器，请用下面这个镜像
-    # image: biarms/mysql:5
-    hostname: mysql1
+    # image: biarms/mysql:5.7
+    hostname: mysql0
     ports:
-      - 3316:3306
-      - 33160:33060
-    secrets:
-      - mysql_root_password
+      - 3306:3306
+      - 33060:33060
+    # secrets:
+    #   - mysql_root_password
     volumes:
-      - /usr/local/mysql/mysql1-my.cnf:/etc/mysql/my.cnf:z
-      - mysql1data:/var/lib/mysql:z
+      - ~/opt/mysql/mysql0-my.cnf:/etc/mysql/my.cnf:z
+      - mysql0data:/var/lib/mysql:z
     environment:
       # 最好使用此设定时区，其它镜像也可以使用
       - TZ=CST-8
+      # 允许空密码
+      - MYSQL_ALLOW_EMPTY_PASSWORD=true
       #- MYSQL_ROOT_PASSWORD_FILE=/run/secrets/mysql_root_password
     # max_connections设置最大连接数，默认151太小
     # skip-name-resolve为了加快连接速度，禁用反向域名解析，这样授权表中的host字段就不能用IP
+    # skip-grant-tables首次进入容器不用密码登录
     command: --default-time-zone='+8:00'
             --character-set-client-handshake=FALSE
             --character-set-server=utf8mb4
             --collation-server=utf8mb4_general_ci
             --max_connections=5000
             --skip-name-resolve
-            # 首次进入容器不用密码登录
             --skip-grant-tables
     # deploy:
     #   placement:
@@ -344,27 +344,30 @@ services:
     logging:
       options:
         max-size: 8m
-  mysql2:
-    image: mysql:5
+  mysql1:
+    image: mysql:5.7
     # 注意: 如果是arm架构服务器，请用下面这个镜像
-    # image: biarms/mysql:5
-    hostname: mysql2
+    # image: biarms/mysql:5.7
+    hostname: mysql1
     ports:
-      - 3326:3306
-      - 33260:33060
+      - 3316:3306
+      - 33160:33060
     depends_on:
-      - mysql1
-    secrets:
-      - mysql_root_password
+      - mysql0
+    # secrets:
+    #   - mysql_root_password
     volumes:
-      - /usr/local/mysql/mysql2-my.cnf:/etc/mysql/my.cnf:z
-      - mysql2data:/var/lib/mysql:z
+      - ~/opt/mysql/mysql1-my.cnf:/etc/mysql/my.cnf:z
+      - mysql1data:/var/lib/mysql:z
     environment:
       # 最好使用此设定时区，其它镜像也可以使用
       - TZ=CST-8
+      # 允许空密码
+      - MYSQL_ALLOW_EMPTY_PASSWORD=true
       #- MYSQL_ROOT_PASSWORD_FILE=/run/secrets/mysql_root_password
     # max_connections设置最大连接数，默认151太小
     # skip-name-resolve为了加快连接速度，禁用反向域名解析，这样授权表中的host字段就不能用IP
+    # skip-grant-tables首次进入容器不用密码登录
     command: --default-time-zone='+8:00'
             --character-set-client-handshake=FALSE
             --character-set-server=utf8mb4
@@ -386,8 +389,8 @@ services:
 #  mysql_root_password:
 #    external: true
 volumes:
+  mysql0data:
   mysql1data:
-  mysql2data:
 
 networks:
   default:
@@ -398,12 +401,12 @@ networks:
 #### 2.5.5. 部署
 
 ```sh
-docker stack deploy -c /usr/local/mysql/stack.yml mysql
+docker stack deploy -c ~/opt/mysql/stack.yml mysql
 ```
 
 #### 2.5.6. 开启主从同步
 
-1. 分别对 mysql1 和 mysql2 执行下面命令
+1. 分别对 mysql0 和 mysql1 执行下面命令
 
 ```sh
 # 查看mysql的容器id
@@ -417,23 +420,30 @@ mysql -uroot
 ```mysql
 # 设置xxxxxxxx为密码，注意不能超过32位
 update mysql.user set authentication_string=password('xxxxxxxx') where user='root';
+
+# 开放 root 用户给所有地址访问
+# 检查 root 用户的 Host 配置
+SELECT User, Host FROM mysql.user WHERE User = 'root';
+# 如果 root 的 Host 属性是 localhost，需要更新为 %
+UPDATE mysql.user SET Host = '%' WHERE User = 'root' AND Host = 'localhost';
+
 flush privileges;
 ```
 
-2. 在 mysql1 中执行下面的命令
+2. 在 mysql0 中执行下面的命令
 
 ```sh
 # 创建用户并授权
 GRANT REPLICATION SLAVE ON *.* to 'slave'@'%' identified by '密码';
 ```
 
-3. 在 mysql2 中执行下面的命令
+3. 在 mysql1 中执行下面的命令
 
 **注意：** 如果是重新部署的，需要先执行这个命令 `reset slave;`
 
 ```sh
 # 开启IO线程监听mysql-1的binlog文件
-change master to master_host='mysql1',master_user='slave',master_password='密码',master_port=3306,MASTER_AUTO_POSITION=1;
+change master to master_host='mysql0',master_user='slave',master_password='密码',master_port=3306,MASTER_AUTO_POSITION=1;
 # 开启同步
 start slave;
 # 查看是否开启成功
@@ -446,7 +456,7 @@ show slave status\G;
 
 4. 创建账户、数据库并授权
 
-分别对 mysql1 执行下面命令
+分别对 mysql0 执行下面命令
 
 ```sh
 # 查看mysql的容器id
@@ -463,7 +473,7 @@ GRANT ALL ON xxx.* to 'xxx'@'%' identified by '密码';
 
 #### 2.5.7. ~~开启主主同步~~
 
-1. 分别对 mysql1 和 mysql2 执行下面命令
+1. 分别对 mysql0 和 mysql1 执行下面命令
 
 ```sh
 # 查看mysql的容器id
@@ -478,9 +488,18 @@ mysql -u root -p
 GRANT REPLICATION SLAVE ON *.* to 'slave'@'%' identified by '密码';
 ```
 
-2. 在 mysql2 中执行下面的命令
+2. 在 mysql1 中执行下面的命令
 
 **注意：** 如果是重新部署的，需要先执行这个命令 `reset slave;`
+
+```sh
+# 开启IO线程监听mysql-1的binlog文件
+change master to master_host='mysql0',master_user='slave',master_password='密码',master_port=3306,MASTER_AUTO_POSITION=1;
+# 开启同步
+start slave;
+```
+
+3. 在 mysql0 中执行下面的命令
 
 ```sh
 # 开启IO线程监听mysql-1的binlog文件
@@ -489,16 +508,7 @@ change master to master_host='mysql1',master_user='slave',master_password='密�
 start slave;
 ```
 
-3. 在 mysql1 中执行下面的命令
-
-```sh
-# 开启IO线程监听mysql-1的binlog文件
-change master to master_host='mysql2',master_user='slave',master_password='密码',master_port=3306,MASTER_AUTO_POSITION=1;
-# 开启同步
-start slave;
-```
-
-4. 分别在 mysql1 和 mysql2 中执行下面命令查看是否开启成功
+4. 分别在 mysql0 和 mysql1 中执行下面命令查看是否开启成功
 
 ```sh
 show slave status\G;
@@ -510,7 +520,7 @@ show slave status\G;
 
 #### 2.5.8. ~~在主主环境中创建账户并授权~~
 
-分别对 mysql1 和 mysql2 执行下面命令
+分别对 mysql0 和 mysql1 执行下面命令
 
 ```sh
 # 查看mysql的容器id
@@ -527,7 +537,7 @@ GRANT ALL ON xxx.* to 'xxx'@'%' identified by '密码';
 
 #### 2.5.9. ~~在主主环境中修改账户密码~~
 
-分别对 mysql1 和 mysql2 执行下面命令
+分别对 mysql0 和 mysql1 执行下面命令
 
 ```sh
 # 查看mysql的容器id

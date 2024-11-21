@@ -29,30 +29,47 @@ hostname
 - 在/etc/hosts文件的127.0.0.1的末尾添加hostname
 +
 ./etc/hosts
-[,ini]
+[source,ini]
 ----
 ....
 127.0.0.1 www.xxx.com
 ----
 
 == 查看系统版本
-[,shell]
+[source,shell]
 ----
 cat /etc/*-release
 ----
 
-== 安装EPEL
-[,shell]
+== 清空缓存、升级版本、更新补丁、安装EPEL
+[source,shell]
 ----
+yum clean all
+yum update -y
+yum upgrade -y
 yum install epel-release -y
 ----
 
-== 升级系统版本
-[,shell]
+== 关闭 SELinux
+./etc/selinux/config
+[source,ini]
 ----
-yum clean all
-yum update
-reboot
+....
+SELINUX=permissive
+....
 ----
+- 重启
 
+== 登录卡慢
+./etc/ssh/sshd_config
+[source,shell]
+----
+....
+把下面两行注释
+# GSSAPIAuthentication yes
+# GSSAPICleanupCredentials no
+
+# 把 UseDNS no 改为 yes
+UseDNS yes
+----
 

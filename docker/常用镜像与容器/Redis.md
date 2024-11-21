@@ -7,8 +7,8 @@
 - 无密码（开发环境，线上环境不推荐）
 
 ```sh
-sudo mkdir -p /usr/local/redis/
-vi /usr/local/redis/stack.yml
+sudo mkdir -p ~/opt/redis/
+vi ~/opt/redis/stack.yml
 ```
 
 ```yaml
@@ -37,18 +37,18 @@ volumes:
 ```
 
 ```sh
-docker compose -f /usr/local/redis/stack.yml up -d
+docker compose -f ~/opt/redis/stack.yml up -d
 ```
 
 - 配置密码
 
 ```sh
 # 准备配置文件
-echo requirepass xxxxxxxx >> /usr/local/redis/redis.conf
+echo requirepass xxxxxxxx >> ~/opt/redis/redis.conf
 # 创建并运行容器
 docker run -dp6379:6379 \
   --privileged=true \
-  -v /usr/local/redis/redis.conf:/data/redis.conf \
+  -v ~/opt/redis/redis.conf:/data/redis.conf \
   --name redis \
   -h redis \
   --network rebue \
@@ -61,23 +61,22 @@ docker run -dp6379:6379 \
 ## 2. Swarm(单例)
 
 ```sh
-mkdir -p /usr/local/redis/conf
+mkdir -p ~/opt/redis/conf
 # 准备密码
-echo 'requirepass xxxxxxxx' >> /usr/local/redis/conf/redis.conf
+echo 'requirepass xxxxxxxx' >> ~/opt/redis/conf/redis.conf
 # 如果在arm架构服务器上，启动redis启动不起来，报下面的错
 # Redis will now exit to prevent data corruption. Note that it is possible to suppress this warning by setting the following config: ignore-warnings ARM64-COW-BUG
 # 那么请运行下面这行
-echo 'ignore-warnings ARM64-COW-BUG' >> /usr/local/redis/conf/redis.conf
+echo 'ignore-warnings ARM64-COW-BUG' >> ~/opt/redis/conf/redis.conf
 
 # 设置内存不足执行清理缓存的策略(带有过期时间最近最少使用)
-echo 'maxmemory 8gb' >> /usr/local/redis/conf/redis.conf
-echo 'maxmemory-policy volatile-lru' >> /usr/local/redis/conf/redis.conf
+echo 'maxmemory 8gb' >> ~/opt/redis/conf/redis.conf
+echo 'maxmemory-policy volatile-lru' >> ~/opt/redis/conf/redis.conf
 
-vi /usr/local/redis/stack-standalone.yml
+vi ~/opt/redis/stack-standalone.yml
 ```
 
 ```yml{.line-numbers}
-version: "3.9"
 services:
   svr:
     image: redis:alpine
@@ -86,14 +85,21 @@ services:
       - TZ=CST-8
     volumes:
       # 不要放在/data/目录下，否则启动报错: Read-only file system，/data/目录是存放数据的目录
-      - /usr/local/redis/conf/:/usr/local/redis/conf/:z
+      - ~/opt/redis/conf/:/opt/redis/conf/:z
+      - redisdata:/data/:z
     sysctls:
       # 消除警告: The TCP backlog setting of 511 cannot be enforced because /proc/sys/net/core/somaxconn is set to the lower value of 128.
       - net.core.somaxconn=2048
-    command: redis-server /usr/local/redis/conf/redis.conf --appendonly yes
+    command: redis-server /opt/redis/conf/redis.conf --appendonly yes
+    deploy:
+      placement:
+        constraints:
+          - node.labels.role==redis
     logging:
       options:
         max-size: 8m
+volumes:
+  redisdata:
 networks:
   default:
     external: true
@@ -103,7 +109,7 @@ networks:
 - 部署
 
 ```sh
-docker stack deploy -c /usr/local/redis/stack-standalone.yml redis
+docker stack deploy -c ~/opt/redis/stack-standalone.yml redis
 ```
 
 ## 3. Swarm(一主多从多哨兵)
@@ -113,8 +119,8 @@ docker stack deploy -c /usr/local/redis/stack-standalone.yml redis
 - master
 
 ```sh
-mkdir -p /usr/local/redis/{master,slave1,slave2,sentinel1,sentinel2,sentinel3}
-vi /usr/local/redis/master/redis.conf
+mkdir -p ~/opt/redis/{master,slave1,slave2,sentinel1,sentinel2,sentinel3}
+vi ~/opt/redis/master/redis.conf
 ```
 
 ```ini
@@ -134,7 +140,7 @@ requirepass xxxxxxxx
 - slave
 
 ```sh
-vi /usr/local/redis/slave1/redis.conf
+vi ~/opt/redis/slave1/redis.conf
 ```
 
 ```ini
@@ -158,13 +164,13 @@ masterauth xxxxxxxx
 复制到2
 
 ```sh
-cp /usr/local/redis/slave1/redis.conf /usr/local/redis/slave2/redis.conf
+cp ~/opt/redis/slave1/redis.conf ~/opt/redis/slave2/redis.conf
 ```
 
 - sentinel
 
 ```sh
-vi /usr/local/redis/sentinel1/sentinel.conf
+vi ~/opt/redis/sentinel1/sentinel.conf
 ```
 
 ```ini{.line-numbers}
@@ -193,14 +199,14 @@ sentinel auth-pass mymaster xxxxxxxx
 复制到2和3
 
 ```sh
-cp /usr/local/redis/sentinel1/sentinel.conf /usr/local/redis/sentinel2/
-cp /usr/local/redis/sentinel1/sentinel.conf /usr/local/redis/sentinel3/
+cp ~/opt/redis/sentinel1/sentinel.conf ~/opt/redis/sentinel2/
+cp ~/opt/redis/sentinel1/sentinel.conf ~/opt/redis/sentinel3/
 ```
 
 ### 3.2. Docker Compose
 
 ```sh
-vi /usr/local/redis/stack.yml
+vi ~/opt/redis/stack.yml
 ```
 
 ```yml{.line-numbers}
@@ -213,11 +219,11 @@ services:
       - TZ=CST-8
     volumes:
       # 不要放在/data/目录下，否则启动报错: Read-only file system，/data/目录是存放数据的目录
-      - /usr/local/redis/master/:/usr/local/redis/:z
+      - ~/opt/redis/master/:/opt/redis/:z
     sysctls:
       # 消除警告: The TCP backlog setting of 511 cannot be enforced because /proc/sys/net/core/somaxconn is set to the lower value of 128.
       - net.core.somaxconn=2048
-    command: redis-server /usr/local/redis/redis.conf
+    command: redis-server /opt/redis/redis.conf
   slave1:
     image: redis:alpine
     depends_on:
@@ -227,8 +233,8 @@ services:
       - TZ=CST-8
     volumes:
       # 不要放在/data/目录下，否则启动报错: Read-only file system，/data/目录是存放数据的目录
-      - /usr/local/redis/slave1/:/usr/local/redis/:z
-    command: redis-server /usr/local/redis/redis.conf
+      - ~/opt/redis/slave1/:/opt/redis/:z
+    command: redis-server /opt/redis/redis.conf
   slave2:
     image: redis:alpine
     depends_on:
@@ -238,22 +244,22 @@ services:
       - TZ=CST-8
     volumes:
       # 不要放在/data/目录下，否则启动报错: Read-only file system，/data/目录是存放数据的目录
-      - /usr/local/redis/slave2/:/usr/local/redis/:z
+      - ~/opt/redis/slave2/:/opt/redis/:z
     sysctls:
       # 消除警告: The TCP backlog setting of 511 cannot be enforced because /proc/sys/net/core/somaxconn is set to the lower value of 128.
       - net.core.somaxconn=2048
-    command: redis-server /usr/local/redis/redis.conf
+    command: redis-server /opt/redis/redis.conf
   sentinel1:
     image: redis:alpine
     environment:
       # 最好使用此设定时区，其它镜像也可以使用
       - TZ=CST-8
     volumes:
-      - /usr/local/redis/sentinel1/:/usr/local/redis/:z
+      - ~/opt/redis/sentinel1/:/opt/redis/:z
     sysctls:
       # 消除警告: The TCP backlog setting of 511 cannot be enforced because /proc/sys/net/core/somaxconn is set to the lower value of 128.
       - net.core.somaxconn=2048
-    command: redis-sentinel /usr/local/redis/sentinel.conf
+    command: redis-sentinel /opt/redis/sentinel.conf
     depends_on:
       - master
       - slave1
@@ -264,11 +270,11 @@ services:
       # 最好使用此设定时区，其它镜像也可以使用
       - TZ=CST-8
     volumes:
-      - /usr/local/redis/sentinel2/:/usr/local/redis/:z
+      - ~/opt/redis/sentinel2/:/opt/redis/:z
     sysctls:
       # 消除警告: The TCP backlog setting of 511 cannot be enforced because /proc/sys/net/core/somaxconn is set to the lower value of 128.
       - net.core.somaxconn=2048
-    command: redis-sentinel /usr/local/redis/sentinel.conf
+    command: redis-sentinel /opt/redis/sentinel.conf
     depends_on:
       - master
       - slave1
@@ -279,11 +285,11 @@ services:
       # 最好使用此设定时区，其它镜像也可以使用
       - TZ=CST-8
     volumes:
-      - /usr/local/redis/sentinel3/:/usr/local/redis/:z
+      - ~/opt/redis/sentinel3/:/opt/redis/:z
     sysctls:
       # 消除警告: The TCP backlog setting of 511 cannot be enforced because /proc/sys/net/core/somaxconn is set to the lower value of 128.
       - net.core.somaxconn=2048
-    command: redis-sentinel /usr/local/redis/sentinel.conf
+    command: redis-sentinel /opt/redis/sentinel.conf
     depends_on:
       - master
       - slave1
@@ -298,7 +304,7 @@ networks:
 ### 3.3. 部署
 
 ```sh
-docker stack deploy -c /usr/local/redis/stack.yml redis
+docker stack deploy -c ~/opt/redis/stack.yml redis
 ```
 
 ## 4. Swarm(三主三从集群)
@@ -308,8 +314,8 @@ docker stack deploy -c /usr/local/redis/stack.yml redis
 - master
 
 ```sh
-mkdir -p /usr/local/redis/{master1,master2,master3,slave1,slave2,slave3}
-vi /usr/local/redis/master1/redis.conf
+mkdir -p ~/opt/redis/{master1,master2,master3,slave1,slave2,slave3}
+vi ~/opt/redis/master1/redis.conf
 ```
 
 ```ini
@@ -345,28 +351,28 @@ cluster-announce-hostname redismaster1
 复制配置文件到 `master2/slave1/slave2/slave3`
 
 ```sh
-cp /usr/local/redis/master1/redis.conf /usr/local/redis/master2/
-cp /usr/local/redis/master1/redis.conf /usr/local/redis/master3/
-cp /usr/local/redis/master1/redis.conf /usr/local/redis/slave1/
-cp /usr/local/redis/master1/redis.conf /usr/local/redis/slave2/
-cp /usr/local/redis/master1/redis.conf /usr/local/redis/slave3/
+cp ~/opt/redis/master1/redis.conf ~/opt/redis/master2/
+cp ~/opt/redis/master1/redis.conf ~/opt/redis/master3/
+cp ~/opt/redis/master1/redis.conf ~/opt/redis/slave1/
+cp ~/opt/redis/master1/redis.conf ~/opt/redis/slave2/
+cp ~/opt/redis/master1/redis.conf ~/opt/redis/slave3/
 ```
 
 - 注意修改配置文件中的 `maxmemory` 为实际环境最大内存的合理范围
 - 注意修改配置文件中的 `redismaster1` 为对应的主机名(redismaster2/redismaster3/redisslave1/redisslave2/redisslave3)
 
 ```sh
-sed -i "s/redismaster1/redismaster2/g" /usr/local/redis/master2/redis.conf
-sed -i "s/redismaster1/redismaster3/g" /usr/local/redis/master3/redis.conf
-sed -i "s/redismaster1/redisslave1/g" /usr/local/redis/slave1/redis.conf
-sed -i "s/redismaster1/redisslave2/g" /usr/local/redis/slave2/redis.conf
-sed -i "s/redismaster1/redisslave3/g" /usr/local/redis/slave3/redis.conf
+sed -i "s/redismaster1/redismaster2/g" ~/opt/redis/master2/redis.conf
+sed -i "s/redismaster1/redismaster3/g" ~/opt/redis/master3/redis.conf
+sed -i "s/redismaster1/redisslave1/g" ~/opt/redis/slave1/redis.conf
+sed -i "s/redismaster1/redisslave2/g" ~/opt/redis/slave2/redis.conf
+sed -i "s/redismaster1/redisslave3/g" ~/opt/redis/slave3/redis.conf
 ```
 
 ### 4.2. Docker Compose
 
 ```sh
-vi /usr/local/redis/stack.yml
+vi ~/opt/redis/stack.yml
 ```
 
 ```yml{.line-numbers}
@@ -380,11 +386,11 @@ services:
       - TZ=CST-8
     volumes:
       # 不要放在/data/目录下，否则启动报错: Read-only file system，/data/目录是存放数据的目录
-      - /usr/local/redis/master1/:/usr/local/redis/:z
+      - ~/opt/redis/master1/:/opt/redis/:z
     sysctls:
       # 消除警告: The TCP backlog setting of 511 cannot be enforced because /proc/sys/net/core/somaxconn is set to the lower value of 128.
       - net.core.somaxconn=2048
-    command: redis-server /usr/local/redis/redis.conf
+    command: redis-server /opt/redis/redis.conf
     deploy:
       endpoint_mode: dnsrr
       placement:
@@ -402,11 +408,11 @@ services:
       - TZ=CST-8
     volumes:
       # 不要放在/data/目录下，否则启动报错: Read-only file system，/data/目录是存放数据的目录
-      - /usr/local/redis/master2/:/usr/local/redis/:z
+      - ~/opt/redis/master2/:/opt/redis/:z
     sysctls:
       # 消除警告: The TCP backlog setting of 511 cannot be enforced because /proc/sys/net/core/somaxconn is set to the lower value of 128.
       - net.core.somaxconn=2048
-    command: redis-server /usr/local/redis/redis.conf
+    command: redis-server /opt/redis/redis.conf
     deploy:
       endpoint_mode: dnsrr
       placement:
@@ -424,11 +430,11 @@ services:
       - TZ=CST-8
     volumes:
       # 不要放在/data/目录下，否则启动报错: Read-only file system，/data/目录是存放数据的目录
-      - /usr/local/redis/master3/:/usr/local/redis/:z
+      - ~/opt/redis/master3/:/opt/redis/:z
     sysctls:
       # 消除警告: The TCP backlog setting of 511 cannot be enforced because /proc/sys/net/core/somaxconn is set to the lower value of 128.
       - net.core.somaxconn=2048
-    command: redis-server /usr/local/redis/redis.conf
+    command: redis-server /opt/redis/redis.conf
     deploy:
       endpoint_mode: dnsrr
       placement:
@@ -446,8 +452,8 @@ services:
       - TZ=CST-8
     volumes:
       # 不要放在/data/目录下，否则启动报错: Read-only file system，/data/目录是存放数据的目录
-      - /usr/local/redis/slave1/:/usr/local/redis/:z
-    command: redis-server /usr/local/redis/redis.conf
+      - ~/opt/redis/slave1/:/opt/redis/:z
+    command: redis-server /opt/redis/redis.conf
     deploy:
       endpoint_mode: dnsrr
       placement:
@@ -465,8 +471,8 @@ services:
       - TZ=CST-8
     volumes:
       # 不要放在/data/目录下，否则启动报错: Read-only file system，/data/目录是存放数据的目录
-      - /usr/local/redis/slave2/:/usr/local/redis/:z
-    command: redis-server /usr/local/redis/redis.conf
+      - ~/opt/redis/slave2/:/opt/redis/:z
+    command: redis-server /opt/redis/redis.conf
     deploy:
       endpoint_mode: dnsrr
       placement:
@@ -484,8 +490,8 @@ services:
       - TZ=CST-8
     volumes:
       # 不要放在/data/目录下，否则启动报错: Read-only file system，/data/目录是存放数据的目录
-      - /usr/local/redis/slave3/:/usr/local/redis/:z
-    command: redis-server /usr/local/redis/redis.conf
+      - ~/opt/redis/slave3/:/opt/redis/:z
+    command: redis-server /opt/redis/redis.conf
     deploy:
       endpoint_mode: dnsrr
       placement:
@@ -505,12 +511,12 @@ networks:
 ### 4.3. 部署
 
 ```sh
-docker stack deploy -c /usr/local/redis/stack.yml redis
+docker stack deploy -c ~/opt/redis/stack.yml redis
 ```
 
 ### 4.4. 创建集群
 
-随便进入一个容器节点，并进入 /usr/local/bin/ 目录
+随便进入一个容器节点，并进入 ~/opt/bin/ 目录
 
 ```sh
 redis-cli -a 'xxxxxxxx' --cluster create redismaster1:6379 redismaster2:6379 redismaster3:6379 redisslave1:6379 redisslave2:6379 redisslave3:6379 --cluster-replicas 1
@@ -556,21 +562,21 @@ docker run -p15080:80 --rm --name redisweb --network=rebue -it -e REDIS_1_HOST=r
 cd /tmp
 wget http://download.redis.io/releases/redis-5.0.5.tar.gz
 tar vxf /tmp/redis-5.0.5.tar.gz
-mkdir -p /usr/local/redis-cluster/conf
-cp /tmp/redis-5.0.5/redis.conf /usr/local/redis-cluster/conf
+mkdir -p ~/opt/redis-cluster/conf
+cp /tmp/redis-5.0.5/redis.conf ~/opt/redis-cluster/conf
 ```
 
 ### 6.3. 修改配置文件
 
 ```sh
-sed -i 's/^bind 127.0.0.1$/bind 0.0.0.0/' /usr/local/redis-cluster/conf/redis.conf
-sed -i '/# cluster-enabled yes/acluster-enabled yes' /usr/local/redis-cluster/conf/redis.conf
+sed -i 's/^bind 127.0.0.1$/bind 0.0.0.0/' ~/opt/redis-cluster/conf/redis.conf
+sed -i '/# cluster-enabled yes/acluster-enabled yes' ~/opt/redis-cluster/conf/redis.conf
 ```
 
 ### 6.4. 准备集群中每个节点的配置文件
 
 ```sh
-cd /usr/local/redis-cluster/conf/
+cd ~/opt/redis-cluster/conf/
 mkdir 7000
 mkdir 7001
 mkdir 7002
@@ -597,14 +603,14 @@ sed -i 's/^port 6379$/port 7102/' 7102/redis.conf
 
 ```sh
 # master
-docker run -d --net=host --name redis-a --restart=always -v /usr/local/redis-cluster/conf/7000:/usr/local/etc/redis redis redis-server /usr/local/etc/redis/redis.conf
-docker run -d --net=host --name redis-b --restart=always -v /usr/local/redis-cluster/conf/7001:/usr/local/etc/redis redis redis-server /usr/local/etc/redis/redis.conf
-docker run -d --net=host --name redis-c --restart=always -v /usr/local/redis-cluster/conf/7002:/usr/local/etc/redis redis redis-server /usr/local/etc/redis/redis.conf
+docker run -d --net=host --name redis-a --restart=always -v ~/opt/redis-cluster/conf/7000:~/opt/etc/redis redis redis-server ~/opt/etc/redis/redis.conf
+docker run -d --net=host --name redis-b --restart=always -v ~/opt/redis-cluster/conf/7001:~/opt/etc/redis redis redis-server ~/opt/etc/redis/redis.conf
+docker run -d --net=host --name redis-c --restart=always -v ~/opt/redis-cluster/conf/7002:~/opt/etc/redis redis redis-server ~/opt/etc/redis/redis.conf
 
 # slaver
-docker run -d --net=host --name redis-a1 --restart=always -v /usr/local/redis-cluster/conf/7100:/usr/local/etc/redis redis redis-server /usr/local/etc/redis/redis.conf
-docker run -d --net=host --name redis-b1 --restart=always -v /usr/local/redis-cluster/conf/7101:/usr/local/etc/redis redis redis-server /usr/local/etc/redis/redis.conf
-docker run -d --net=host --name redis-c1 --restart=always -v /usr/local/redis-cluster/conf/7102:/usr/local/etc/redis redis redis-server /usr/local/etc/redis/redis.conf
+docker run -d --net=host --name redis-a1 --restart=always -v ~/opt/redis-cluster/conf/7100:~/opt/etc/redis redis redis-server ~/opt/etc/redis/redis.conf
+docker run -d --net=host --name redis-b1 --restart=always -v ~/opt/redis-cluster/conf/7101:~/opt/etc/redis redis redis-server ~/opt/etc/redis/redis.conf
+docker run -d --net=host --name redis-c1 --restart=always -v ~/opt/redis-cluster/conf/7102:~/opt/etc/redis redis redis-server ~/opt/etc/redis/redis.conf
 ```
 
 ### 6.6. 打开防火墙端口
@@ -670,21 +676,21 @@ polkitd  28704  0.1  0.0  43252 10368 ?        Ssl  16:02   0:01 redis-server 0.
 cd /tmp
 wget http://download.redis.io/releases/redis-4.0.2.tar.gz
 tar vxf redis-4.0.2.tar.gz
-mkdir -p /usr/local/redis-cluster/conf
-cp /tmp/redis-4.0.2/redis.conf /usr/local/redis-cluster/conf
+mkdir -p ~/opt/redis-cluster/conf
+cp /tmp/redis-4.0.2/redis.conf ~/opt/redis-cluster/conf
 ```
 
 ### 7.3. ~~修改配置文件~~
 
 ```sh
-sed -i 's/^bind 127.0.0.1$/bind 0.0.0.0/' /usr/local/redis-cluster/conf/redis.conf
-sed -i '/# cluster-enabled yes/acluster-enabled yes' /usr/local/redis-cluster/conf/redis.conf
+sed -i 's/^bind 127.0.0.1$/bind 0.0.0.0/' ~/opt/redis-cluster/conf/redis.conf
+sed -i '/# cluster-enabled yes/acluster-enabled yes' ~/opt/redis-cluster/conf/redis.conf
 ```
 
 ### 7.4. ~~准备集群中每个节点的配置文件~~
 
 ```sh
-cd /usr/local/redis-cluster/conf/
+cd ~/opt/redis-cluster/conf/
 mkdir 7000
 mkdir 7001
 mkdir 7002
@@ -754,7 +760,7 @@ curl -L get.rvm.io | bash -s stable
 ```
 
 ```sh
-. /usr/local/rvm/scripts/rvm
+. ~/opt/rvm/scripts/rvm
 ```
 
 查看rvm库中已知的ruby版本
@@ -801,10 +807,10 @@ gem install redis
 
 #### 7.5.2. ~~复制redis-trib.rb到容器~~
 
-在主机中将 redis-trib.rb 文件复制到redis-trib容器中的 /usr/local/bin/ 目录下
+在主机中将 redis-trib.rb 文件复制到redis-trib容器中的 ~/opt/bin/ 目录下
 
 ```sh
-docker cp /tmp/redis-4.0.2/src/redis-trib.rb redis-trib:/usr/local/bin/
+docker cp /tmp/redis-4.0.2/src/redis-trib.rb redis-trib:~/opt/bin/
 ```
 
 #### 7.5.3. ~~提交修改生成新镜像~~
@@ -817,14 +823,14 @@ docker commit -m "redis trib" -a "zbz" redis-trib zboss/redis-trib:v1.0.0
 
 ```sh
 # master
-docker run -d --net=host --name redis-a --restart=always -v /usr/local/redis-cluster/conf/7000:/usr/local/redis/conf redis /usr/local/redis/conf/redis.conf
-docker run -d --net=host --name redis-b --restart=always -v /usr/local/redis-cluster/conf/7001:/usr/local/redis/conf redis /usr/local/redis/conf/redis.conf
-docker run -d --net=host --name redis-c --restart=always -v /usr/local/redis-cluster/conf/7002:/usr/local/redis/conf redis /usr/local/redis/conf/redis.conf
+docker run -d --net=host --name redis-a --restart=always -v ~/opt/redis-cluster/conf/7000:~/opt/redis/conf redis ~/opt/redis/conf/redis.conf
+docker run -d --net=host --name redis-b --restart=always -v ~/opt/redis-cluster/conf/7001:~/opt/redis/conf redis ~/opt/redis/conf/redis.conf
+docker run -d --net=host --name redis-c --restart=always -v ~/opt/redis-cluster/conf/7002:~/opt/redis/conf redis ~/opt/redis/conf/redis.conf
 
 # slaver
-docker run -d --net=host --name redis-a1 --restart=always -v /usr/local/redis-cluster/conf/7100:/usr/local/redis/conf redis /usr/local/redis/conf/redis.conf
-docker run -d --net=host --name redis-b1 --restart=always -v /usr/local/redis-cluster/conf/7101:/usr/local/redis/conf redis /usr/local/redis/conf/redis.conf
-docker run -d --net=host --name redis-c1 --restart=always -v /usr/local/redis-cluster/conf/7102:/usr/local/redis/conf redis /usr/local/redis/conf/redis.conf
+docker run -d --net=host --name redis-a1 --restart=always -v ~/opt/redis-cluster/conf/7100:~/opt/redis/conf redis ~/opt/redis/conf/redis.conf
+docker run -d --net=host --name redis-b1 --restart=always -v ~/opt/redis-cluster/conf/7101:~/opt/redis/conf redis ~/opt/redis/conf/redis.conf
+docker run -d --net=host --name redis-c1 --restart=always -v ~/opt/redis-cluster/conf/7102:~/opt/redis/conf redis ~/opt/redis/conf/redis.conf
 ```
 
 ### 7.7. ~~打开防火墙端口~~

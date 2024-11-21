@@ -38,8 +38,6 @@ vi /usr/local/zookeeper/stack.yml
 ```
 
 ```sh{.line-numbers}
-version: '3.9'
-
 services:
   zoo:
     image: zookeeper
