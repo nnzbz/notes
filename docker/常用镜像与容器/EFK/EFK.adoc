@@ -453,7 +453,7 @@ docker.elastic.co/elasticsearch/elasticsearch:8.14.2 bash
 ----
 . 进入容器内添加kibana访问的账户和密码
 +
-https://github.com/elastic/elasticsearch/blob/8.14/docs/reference/setup/install/docker/docker compose.yml[官方参考^]
+https://github.com/elastic/elasticsearch/blob/8.14/docs/reference/setup/install/docker/docker-compose.yml[官方参考^]
 +
 
 [source,bash]
@@ -658,6 +658,57 @@ networks:
 ----
 docker stack deploy -c /usr/local/elasticsearch/filebeat/stack.yml es
 ----
+
+== 常见问题
+=== ES 磁盘满
+. 报错 `TOO_MANY_REQUESTS/12/disk usage exceeded flood-stage watermark, index has read-only-allow-delete block`
++
+. 创建运行并进入临时容器
++
+[source,bash]
+----
+docker run --rm -it --net=rebue --env-file /usr/local/elasticsearch/.env \
+-v /usr/local/elasticsearch/config/certs/:/usr/share/elasticsearch/config/certs/ \
+docker.elastic.co/elasticsearch/elasticsearch:8.14.2 bash
+----
+. 检查现有索引
++
+[source,bash]
+----
+curl --cacert config/certs/ca/ca.crt -u "elastic:${ELASTIC_PASSWORD}" "https://es01:9200/_cat/indices?v&pretty"
+----
+. 删除指定索引
++
+[source,bash]
+----
+curl -X DELETE --cacert config/certs/ca/ca.crt -u "elastic:${ELASTIC_PASSWORD}" "https://es01:9200/<index-name>"
+----
+. 查看所有数据流
++
+[source,bash]
+----
+curl --cacert config/certs/ca/ca.crt -u "elastic:${ELASTIC_PASSWORD}" "https://es01:9200/_data_stream/*?pretty"
+----
+. 查看指定数据流
++
+[source,bash]
+----
+curl --cacert config/certs/ca/ca.crt -u "elastic:${ELASTIC_PASSWORD}" "https://es01:9200/_data_stream/<data_stream_name>?pretty"
+----
+. 删除数据流
++
+[source,bash]
+----
+curl -X DELETE --cacert config/certs/ca/ca.crt -u "elastic:${ELASTIC_PASSWORD}" "https://es01:9200/_data_stream/<data_stream_name>"
+----
+. 关闭索引的只读状态
++
+[source,bash]
+----
+# 在ES中添加kibana访问的账户和密码(下面的执行要等es部署好后再运行)
+curl -X PUT --cacert config/certs/ca/ca.crt -u "elastic:${ELASTIC_PASSWORD}" -H "Content-Type: application/json" https://es01:9200/_all/_settings -d "{\"index.blocks.read_only_allow_delete\": null}"
+----
+
 
 == 附录
 === filebeat
