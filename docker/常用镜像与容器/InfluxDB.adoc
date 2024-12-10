@@ -4,15 +4,15 @@
 
 == 单机
 ----
-mkdir -p /usr/local/influxdb/{data,config}
+mkdir -p ~/opt/influxdb/config
 ----
 
 ----
 docker run -d \
     --name influxdb \
     -p 8086:8086 \
-    -v "/usr/local/influxdb/data:/var/lib/influxdb2" \
-    -v "/usr/local/influxdb/config:/etc/influxdb2" \
+    -v influxdbdata:/var/lib/influxdb2 \
+    -v ~/opt/influxdb/config:/etc/influxdb2 \
     -e DOCKER_INFLUXDB_INIT_MODE=setup \
     -e DOCKER_INFLUXDB_INIT_USERNAME=<USERNAME> \
     -e DOCKER_INFLUXDB_INIT_PASSWORD=<PASSWORD> \
@@ -25,8 +25,8 @@ docker run -d \
 
 == swarm
 ----
-mkdir -p /usr/local/influxdb/{data,config}
-vi /usr/local/influxdb/stack.yml
+mkdir -p ~/opt/influxdb/config
+vi ~/opt/influxdb/stack.yml
 ----
 
 ```yaml{.line-numbers}
@@ -41,6 +41,20 @@ services:
       - DOCKER_INFLUXDB_INIT_ORG=<ORG_NAME>
       - DOCKER_INFLUXDB_INIT_BUCKET=<BUCKET_NAME>
       - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=my-super-secret-auth-token
+    volumes:
+      - influxdbdata:/var/lib/influxdb2
+      - ~/opt/influxdb/config:/etc/influxdb2
+    deploy:
+      placement:
+        constraints:
+          # 部署的节点指定是gateway角色的
+          - node.labels.role==gateway
+    logging:
+      options:
+        max-size: 8m
+
+volumes:
+  influxdbdata:
 
 networks:
   default:

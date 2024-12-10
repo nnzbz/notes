@@ -13,7 +13,7 @@ docker run --name zoo \
     -dp2181:2181 -p2888:2888 -p3888:3888 \
     -e ZOO_ADMINSERVER_ENABLED=false \
     -e ZOO_4LW_COMMANDS_WHITELIST=* \
-    --restart always zookeeper
+    --restart always zookeeper:3.9
 ```
 
 - `-e ZOO_4LW_COMMANDS_WHITELIST=*`
@@ -33,15 +33,15 @@ docker run --name zoo \
 ### 2.1. 准备部署文件
 
 ```sh
-mkdir /usr/local/zookeeper/
-vi /usr/local/zookeeper/stack.yml
+mkdir ~/opt/zookeeper/
+vi ~/opt/zookeeper/stack.yml
 ```
 
 ```sh{.line-numbers}
 services:
   zoo:
-    image: zookeeper
-    # hostname: zoo
+    image: zookeeper:3.9
+    hostname: zoo
     #ports:
     #  - 2181:2181
     environment:
@@ -53,11 +53,14 @@ services:
     volumes:
       - zoodata:/data:z
       - zoodatalog:/datalog:z
+    deploy:
+      endpoint_mode: dnsrr
+      placement:
+        constraints:
+          - node.labels.role==zookeeper
     logging:
       options:
         max-size: 8m
-    deploy:
-      endpoint_mode: dnsrr
 
 volumes:
   zoodata:
@@ -72,7 +75,7 @@ networks:
 ### 2.2. 部署
 
 ```sh
-docker stack deploy -c /usr/local/zookeeper/stack.yml zookeeper
+docker stack deploy -c ~/opt/zookeeper/stack.yml zookeeper
 ```
 
 ## 3. Swarm集群
@@ -80,8 +83,8 @@ docker stack deploy -c /usr/local/zookeeper/stack.yml zookeeper
 ### 3.1. 准备部署文件
 
 ```sh
-mkdir /usr/local/zookeeper/
-vi /usr/local/zookeeper/stack.yml
+mkdir ~/opt/zookeeper/
+vi ~/opt/zookeeper/stack.yml
 ```
 
 ```yml{.line-numbers}
@@ -89,7 +92,7 @@ version: '3.9'
 
 services:
   zoo1:
-    image: zookeeper
+    image: zookeeper:3.9
     # hostname: zoo1
     #ports:
     #  - 2181:2181
@@ -110,7 +113,7 @@ services:
     deploy:
       endpoint_mode: dnsrr
   zoo2:
-    image: zookeeper
+    image: zookeeper:3.9
     # hostname: zoo2
     #ports:
     #  - 2182:2181
@@ -131,7 +134,7 @@ services:
     deploy:
       endpoint_mode: dnsrr
   zoo3:
-    image: zookeeper
+    image: zookeeper:3.9
     # hostname: zoo3
     #ports:
     #  - 2183:2181
@@ -169,14 +172,14 @@ networks:
 ### 3.2. 部署
 
 ```sh
-docker stack deploy -c /usr/local/zookeeper/stack.yml zookeeper
+docker stack deploy -c ~/opt/zookeeper/stack.yml zookeeper
 ```
 
 ## 4. Zoo Navigator
 
 ```sh
-mkdir -p /usr/local/zookeeper/navigator/
-vi /usr/local/zookeeper/navigator/stack.yml
+mkdir -p ~/opt/zookeeper/navigator/
+vi ~/opt/zookeeper/navigator/stack.yml
 ```
 
 ```yml{.line-numbers}
@@ -202,7 +205,7 @@ networks:
 ```
 
 ```sh
-docker stack deploy -c /usr/local/zookeeper/navigator/stack.yml zookeeper
+docker stack deploy -c ~/opt/zookeeper/navigator/stack.yml zookeeper
 ```
 
 ## 5. ~~Web UI~~

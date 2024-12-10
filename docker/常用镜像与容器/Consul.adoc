@@ -19,7 +19,7 @@ mkdir -p ~/opt/consul/
 ----
 services:
   consul:
-    image: hashicorp/consul:1.19
+    image: hashicorp/consul:1.20.1
     container_name: consul
     ports:
       - "8300:8300"
@@ -49,28 +49,30 @@ docker compose -f ~/opt/consul/stack.yml up -d
 
 [source,sh]
 ----
-mkdir /var/consul/data
-mkdir -p /usr/local/consul/template
+mkdir -p ~/opt/consul/
 ----
 
-./usr/local/consul/stack.yml
+.~/opt/consul/stack.yml
 [source,yaml,%linenums]
 ----
 services:
   svr:
-    image: hashicorp/consul:1.19
+    image: hashicorp/consul:1.20.1
+    ports:
+      - "8300:8300"
+      - "8500:8500"
     environment:
       - CONSUL_BIND_INTERFACE=eth0
     volumes:
       - consuldata:/consul/data
     command:
       # https://developer.hashicorp.com/consul/docs/agent/config/cli-flags
-      agent -server -bind 0.0.0.0 -bind_addr eth0 -client 0.0.0.0 -ui -ui-content-path /consul -bootstrap-expect 1
+      agent -server -ui -ui-content-path /consul -bootstrap-expect 1
     deploy:
       placement:
         constraints:
           # 部署的节点指定是gateway角色的
-          - node.labels.role==gateway
+          - node.hostname==consul
     logging:
       options:
         max-size: 8m
@@ -84,7 +86,12 @@ networks:
     name: rebue
 ----
 
-./usr/local/consul/template/stack.yml
+[source,bash]
+----
+docker stack deploy -c ~/opt/consul/stack.yml consul
+----
+
+.~/opt/consul/template/stack.yml
 [source,yaml,%linenums]
 ----
 version: "3.9"
@@ -92,7 +99,7 @@ services:
   template:
     image: nnzbz/consul-template:0.39
     volumes:
-      - /usr/local/consul/template:/template
+      - ~/opt/consul/template:/template
     command: ["-config=/template/deregister.hcl", "-template=/template/deregister.tpl:/template/deregister.sh"]
     deploy:
       placement:
@@ -109,7 +116,7 @@ networks:
     name: rebue
 ----
 
-./usr/local/consul/template/deregister.hcl
+.~/opt/consul/template/deregister.hcl
 [,json]
 ----
 consul {
@@ -124,8 +131,8 @@ template {
 }
 ----
 
-./usr/local/consul/template/deregister.tpl
-[,json]
+.~/opt/consul/template/deregister.tpl
+[source,bash]
 ----
 #!/bin/sh
 {{range services}}
@@ -139,8 +146,7 @@ curl -X PUT "http://consul_svr:8500/v1/agent/service/deregister/{{.ID}}"
 ----
 
 
-[,sh]
+[source,bash]
 ----
-docker stack deploy -c /usr/local/consul/stack.yml consul
-docker stack deploy -c /usr/local/consul/template/stack.yml consul
+docker stack deploy -c ~/opt/consul/template/stack.yml consul
 ----

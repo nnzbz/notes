@@ -167,7 +167,6 @@ docker service create --replicas 3 -p 80:80 --name nginx nginx:1.13.7-alpine
 ### 部署条件约束
 
 ```sh
-version: '3.9'
 services:
   nginx:
     ....

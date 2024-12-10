@@ -29,14 +29,13 @@ docker run -d \
 ### 3.1. Docker Compose
 
 ```sh
-mkdir -p /usr/local/rabbitmq
-vi /usr/local/rabbitmq/stack.yml
+mkdir -p ~/opt/rabbitmq
+vi ~/opt/rabbitmq/stack.yml
 ```
 
 ```yml{.line-numbers}
-version: "3.9"
 services:
-  rabbitmq:
+  svr:
     image: rabbitmq:management-alpine
     hostname: rabbitmq
     ports:
@@ -45,6 +44,10 @@ services:
     environment:
       # 最好使用此设定时区，其它镜像也可以使用
       - TZ=CST-8
+    deploy:
+      placement:
+        constraints:
+          - node.hostname==rabbitmq00
     logging:
       options:
         max-size: 8m
@@ -57,7 +60,7 @@ networks:
 ### 3.2. 部署
 
 ```sh
-docker stack deploy -c /usr/local/rabbitmq/stack.yml rabbitmq
+docker stack deploy -c ~/opt/rabbitmq/stack.yml rabbitmq
 ```
 
 ## 4. 访问

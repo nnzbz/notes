@@ -3,19 +3,17 @@
 == 单机
 [source,shell]
 ----
-mkdir -p /usr/local/postgresql/data
-mkdir -p /usr/local/postgis/data
-vi /usr/local/postgis/stack.yml
+mkdir -p ~/opt/pgsql/
+vi ~/opt/pgsql/stack.yml
 ----
 
-./usr/local/postgis/stack.yml
+.~/opt/pgsql/stack.yml
 [source,yaml]
 ----
-version: "3.9"
 services:
-  postgis:
+  pgsql:
     image: postgis/postgis:16-3.4-alpine
-    container_name: postgis
+    container_name: pgsql
     ports:
       - "5432:5432"
     environment:
@@ -23,14 +21,61 @@ services:
       - POSTGRES_PASSWORD=postgis
       - POSTGRES_DBNAME=postgis
     volumes:
-      - /usr/local/postgresql/data:/var/lib/postgresql/data
-      - /usr/local/postgis/data:/var/lib/postgis/data
+      - pgsql00data:/var/lib/pgsql/data
+      - postgis00data:/var/lib/postgis/data
     restart: always
 ----
 
 [source,shell]
 ----
-docker compose -f /usr/local/postgis/stack.yml up -d
+docker compose -f ~/opt/postgis/stack.yml up -d
+----
+
+== Swarm
+=== 单机
+[source,shell]
+----
+mkdir -p ~/opt/pgsql/
+vi ~/opt/pgsql/stack.yml
+----
+
+.~/opt/postgis/stack.yml
+[source,yaml]
+----
+services:
+  pgsql00:
+    image: postgis/postgis:16-3.4-alpine
+    container_name: pgsql
+    // ports:
+    //   - "5432:5432"
+    environment:
+      - POSTGRES_USER=postgis
+      - POSTGRES_PASSWORD=postgis
+      - POSTGRES_DBNAME=postgis
+    volumes:
+      - pgsql00data:/var/lib/pgsql/data
+      - postgis00data:/var/lib/postgis/data
+    # deploy:
+    #   placement:
+    #     constraints:
+    #       #该hostname为指定容器在哪个主机启动
+    #       - node.hostname == pgsql00
+    logging:
+      options:
+        max-size: 8m
+volumes:
+  pgsql00data:
+  postgis00data:
+
+networks:
+  default:
+    external: true
+    name: rebue
+----
+
+[source,bash]
+----
+docker stack deploy -c ~/opt/pgsql/stack.yml pgsql
 ----
 
 == [line-through]#启用postgis插件# postgis的镜像已经默认启用了postgis插件
@@ -52,3 +97,4 @@ psql -Upostgis
 CREATE EXTENSION postgis;
 CREATE EXTENSION postgis_topology;
 ----
+

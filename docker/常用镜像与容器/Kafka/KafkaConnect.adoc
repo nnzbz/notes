@@ -65,7 +65,11 @@ services:
     container_name: kafka-connect
     ports:
       - 8083:8083
+    environment:
+      - TZ=Asia/Shanghai
     volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ~/opt/kafka/config/log4j.properties:/opt/kafka/config/log4j.properties:ro
       - ~/opt/kafka/config/connect-standalone.properties:/opt/kafka/config/connect-standalone.properties:z
       - ~/opt/kafka/plugins:/opt/kafka/plugins:z
     command:
@@ -142,9 +146,13 @@ services:
   connect:
     image: apache/kafka:3.9.0
     hostname: kafka-connect
-    ports:
-      - 8083:8083
+    # ports:
+    #   - 8083:8083
+    environment:
+      - TZ=Asia/Shanghai
     volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ~/opt/kafka/config/log4j.properties:/opt/kafka/config/log4j.properties:ro
       - ~/opt/kafka/config/connect-standalone.properties:/opt/kafka/config/connect-standalone.properties:z
       - ~/opt/kafka/plugins/:/opt/kafka/plugins/:z
     command:
@@ -152,8 +160,20 @@ services:
       - -c
       - |
         /opt/kafka/bin/connect-standalone.sh /opt/kafka/config/connect-standalone.properties
+    deploy:
+      placement:
+        constraints:
+          - node.hostname==kafka00
+    logging:
+      options:
+        max-size: 8m
+
+networks:
+  default:
+    external: true
+    name: rebue
 ----
 
 ```sh
-docker stack deploy -c /usr/local/kafka/kafka-connect-stack.yml kafka
+docker stack deploy -c ~/opt/kafka/kafka-connect-stack.yml kafka
 ```

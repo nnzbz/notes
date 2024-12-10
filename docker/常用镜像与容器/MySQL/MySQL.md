@@ -228,17 +228,17 @@ cat /run/secrets/mysql_root_password
 
 #### 2.5.2. 准备 `my.cnf` 文件
 
-- mysql0的 `my.cnf`
+- mysql00的 `my.cnf`
 
 ```sh
 mkdir -p ~/opt/mysql
-vi ~/opt/mysql/mysql0-my.cnf
+vi ~/opt/mysql/mysql00-my.cnf
 ```
 
 ```ini
 [mysqld]
 # 为服务器分配id，可以自定义，不区分大小，起标识作用。不同数据库节点分配不同的id
-server_id=0
+server_id=10
 # 打开Mysql 日志，日志格式为二进制
 log-bin=mysql-bin
 # 每1次在事务提交前会将二进制日志同步到磁盘上，保证在服务器崩溃时不会丢失事件
@@ -248,7 +248,7 @@ sync_binlog=1
 enforce-gtid-consistency=on
 # 启用基于GTID的复制，启用之前必须保证enforce-gtid-consistency=true
 gtid_mode=on
-# 默认为mixed混合模式，为了数据一致性，可以更改成row，但是效率和空间消耗会较大
+# 默认为mixed混合模式，为了数据一致性，可以更改成row，但是效率和空间消耗会较大(debezium 需要设置为 row)
 binlog_format=mixed
 
 #replicate-ignore-db=mysql
@@ -257,16 +257,16 @@ binlog_format=mixed
 #replicate-ignore-db=performance_schema
 ```
 
-- mysql1的 `my.cnf`
+- mysql01的 `my.cnf`
 
 ```sh
-vi ~/opt/mysql/mysql1-my.cnf
+vi ~/opt/mysql/mysql01-my.cnf
 ```
 
 ```ini
 [mysqld]
 #为服务器分配id，可以自定义，不区分大小，起标识作用。不同数据库节点分配不同的id
-server_id=1
+server_id=20
 # 打开Mysql 日志，日志格式为二进制
 log-bin=mysql-bin
 # 当启用时，服务器通过只允许执行可以使用GTID安全地记录的语句来强制GTID一致性。
@@ -307,19 +307,19 @@ vi ~/opt/mysql/stack.yml
 
 ```yaml{.line-numbers}
 services:
-  mysql0:
+  mysql00:
     image: mysql:5.7
     # 注意: 如果是arm架构服务器，请用下面这个镜像
     # image: biarms/mysql:5.7
-    hostname: mysql0
+    hostname: mysql00
     ports:
       - 3306:3306
       - 33060:33060
     # secrets:
     #   - mysql_root_password
     volumes:
-      - ~/opt/mysql/mysql0-my.cnf:/etc/mysql/my.cnf:z
-      - mysql0data:/var/lib/mysql:z
+      - ~/opt/mysql/mysql00-my.cnf:/etc/mysql/my.cnf:z
+      - mysql00data:/var/lib/mysql:z
     environment:
       # 最好使用此设定时区，其它镜像也可以使用
       - TZ=CST-8
@@ -340,25 +340,23 @@ services:
     #   placement:
     #     constraints:
     #       #该hostname为指定容器在哪个主机启动
-    #       - node.hostname == db1
+    #       - node.hostname == mysql00
     logging:
       options:
         max-size: 8m
-  mysql1:
+  mysql01:
     image: mysql:5.7
     # 注意: 如果是arm架构服务器，请用下面这个镜像
     # image: biarms/mysql:5.7
-    hostname: mysql1
+    hostname: mysql01
     ports:
       - 3316:3306
       - 33160:33060
     depends_on:
-      - mysql0
-    # secrets:
-    #   - mysql_root_password
+      - mysql00
     volumes:
-      - ~/opt/mysql/mysql1-my.cnf:/etc/mysql/my.cnf:z
-      - mysql1data:/var/lib/mysql:z
+      - ~/opt/mysql/mysql01-my.cnf:/etc/mysql/my.cnf:z
+      - mysql01data:/var/lib/mysql:z
     environment:
       # 最好使用此设定时区，其它镜像也可以使用
       - TZ=CST-8
@@ -380,17 +378,14 @@ services:
     #   placement:
     #     constraints:
     #       #该hostname为指定容器在哪个主机启动
-    #       - node.hostname == db2
+    #       - node.hostname == mysql01
     logging:
       options:
         max-size: 8m
 
-#secrets:
-#  mysql_root_password:
-#    external: true
 volumes:
-  mysql0data:
-  mysql1data:
+  mysql00data:
+  mysql01data:
 
 networks:
   default:
@@ -406,7 +401,7 @@ docker stack deploy -c ~/opt/mysql/stack.yml mysql
 
 #### 2.5.6. 开启主从同步
 
-1. 分别对 mysql0 和 mysql1 执行下面命令
+1. 分别对 mysql00 和 mysql01 执行下面命令
 
 ```sh
 # 查看mysql的容器id
@@ -430,20 +425,20 @@ UPDATE mysql.user SET Host = '%' WHERE User = 'root' AND Host = 'localhost';
 flush privileges;
 ```
 
-2. 在 mysql0 中执行下面的命令
+2. 在 mysql00 中执行下面的命令
 
 ```sh
 # 创建用户并授权
 GRANT REPLICATION SLAVE ON *.* to 'slave'@'%' identified by '密码';
 ```
 
-3. 在 mysql1 中执行下面的命令
+3. 在 mysql01 中执行下面的命令
 
 **注意：** 如果是重新部署的，需要先执行这个命令 `reset slave;`
 
 ```sh
 # 开启IO线程监听mysql-1的binlog文件
-change master to master_host='mysql0',master_user='slave',master_password='密码',master_port=3306,MASTER_AUTO_POSITION=1;
+change master to master_host='mysql00',master_user='slave',master_password='密码',master_port=3306,MASTER_AUTO_POSITION=1;
 # 开启同步
 start slave;
 # 查看是否开启成功
@@ -456,7 +451,7 @@ show slave status\G;
 
 4. 创建账户、数据库并授权
 
-分别对 mysql0 执行下面命令
+分别对 mysql00 执行下面命令
 
 ```sh
 # 查看mysql的容器id
@@ -473,7 +468,7 @@ GRANT ALL ON xxx.* to 'xxx'@'%' identified by '密码';
 
 #### 2.5.7. ~~开启主主同步~~
 
-1. 分别对 mysql0 和 mysql1 执行下面命令
+1. 分别对 mysql00 和 mysql01 执行下面命令
 
 ```sh
 # 查看mysql的容器id
@@ -488,27 +483,27 @@ mysql -u root -p
 GRANT REPLICATION SLAVE ON *.* to 'slave'@'%' identified by '密码';
 ```
 
-2. 在 mysql1 中执行下面的命令
+2. 在 mysql01 中执行下面的命令
 
 **注意：** 如果是重新部署的，需要先执行这个命令 `reset slave;`
 
 ```sh
 # 开启IO线程监听mysql-1的binlog文件
-change master to master_host='mysql0',master_user='slave',master_password='密码',master_port=3306,MASTER_AUTO_POSITION=1;
+change master to master_host='mysql00',master_user='slave',master_password='密码',master_port=3306,MASTER_AUTO_POSITION=1;
 # 开启同步
 start slave;
 ```
 
-3. 在 mysql0 中执行下面的命令
+3. 在 mysql00 中执行下面的命令
 
 ```sh
 # 开启IO线程监听mysql-1的binlog文件
-change master to master_host='mysql1',master_user='slave',master_password='密码',master_port=3306,MASTER_AUTO_POSITION=1;
+change master to master_host='mysql01',master_user='slave',master_password='密码',master_port=3306,MASTER_AUTO_POSITION=1;
 # 开启同步
 start slave;
 ```
 
-4. 分别在 mysql0 和 mysql1 中执行下面命令查看是否开启成功
+4. 分别在 mysql00 和 mysql01 中执行下面命令查看是否开启成功
 
 ```sh
 show slave status\G;
@@ -520,7 +515,7 @@ show slave status\G;
 
 #### 2.5.8. ~~在主主环境中创建账户并授权~~
 
-分别对 mysql0 和 mysql1 执行下面命令
+分别对 mysql00 和 mysql01 执行下面命令
 
 ```sh
 # 查看mysql的容器id
@@ -537,7 +532,7 @@ GRANT ALL ON xxx.* to 'xxx'@'%' identified by '密码';
 
 #### 2.5.9. ~~在主主环境中修改账户密码~~
 
-分别对 mysql0 和 mysql1 执行下面命令
+分别对 mysql00 和 mysql01 执行下面命令
 
 ```sh
 # 查看mysql的容器id

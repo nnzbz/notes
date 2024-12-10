@@ -67,7 +67,7 @@ echo 'requirepass xxxxxxxx' >> ~/opt/redis/conf/redis.conf
 # 如果在arm架构服务器上，启动redis启动不起来，报下面的错
 # Redis will now exit to prevent data corruption. Note that it is possible to suppress this warning by setting the following config: ignore-warnings ARM64-COW-BUG
 # 那么请运行下面这行
-echo 'ignore-warnings ARM64-COW-BUG' >> ~/opt/redis/conf/redis.conf
+#echo 'ignore-warnings ARM64-COW-BUG' >> ~/opt/redis/conf/redis.conf
 
 # 设置内存不足执行清理缓存的策略(带有过期时间最近最少使用)
 echo 'maxmemory 8gb' >> ~/opt/redis/conf/redis.conf
@@ -80,6 +80,7 @@ vi ~/opt/redis/stack-standalone.yml
 services:
   svr:
     image: redis:alpine
+    hostname: redis
     environment:
       # 最好使用此设定时区，其它镜像也可以使用
       - TZ=CST-8
@@ -94,7 +95,7 @@ services:
     deploy:
       placement:
         constraints:
-          - node.labels.role==redis
+          - node.hostname==redis
     logging:
       options:
         max-size: 8m
