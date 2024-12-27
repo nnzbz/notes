@@ -1,0 +1,57 @@
+= 创建 Windows 虚拟机
+
+== 创建命令
+[source,bash]
+----
+# Win7
+virt-install \
+--name Win7 \
+--vcpus=2,maxvcpus=4 \
+--os-type=windows \
+--os-variant win7 \
+--memory=4096,maxmemory=8096 \
+--graphics vnc,listen=0.0.0.0,port=5920 \
+--console pty,target_type=serial \
+--cdrom=/home/data/cn_windows_7_professional_with_sp1_x64_dvd_u_677031.iso \
+--disk path=/kvm-data/images/Win7.img,size=50 \
+--network bridge=br1
+
+Win10
+virt-install \
+--name Win10 \
+--vcpus=2,maxvcpus=4 \
+--os-type=windows \
+--os-variant win10 \
+--memory=4096,maxmemory=8096 \
+--graphics vnc,listen=0.0.0.0,port=5921 \
+--console pty,target_type=serial \
+--cdrom=/home/data/cn_windows_10_business_editions_version_1909_x64_dvd_0ca83907.iso \
+--disk path=/kvm-data/images/Win10.img,size=50 \
+--network bridge=br1
+----
+
+参数说明：
+
+* --name: 虚拟机名称。
+* --memory: 分配的内存大小。
+* --disk: 虚拟硬盘路径和大小。
+* --vcpus: CPU核心数。
+* --os-type和--os-variant: 指定操作系统类型和版本。
+* --graphics none: 使用VNC或SPICE进行图形化管理。
+* --console pty,target_type=serial: 通过串行控制台连接虚拟机。
+* --network: 虚拟机网络配置。
+* --cdrom: Windows安装介质路径。
+
+== VNC客户端连接
+[source,bash]
+----
+vncviewer xxx.xxx.xxx.xxx:5920
+----
+
+== 开启 Windows 远程桌面
+* Win7
++
+计算机 -> 属性 -> 远程设置 -> 远程 -> 允许运行任意版本远程桌面的计算机连接(较不安全)(L)
+* Win10
++
+此电脑 -> 属性 -> 远程设置 -> 远程 -> 允许远程连接到此计算机(L)

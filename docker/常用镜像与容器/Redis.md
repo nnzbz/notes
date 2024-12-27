@@ -21,6 +21,8 @@ services:
       - 6379:6379
     environment:
       - TZ=CST-8
+    volumes:
+      - redisdata:/data/:z
     restart: always
   redisinsight:
     image: redis/redisinsight
@@ -388,6 +390,7 @@ services:
     volumes:
       # 不要放在/data/目录下，否则启动报错: Read-only file system，/data/目录是存放数据的目录
       - ~/opt/redis/master1/:/opt/redis/:z
+      - redismaster1data:/data/:z
     sysctls:
       # 消除警告: The TCP backlog setting of 511 cannot be enforced because /proc/sys/net/core/somaxconn is set to the lower value of 128.
       - net.core.somaxconn=2048
@@ -410,6 +413,7 @@ services:
     volumes:
       # 不要放在/data/目录下，否则启动报错: Read-only file system，/data/目录是存放数据的目录
       - ~/opt/redis/master2/:/opt/redis/:z
+      - redismaster2data:/data/:z
     sysctls:
       # 消除警告: The TCP backlog setting of 511 cannot be enforced because /proc/sys/net/core/somaxconn is set to the lower value of 128.
       - net.core.somaxconn=2048
@@ -432,6 +436,7 @@ services:
     volumes:
       # 不要放在/data/目录下，否则启动报错: Read-only file system，/data/目录是存放数据的目录
       - ~/opt/redis/master3/:/opt/redis/:z
+      - redismaster3data:/data/:z
     sysctls:
       # 消除警告: The TCP backlog setting of 511 cannot be enforced because /proc/sys/net/core/somaxconn is set to the lower value of 128.
       - net.core.somaxconn=2048
@@ -454,6 +459,7 @@ services:
     volumes:
       # 不要放在/data/目录下，否则启动报错: Read-only file system，/data/目录是存放数据的目录
       - ~/opt/redis/slave1/:/opt/redis/:z
+      - redisslave1data:/data/:z
     command: redis-server /opt/redis/redis.conf
     deploy:
       endpoint_mode: dnsrr
@@ -473,6 +479,7 @@ services:
     volumes:
       # 不要放在/data/目录下，否则启动报错: Read-only file system，/data/目录是存放数据的目录
       - ~/opt/redis/slave2/:/opt/redis/:z
+      - redisslave2data:/data/:z
     command: redis-server /opt/redis/redis.conf
     deploy:
       endpoint_mode: dnsrr
@@ -492,6 +499,7 @@ services:
     volumes:
       # 不要放在/data/目录下，否则启动报错: Read-only file system，/data/目录是存放数据的目录
       - ~/opt/redis/slave3/:/opt/redis/:z
+      - redisslave3data:/data/:z
     command: redis-server /opt/redis/redis.conf
     deploy:
       endpoint_mode: dnsrr
@@ -502,6 +510,14 @@ services:
     logging:
       options:
         max-size: 8m
+
+volumes:
+  redismaster1data:
+  redismaster2data:
+  redismaster3data:
+  redisslave1data:
+  redisslave2data:
+  redisslave3data:
 
 networks:
   default:

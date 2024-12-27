@@ -16,7 +16,6 @@ vi ~/opt/mysql/stack.yml
 ```
 
 ```yml
-version: "3.9"
 services:
   mysql:
     image: mysql:5.7
@@ -35,8 +34,51 @@ services:
       --max_connections=5000
       --skip-name-resolve
     volumes:
-      - ~/opt/mysql/data:/var/lib/mysql
+      - mysqldata:/var/lib/mysql
     restart: always
+
+  mysql8:
+    image: mysql:8
+    container_name: mysql8
+    ports:
+      - "3386:3306"
+      - "33860:33060"
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - TZ=CST-8
+    command:
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_unicode_ci
+      --default-time-zone='+8:00'
+      --max_connections=5000
+      --skip-name-resolve
+    volumes:
+      - mysql8data:/var/lib/mysql
+    restart: always
+
+  mysql9:
+    image: mysql:9
+    container_name: mysql9
+    ports:
+      - "3396:3306"
+      - "33960:33060"
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - TZ=CST-8
+    command:
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_unicode_ci
+      --default-time-zone='+8:00'
+      --max_connections=5000
+      --skip-name-resolve
+    volumes:
+      - mysql9data:/var/lib/mysql
+    restart: always
+
+volumes:
+  mysqldata:
+  mysql8data:
+  mysql9data:
 ```
 
 - MYSQL_ROOT_PASSWORD: 初始化root账户访问的密码
