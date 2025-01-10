@@ -36,10 +36,10 @@ tar zxvf frp_0.48.1_linux_amd64.tar.gz
 
 == 部署服务器
 === 上传
-将解压后的以 `frps` 开头的系列文件上传到具有公网 IP 的机器上，建议放置到 `/usr/local/frp/` 目录中
+将解压后的以 `frps` 开头的系列文件上传到具有公网 IP 的机器上，建议放置到 `~/opt/frp/` 目录中
 
 === 配置
-./usr/local/frp/frps.yml
+.~/opt/frp/frps.yml
 [source,yml]
 ----
 auth:
@@ -61,10 +61,10 @@ quicBindPort: 40070
 transport:
   tls:
     # 服务端检验签名是否正确的CA证书(为减少麻烦且适合使用场景，由服务端统一生成)
-    trustedCaFile: /usr/local/frp/ca.crt
+    trustedCaFile: ~/opt/frp/ca.crt
     # 服务端发送数据签名使用的密钥(为减少麻烦且适合使用场景，由服务端统一生成)
-    certFile: /usr/local/frp/server.crt
-    keyFile: /usr/local/frp/server.key
+    certFile: ~/opt/frp/server.crt
+    keyFile: ~/opt/frp/server.key
 
 # 服务端管理界面
 # 默认为 127.0.0.1，如果需要公网访问，需要修改为 0.0.0.0。
@@ -76,8 +76,8 @@ webServer:
   password: xxxxxxxx
   # 通过配置 TLS 证书来启用 HTTPS
   tls:
-    certFile: /usr/local/frp/server.crt
-    keyFile: /usr/local/frp/server.key
+    certFile: ~/opt/frp/server.crt
+    keyFile: ~/opt/frp/server.key
 ----
 
 === 运行
@@ -91,7 +91,7 @@ webServer:
 [,shell]
 ----
 mkdir -p /var/log/frp
-nohup /usr/local/frp/frps -c /usr/local/frp/frps.yml > /usr/local/frp/frps.log 2>&1 &
+nohup ~/opt/frp/frps -c ~/opt/frp/frps.yml > /var/log/frp/frps.log 2>&1 &
 ----
 
 ==== systemd方式
@@ -107,7 +107,7 @@ Wants = network.target
 [Service]
 Type = simple
 # 启动frps的命令，需修改为您的frps的安装路径
-ExecStart = /usr/local/frp/frps -c /usr/local/frp/frps.yml
+ExecStart = ~/opt/frp/frps -c ~/opt/frp/frps.yml
 
 [Install]
 WantedBy = multi-user.target
@@ -141,13 +141,13 @@ files = supervisord.d/*.ini
 [,ini]
 ----
 [program:frps]
-directory = /usr/local/frp/
-command = /usr/local/frp/frps -c /usr/local/frp/frps.yml
+directory = ~/opt/frp/
+command = ~/opt/frp/frps -c ~/opt/frp/frps.yml
 autostart = true
 startsecs = 10
 autorestart = true
 startretries = 100000
-stdout_logfile = /usr/local/frp/frps.log
+stdout_logfile = /var/log/frp/frps.log
 ----
 
 * supervisord 服务管理
@@ -180,10 +180,10 @@ supervisorctl reload
 
 == 部署客户端
 === 上传
-将解压后的以 `frpc` 开头的系列文件上传到内网服务所在的机器上，建议放置到 `/usr/local/frp/` 目录中
+将解压后的以 `frpc` 开头的系列文件上传到内网服务所在的机器上，建议放置到 `~/opt/frp/` 目录中
 
 === 配置
-./usr/local/frp/frpc.yml
+.~/opt/frp/frpc.yml
 [source,yml]
 ----
 auth:
@@ -205,10 +205,10 @@ transport:
   # protocol: "quic"
   tls:
     # 客户端校验签名是否正确信任(为减少麻烦且适合使用场景，由服务端统一生成)
-    trustedCaFile: /usr/local/frp/ca.crt
+    trustedCaFile: ~/opt/frp/ca.crt
     # 客户端发送数据签名使用的密钥(为减少麻烦且适合使用场景，由服务端统一生成)
-    certFile: /usr/local/frp/client.crt
-    keyFile: /usr/local/frp/client.key
+    certFile: ~/opt/frp/client.crt
+    keyFile: ~/opt/frp/client.key
 
 # 客户端管理界面
 webServer:
@@ -218,8 +218,8 @@ webServer:
   password: xxxxxxxx
   # 通过配置 TLS 证书来启用 HTTPS
   tls:
-    certFile: /usr/local/frp/client.crt
-    keyFile: /usr/local/frp/client.key
+    certFile: ~/opt/frp/client.crt
+    keyFile: ~/opt/frp/client.key
 
 proxies:
   # 将客户端ssh暴露到外网
@@ -260,7 +260,7 @@ proxies:
 [,shell]
 ----
 mkdir -p /var/log/frp
-nohup /usr/local/frp/frpc -c /usr/local/frp/frpc.yml > /usr/local/frp/frpc.log 2>&1 &
+nohup ~/opt/frp/frpc -c ~/opt/frp/frpc.yml > /var/log/frp/frpc.log 2>&1 &
 ----
 
 ==== systemd方式
@@ -276,7 +276,7 @@ Wants = network.target
 [Service]
 Type = simple
 # 启动frpc的命令，需修改为您的frpc的安装路径
-ExecStart = /usr/local/frp/frpc -c /usr/local/frp/frpc.yml
+ExecStart = ~/opt/frp/frpc -c ~/opt/frp/frpc.yml
 
 [Install]
 WantedBy = multi-user.target
@@ -328,12 +328,12 @@ files = /usr/local/etc/supervisor.d/*.ini
 ----
 [program:frpc]
 directory = /root/
-command = /usr/local/frp/frpc -c /usr/local/frp/frpc.yml
+command = ~/opt/frp/frpc -c ~/opt/frp/frpc.yml
 autostart = true
 startsecs = 10
 autorestart = true
 startretries = 100000
-stdout_logfile = /usr/local/frp/frpc.log
+stdout_logfile = /var/log/frp/frpc.log
 ----
 
 . supervisord 服务管理
@@ -401,7 +401,7 @@ ssh -oPort=40170 root@x.x.x.x
 ==== 准备默认 OpenSSL 配置文件于当前目录
 [shell,bash]
 ----
-cd /usr/local/frp/
+cd ~/opt/frp/
 cp /etc/pki/tls/openssl.cnf ./my-openssl.cnf
 ----
 如果不存在可以使用下面的命令来创建

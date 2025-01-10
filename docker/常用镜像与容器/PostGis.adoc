@@ -12,23 +12,22 @@ vi ~/opt/pgsql/stack.yml
 ----
 services:
   pgsql:
-    image: postgis/postgis:16-3.4-alpine
+    image: postgis/postgis:17-3.5-alpine
     container_name: pgsql
     ports:
       - "5432:5432"
     environment:
-      - POSTGRES_USER=postgis
-      - POSTGRES_PASSWORD=postgis
-      - POSTGRES_DBNAME=postgis
+      - POSTGRES_PASSWORD=postgres
     volumes:
-      - pgsql00data:/var/lib/pgsql/data
-      - postgis00data:/var/lib/postgis/data
+      - pgsqldata:/var/lib/postgresql/data
     restart: always
+volumes:
+  pgsqldata:
 ----
 
 [source,shell]
 ----
-docker compose -f ~/opt/postgis/stack.yml up -d
+docker compose -f ~/opt/pgsql/stack.yml up -d
 ----
 
 == Swarm
@@ -44,17 +43,14 @@ vi ~/opt/pgsql/stack.yml
 ----
 services:
   pgsql00:
-    image: postgis/postgis:16-3.4-alpine
+    image: postgis/postgis:17-3.5-alpine
     container_name: pgsql
-    // ports:
-    //   - "5432:5432"
+    # ports:
+    #   - "5432:5432"
     environment:
-      - POSTGRES_USER=postgis
-      - POSTGRES_PASSWORD=postgis
-      - POSTGRES_DBNAME=postgis
+      - POSTGRES_PASSWORD=postgres
     volumes:
-      - pgsql00data:/var/lib/pgsql/data
-      - postgis00data:/var/lib/postgis/data
+      - pgsqldata:/var/lib/postgresql/data
     # deploy:
     #   placement:
     #     constraints:
@@ -64,8 +60,7 @@ services:
       options:
         max-size: 8m
 volumes:
-  pgsql00data:
-  postgis00data:
+  pgsqldata:
 
 networks:
   default:
@@ -83,13 +78,13 @@ docker stack deploy -c ~/opt/pgsql/stack.yml pgsql
 +
 [source,shell]
 ----
-docker exec -it postgis bash
+docker exec -it pgsql bash
 ----
 . 进入postgis的shell
 +
 [source,shell]
 ----
-psql -Upostgis
+psql -Upostgres
 ----
 . 启用插件
 [source,shell]

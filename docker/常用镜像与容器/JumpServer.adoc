@@ -1,0 +1,121 @@
+= JumpServer
+
+[TOC]
+
+== 单机(未测试)
+----
+mkdir -p ~/opt/jumpserver/
+----
+
+----
+docker run --name jms_all -d \
+  -v /opt/jumpserver/core/data:/opt/jumpserver/data \
+  -v /opt/jumpserver/koko/data:/opt/koko/data \
+  -v /opt/jumpserver/lion/data:/opt/lion/data \
+  -p 80:80 \
+  -p 2222:2222 \
+  -p 30000-30100:30000-30100 \
+  -e SECRET_KEY=xxxxxx \
+  -e BOOTSTRAP_TOKEN=xxxxxx \
+  -e LOG_LEVEL=ERROR \
+  -e DB_HOST=192.168.x.x \
+  -e DB_PORT=3306 \
+  -e DB_USER=jumpserver \
+  -e DB_PASSWORD=weakPassword \
+  -e DB_NAME=jumpserver \
+  -e REDIS_HOST=192.168.x.x \
+  -e REDIS_PORT=6379 \
+  -e REDIS_PASSWORD=weakPassword \
+  --privileged=true \
+  -v /opt/jumpserver/core/data:/opt/jumpserver/data \
+  -v /opt/jumpserver/koko/data:/opt/koko/data \
+  -v /opt/jumpserver/lion/data:/opt/lion/data \
+  -v /opt/jumpserver/kael/data:/opt/kael/data \
+  -v /opt/jumpserver/chen/data:/opt/chen/data \
+  -v /opt/jumpserver/web/log:/var/log/nginx \
+  jumpserver/jms_all:latest
+----
+
+== swarm
+----
+mkdir -p ~/opt/jumpserver/
+vi ~/opt/jumpserver/stack.yml
+----
+
+.~/opt/jumpserver/stack.yml
+[sorce,yaml]
+----
+services:
+  all:
+    image: jumpserver/jms_all:latest
+    environment:
+      # 域名
+      - DOMAINS=www.xxx.com:80
+      # 自行生成随机的字符串, 不要包含特殊字符串, 长度推荐大于等于 50
+      - SECRET_KEY=xxxxxxxx
+      # 自行生成随机的字符串, 不要包含特殊字符串, 长度推荐大于等于 24
+      - BOOTSTRAP_TOKEN=xxxxxxxx
+      # 日志等级, 测试环境推荐设置为 DEBUG
+      - LOG_LEVEL=INFO
+      # 使用 MySQL 数据库
+      - DB_ENGINE=mysql
+      # MySQL 数据库 IP 地址
+      - DB_HOST=mysql_host
+      # MySQL 数据库端口
+      - DB_PORT=3306
+      # MySQL 数据库用户名
+      - DB_USER=jumpserver
+      # MySQL 数据库密码
+      - DB_PASSWORD=xxxxxxxx
+      # MySQL 数据库名称
+      - DB_NAME=jumpserver
+      # 使用 Redis 作为缓存，服务器 IP 地址
+      - REDIS_HOST=redis_host
+      # Redis 端口
+      - REDIS_PORT=6379
+      # Redis 密码
+      - REDIS_PASSWORD=xxxxxxxx
+    volumes:
+      # Core 持久化目录, 存储录像日志
+      - jms_core_data:/opt/jumpserver/data
+      # Koko 持久化目录
+      - jms_koko_data:/opt/koko/data
+      # Lion 持久化目录
+      - jms_lion_data:/opt/lion/data
+      # Kael 持久化目录
+      - jms_kael_data:/opt/kael/data
+      # Chen 持久化目录
+      - jms_chen_data:/opt/chen/data
+      # Nginx 日志持久化目录
+      - jms_nginx:/var/log/nginx
+    deploy:
+      placement:
+        constraints:
+          # 部署的节点指定是gateway角色的
+          - node.labels.role==gateway
+    logging:
+      options:
+        max-size: 8m
+
+volumes:
+  jms_core_data:
+  jms_koko_data:
+  jms_lion_data:
+  jms_kael_data:
+  jms_chen_data:
+  jms_nginx:
+
+networks:
+  default:
+    external: true
+    name: rebue
+----
+
+- 部署
+
+[source,shell]
+----
+docker stack deploy -c ~/opt/jumpserver/stack.yml jms
+----
+
+
