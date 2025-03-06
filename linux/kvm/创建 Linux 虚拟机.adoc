@@ -1,0 +1,12 @@
+= 创建 Linux 虚拟机
+
+== 创建 Debian 虚拟机
+[source,bash]
+----
+virt-install --name=Debian12 --memory=2048,maxmemory=4096 \
+--vcpus=2,maxvcpus=4 --os-type=linux --os-variant=debian10 \
+--location=/home/data/debian-12.9.0-amd64-DVD-1.iso \
+--disk path=/kvm-data/images/Debian12.img,size=50 --bridge=br1 \
+--graphics=none --console=pty,target_type=serial \
+--extra-args="console=tty0 console=ttyS0"
+----
