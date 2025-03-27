@@ -58,6 +58,12 @@ python3 --version
 pip3 --version
 ```
 
+### 通过 anaconda 安装
+ 下载地址:
+```sh
+https://repo.anaconda.com/archive/Anaconda3-2024.10-1-Linux-x86_64.sh
+```sh
+
 ## 2. 安装pip
 
 ### 2.1. deepin
@@ -95,7 +101,7 @@ yum install python3-pip
 ## 4. Python程序后台执行
 
 ```sh
-nohup python -u myscript.py params1 > nohup.out 2>&1 & 
+nohup python -u myscript.py params1 > nohup.out 2>&1 &
 ```
 
 使用-u参数，使得python不启用缓冲，这样就可以同步看到输出结果。

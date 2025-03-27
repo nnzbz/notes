@@ -1,0 +1,38 @@
+= YOLO
+
+[TOC]
+
+== 单机(未测试)
+----
+mkdir -p ~/opt/yolo/
+----
+
+.~/opt/yolo/stack.yml
+[source,yaml,%linenums]
+----
+services:
+  yolo:
+    image: ultralytics/ultralytics:latest
+    container_name: yolo  # 可选，便于管理
+    stdin_open: true  # 对应 -i
+    tty: true         # 对应 -t
+    ipc: host         # 共享主机 IPC 命名空间[1,6](@ref)
+    volumes:
+      - ~/workspace/vision/yolo/:/root/workspace/vision/yolo/  # 映射代码目录
+      - ~/workspace/vision/ultralytics/runs/:/ultralytics/runs/  # 映射输出目录
+    deploy:  # GPU 配置[6](@ref)
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all  # 使用所有 GPU
+              capabilities: [gpu]
+    restart: always
+----
+
+* 部署
+
+[source,shell]
+----
+docker compose -f ~/opt/yolo/stack.yml up -d
+----

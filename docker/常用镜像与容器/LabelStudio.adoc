@@ -1,0 +1,32 @@
+= LabelStudio
+
+[TOC]
+
+== 单机(未测试)
+----
+mkdir -p ~/opt/label-studio/
+----
+
+.~/opt/label-studio/stack.yml
+[source,yaml,%linenums]
+----
+services:
+  label-studio:
+    image: heartexlabs/label-studio:latest
+    container_name: label-studio
+    ports:
+      - 8080:8080
+    volumes:
+      - data:/label-studio/data
+    restart: always
+
+volumes:
+  data:
+----
+
+* 部署
+
+[source,shell]
+----
+docker compose -f ~/opt/label-studio/stack.yml up -d
+----

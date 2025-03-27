@@ -1,0 +1,8 @@
+= ffmpeg 常用命令
+
+== 从视频批量提取图片
+[source,bash]
+----
+# 每 25 帧提取 1 张图片
+ffmpeg -i input.mp4 -vf "select=not(mod(n\,25))" -vsync vfr frame_%03d.jpg
+----

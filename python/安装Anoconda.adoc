@@ -1,0 +1,29 @@
+= 安装Anoconda
+== 下载地址
+https://www.anaconda.com/download/success
+
+== 安装步骤
+- Linux:
+[source,bash]
+----
+# 下载
+wget https://repo.anaconda.com/archive/Anaconda3-2024.10-1-Linux-x86_64.sh
+# 设置可执行
+chmod +x Anaconda3-2024.10-1-Linux-x86_64.sh
+# 执行
+./Anaconda3-2024.10-1-Linux-x86_64.sh
+# 注意后面问是否要初始化的时候要输入 yes 而不是默认的 no
+----
+
+== 建立虚拟环境
+[source,bash]
+----
+# 创建虚拟环境且python 版本为3.8
+conda create --name myenv python=3.8
+# 激活虚拟环境
+conda activate myenv
+# 退出虚拟环境
+conda deactivate
+# 删除虚拟环境
+conda remove -n myenv --all
+----
