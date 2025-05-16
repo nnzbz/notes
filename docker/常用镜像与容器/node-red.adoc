@@ -1,5 +1,35 @@
 = node-red
 
+== 单机
+----
+mkdir -p ~/opt/nodered/
+----
+
+.~/opt/nodered/stack.yml
+[source,yaml,%linenums]
+----
+services:
+  nodered:
+    image: nodered/node-red:4.0
+    container_name: nodered
+    ports:
+      - 1880:1880
+    environment:
+      - NPM_CONFIG_REGISTRY=https://registry.npmmirror.com
+    volumes:
+      - data:/data
+    restart: always
+volumes:
+  data:
+----
+
+* 部署
+
+[source,shell]
+----
+docker compose -f ~/opt/nodered/stack.yml up -d
+----
+
 == Swarm
 
 [source,sh]
@@ -10,14 +40,15 @@ mkdir -p /usr/local/nodered/data
 ./usr/local/nodered/stack.yml
 [source,yaml]
 ----
-version: "3.9"
 services:
   svr:
-    image: nodered/node-red:3.1
+    image: nodered/node-red:4.0
     # ports:
     #   - 1880:1880
+    environment:
+      - NPM_CONFIG_REGISTRY=https://registry.npmmirror.com
     volumes:
-      - /usr/local/nodered/data:/data
+      - data:/data
     deploy:
       placement:
         constraints:
@@ -26,6 +57,9 @@ services:
     logging:
       options:
         max-size: 8m
+
+volumes:
+  data:
 
 networks:
   default:

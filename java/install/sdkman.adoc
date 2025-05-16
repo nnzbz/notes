@@ -1,0 +1,37 @@
+= sdkman
+
+== 列表
+[source,bash]
+----
+sdk list java
+----
+== 当前
+[source,bash]
+----
+sdk current java
+----
+== 详情
+[source,bash]
+----
+sdk info java 21.0.1-tem
+----
+== 搜索
+[source,bash]
+----
+sdk search java 21.0.1-tem
+----
+== 安装
+[source,bash]
+----
+sdk install java 21.0.1-tem
+----
+== 切换
+[source,bash]
+----
+sdk use java 21.0.1-tem
+----
+== 卸载
+[source,bash]
+----
+sdk uninstall java 21.0.1-tem
+----
