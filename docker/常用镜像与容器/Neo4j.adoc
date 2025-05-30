@@ -1,0 +1,90 @@
+= Neo4j
+:scripts: cjk
+:toc:
+:toc-title: 目录
+:toclevels: 4
+
+== 单机
+[,shell]
+----
+mkdir ~/opt/neo4j
+----
+
+.~/opt/neo4j/stack.yml
+[source,yaml,%linenums]
+----
+services:
+  neo4j:
+    image: neo4j
+    hostname: neo4j
+    container_name: neo4j
+    ports:
+      # http
+      - 7474:7474
+      # https
+      - 7473:7473
+      # bolt
+      - 7687:7687
+    volumes:
+      - data:/data
+    logging:
+      options:
+        max-size: 8m
+    restart: always
+volumes:
+  data:
+----
+
+- 部署
+
+[,shell]
+----
+docker compose -f ~/opt/neo4j/stack.yml up -d
+----
+
+== Swarm
+[,shell]
+----
+mkdir /usr/local/neo4j
+----
+
+.~/opt/neo4j/stack.yml
+[source,yaml,%linenums]
+----
+services:
+  svr:
+    image: neo4j
+    hostname: neo4j
+    ports:
+      # http
+      - 7474:7474
+      # https
+      - 7473:7473
+      # bolt
+      - 7687:7687
+    volumes:
+      - data:/data
+    deploy:
+      placement:
+        constraints:
+          # 部署的节点指定是neo4j角色的
+          - node.labels.role==neo4j
+    logging:
+      options:
+        max-size: 8m
+    restart: always
+volumes:
+  data:
+
+networks:
+  default:
+    external: true
+    name: rebue
+----
+
+- 部署
+
+[,shell]
+----
+docker stack deploy -c ~/opt/neo4j/stack.yml neo4j
+----

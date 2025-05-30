@@ -13,25 +13,30 @@ sdk current java
 == 详情
 [source,bash]
 ----
-sdk info java 21.0.1-tem
+sdk info java 21.0.7-tem
 ----
 == 搜索
 [source,bash]
 ----
-sdk search java 21.0.1-tem
+sdk search java 21.0.7-tem
 ----
 == 安装
 [source,bash]
 ----
-sdk install java 21.0.1-tem
+sdk install java 21.0.7-tem
 ----
-== 切换
+== 临时切换
 [source,bash]
 ----
-sdk use java 21.0.1-tem
+sdk use java 21.0.7-tem
+----
+== 全局切换
+[source,bash]
+----
+sdk default java 21.0.7-tem
 ----
 == 卸载
 [source,bash]
 ----
-sdk uninstall java 21.0.1-tem
+sdk uninstall java 21.0.7-tem
 ----

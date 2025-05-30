@@ -188,7 +188,7 @@ supervisorctl reload
 ----
 auth:
   # 客户端连接服务器需要用到的令牌
-  token: AHiJDS2Q5hmO2G4XkTIl3khjuDPls6lVbVoU9n2lYDE4VIcsVs0P2bzErBKMcWrs
+  token: xxxxxxxx
 
 # 客户端访问服务器的地址
 serverAddr: <服务端外网地址>
