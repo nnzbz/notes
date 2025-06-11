@@ -127,3 +127,9 @@ sudo spctl --master-disable
 如果打开应用一闪就退出了，这时候就需要考虑是不是SIP没有关闭的原因了，大家可以参照这篇文章来处理：
 
 [关闭SIP](https://www.macwk.com/article/sipmac)
+
+2. 如何拯救打不开的应用
+
+   碰到打开 App 报错: `"xxx can't be opened"`，可心在终端执行 `xattr -rc /Application/xxx.app`。
+
+   如果还不行，可以试一下对软件重新签名: `codesign --force --deep --sign - /Applications/xxx.app`

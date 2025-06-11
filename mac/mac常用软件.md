@@ -38,7 +38,7 @@ Seagate Paragon Driver（希捷移动硬盘驱动）
 
 ## 6. Xnip
 
-截图、滚动截图、添加注释
+截图、滚动截图、添加注释
 
 ## 7. Unarchiver
 
@@ -87,3 +87,13 @@ brew install mvndaemon/homebrew-mvnd/mvnd
 设置鼠标和触摸板滚轮的方向相反
 
 <https://pilotmoon.com/scrollreverser/>
+
+## 14. Typora
+
+**一个仅仅需要修改官方配置文件的方法，非破解版**
+
+1. 去官网下载<https://typoraio.cn/>官方软件
+2. command+space，输入 `/Applications/Typora.app/Contents/Resources/TypeMark/` 并打开文件夹
+3. 编辑 `/Applications/Typora.app/Contents/Resources/TypeMark/page-dist/static/js/Licenselndex.*.chunk.js` 文件
+4. 全文搜索 `e.hasActivated` 找到 `hasActivated="true"==e.hasActivated`
+6. 将后面的 `e.hasActivated` 修改为 `"true"`
