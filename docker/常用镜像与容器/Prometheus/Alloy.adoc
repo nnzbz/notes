@@ -1,0 +1,93 @@
+= Alloy
+:scripts: cjk
+:toc: left
+:toclevels: 3
+:toc-title: 目录
+:numbered:
+:sectnums:
+:sectnum-depth: 3
+
+== Swarm
+[,shell]
+----
+mkdir -p ~/opt/alloy
+----
+
+.~/opt/alloy/config.alloy
+[source,alloy,%linenums]
+----
+logging {
+  level  = "debug"  // 默认是info
+}
+
+// 匹配本地日志文件
+local.file_match "default" {
+  path_targets = [{"__path__" = "/var/log/**/current.log"}]
+  sync_period = "3s"    // 扫描文件间隔为3秒，默认10秒
+}
+// 抓取日志
+loki.source.file "default" {
+  targets    = local.file_match.default.targets
+  forward_to = [loki.write.default.receiver]
+  tail_from_end = true // 从文件尾开始提取
+}
+// 将日志写入到Loki
+loki.write "default" {
+  endpoint {
+    url = "http://loki:3100/loki/api/v1/push"
+
+    // basic_auth {
+    //  username = "admin"
+    //  password = "admin"
+    // }
+  }
+}
+----
+
+.~/opt/alloy/stack.yml
+[source,yaml,%linenums]
+----
+services:
+  agent:
+    image: docker.io/grafana/alloy:latest
+#    hostname: alloy
+#    ports:
+#      - "12345:12345"
+    volumes:
+      # 配置文件
+      - ~/opt/alloy/config.alloy:/etc/alloy/config.alloy:z
+      # 映射系统日志文件目录
+      - /var/log/:/var/log/:z
+      # 数据存储目录
+      - data:/var/lib/alloy/data
+#    # 监听12345端口可以调试采集数据的情况
+#    command: run --server.http.listen-addr=0.0.0.0:12345 --storage.path=/var/lib/alloy/data /etc/alloy/config.alloy
+    command: run --storage.path=/var/lib/alloy/data /etc/alloy/config.alloy
+    deploy:
+      mode: global
+      placement:
+        constraints:
+          - node.hostname!=prometheus
+          - node.labels.role!=es
+          - node.labels.role!=redis
+          - node.labels.role!=kafka
+          - node.labels.role!=rabbitmq
+    logging:
+      options:
+        max-size: 8m
+
+volumes:
+  data:
+
+networks:
+  default:
+    external: true
+    name: rebue
+----
+
+- 部署
+
+[,shell]
+----
+docker stack deploy -c ~/opt/alloy/stack.yml alloy
+----

@@ -1,5 +1,5 @@
 = curl发送POST请求
-:toc:
+:toc: left
 :toc-title: 目录
 
 == 格式

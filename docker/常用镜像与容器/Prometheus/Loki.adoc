@@ -1,0 +1,98 @@
+= Loki
+:scripts: cjk
+:toc: left
+:toclevels: 3
+:toc-title: 目录
+:numbered:
+:sectnums:
+:sectnum-depth: 3
+
+== Swarm
+[,shell]
+----
+mkdir -p ~/opt/loki
+----
+
+.~/opt/loki/config.yml
+[source,ini,%linenums]
+----
+auth_enabled: false
+
+server:
+  http_listen_port: 3100
+
+common:
+  instance_addr: 127.0.0.1
+  path_prefix: /loki
+  storage:
+    filesystem:
+      chunks_directory: /loki/chunks
+      rules_directory: /loki/rules
+  replication_factor: 1
+  ring:
+    kvstore:
+      store: inmemory
+
+schema_config:
+  configs:
+    - from: 2020-10-24
+      store: tsdb
+      object_store: filesystem
+      schema: v13
+      index:
+        prefix: index_
+        period: 24h
+
+ruler:
+  alertmanager_url: http://alertmanager:9093
+
+# By default, Loki will send anonymous, but uniquely-identifiable usage and configuration
+# analytics to Grafana Labs. These statistics are sent to https://stats.grafana.org/
+#
+# Statistics help us better understand how Loki is used, and they show us performance
+# levels for most users. This helps us prioritize features and documentation.
+# For more information on what's sent, look at
+# https://github.com/grafana/loki/blob/main/pkg/usagestats/stats.go
+# Refer to the buildReport method to see what goes into a report.
+#
+# If you would like to disable reporting, uncomment the following lines:
+#analytics:
+#  reporting_enabled: false
+----
+
+.~/opt/loki/stack.yml
+[source,yaml,%linenums]
+----
+services:
+  svr:
+    image: grafana/loki:latest
+    hostname: loki
+#    ports:
+#      - "3100:3100"
+    volumes:
+      - ~/opt/loki/config.yml:/etc/loki/local-config.yaml:z
+      - data:/loki
+    command: -config.file=/etc/loki/local-config.yaml
+    deploy:
+      placement:
+        constraints:
+          - node.hostname==prometheus
+    logging:
+      options:
+        max-size: 8m
+
+volumes:
+  data:
+
+networks:
+  default:
+    external: true
+    name: rebue
+----
+
+- 部署
+
+[,shell]
+----
+docker stack deploy -c ~/opt/loki/stack.yml loki
+----

@@ -1,7 +1,7 @@
 = ArcGis中引用天地图做底图
 :sectnums:
 :scripts: cjk
-:toc:
+:toc: left
 :toc-title: 目录
 :toclevels: 2
 :doctype: book

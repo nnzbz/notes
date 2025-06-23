@@ -1,5 +1,5 @@
 = curl上传文件
-:toc:
+:toc: left
 :toc-title: 目录
 
 == 示例

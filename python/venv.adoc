@@ -2,13 +2,13 @@
 == 创建虚拟环境
 [source,bash]
 ----
-python3 -m venv myenv
+python3 -m venv venv
 ----
 
 == 激活虚拟环境
 [source,bash]
 ----
-source myenv/bin/activate
+source venv/bin/activate
 ----
 
 == 退出虚拟环境

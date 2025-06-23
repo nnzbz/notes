@@ -1,6 +1,6 @@
 = 让iTerm支持zmodem
 :scripts: cjk
-:toc:
+:toc: left
 :toc-title: 目录
 :toclevels: 4
 

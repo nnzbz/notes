@@ -1,6 +1,6 @@
 = Neo4j
 :scripts: cjk
-:toc:
+:toc: left
 :toc-title: 目录
 :toclevels: 4
 
@@ -21,16 +21,26 @@ services:
     ports:
       # http
       - 7474:7474
+      # https
+      - 7473:7473
       # bolt
       - 7687:7687
+    environment:
+      - NEO4J_AUTH=neo4j/neo4j12345
+      - NEO4J_apoc_export_file_enabled=true
+      - NEO4J_apoc_import_file_enabled=true
+      - NEO4J_apoc_import_file_use__neo4j__config=true
+      - NEO4J_PLUGINS=["apoc"]
     volumes:
       - data:/data
+      - plugins_data:/plugins
     logging:
       options:
         max-size: 8m
-    restart: always
+    restart: unless-stopped
 volumes:
   data:
+  plugins_data:
 ----
 
 - 部署

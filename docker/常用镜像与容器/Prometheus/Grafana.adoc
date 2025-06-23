@@ -1,0 +1,71 @@
+= Grafana
+:scripts: cjk
+:toc: left
+:toclevels: 3
+:toc-title: 目录
+:numbered:
+:sectnums:
+:sectnum-depth: 3
+
+== Swarm
+[,shell]
+----
+mkdir -p ~/opt/grafana
+----
+
+.~/opt/grafana/config.ini
+[source,ini,%linenums]
+----
+[users]
+default_language = zh-Hans
+# 邮件配置(发送邮件需要)
+[smtp]
+# 启用SMTP
+enabled = true
+# SMTP服务器主机名及端口号
+host = smtp.qq.com:587
+# SMTP用户名
+user = xxxxxxx@qq.com
+# SMTP密码
+password = ********
+# 发送的电子邮件地址
+from_address = xxxxx@qq.com
+# 与 from_address 关联的名称
+from_name = 张三
+----
+
+.~/opt/grafana/stack.yml
+[source,yaml,%linenums]
+----
+services:
+  svr:
+    image: grafana/grafana-enterprise
+    hostname: grafana
+#    ports:
+#      - "3000:3000"
+    volumes:
+      - ~/opt/grafana/config.ini:/etc/grafana/grafana.ini:z
+      - data:/var/lib/grafana
+    deploy:
+      placement:
+        constraints:
+          - node.hostname==prometheus
+    logging:
+      options:
+        max-size: 8m
+
+volumes:
+  data:
+
+networks:
+  default:
+    external: true
+    name: rebue
+----
+
+- 部署
+
+[,shell]
+----
+docker stack deploy -c ~/opt/grafana/stack.yml grafana
+----

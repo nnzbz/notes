@@ -1,6 +1,6 @@
 = 磁盘常见操作
 :scripts: cjk
-:toc:
+:toc: left
 :toc-title: 目录
 :toclevels: 4
 :source-highlighter: pygments

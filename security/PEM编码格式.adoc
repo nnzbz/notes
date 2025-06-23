@@ -1,6 +1,6 @@
 = PEM编码格式
 :scripts: cjk
-:toc:
+:toc: left
 :toc-title: 目录
 :toclevels: 4
 

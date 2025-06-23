@@ -3,7 +3,7 @@ ElasticSearch/FileBeat/Kibana
 :sectnums:
 :chapter-signifier: 章节
 :scripts: cjk
-:toc:
+:toc: left
 :toc-title: 目录
 :toclevels: 3
 :doctype: book

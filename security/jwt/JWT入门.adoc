@@ -1,6 +1,6 @@
 = JWT入门
 :scripts: cjk
-:toc:
+:toc: left
 :toc-title: 目录
 :toclevels: 4
 

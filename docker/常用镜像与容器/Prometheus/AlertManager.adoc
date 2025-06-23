@@ -1,0 +1,44 @@
+= AlertManager
+:scripts: cjk
+:toc: left
+:toclevels: 3
+:toc-title: 目录
+:numbered:
+:sectnums:
+:sectnum-depth: 3
+
+== Swarm
+[,shell]
+----
+mkdir -p ~/opt/alertmanager
+----
+
+.~/opt/alertmanager/stack.yml
+[source,yaml,%linenums]
+----
+services:
+  svr:
+    image: prom/alertmanager
+    hostname: alertmanager
+#    ports:
+#      - "9093:9093"
+    deploy:
+      placement:
+        constraints:
+          - node.hostname==prometheus
+    logging:
+      options:
+        max-size: 8m
+
+networks:
+  default:
+    external: true
+    name: rebue
+----
+
+- 部署
+
+[,shell]
+----
+docker stack deploy -c ~/opt/alertmanager/stack.yml alertmanager
+----

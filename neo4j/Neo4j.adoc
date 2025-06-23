@@ -1,0 +1,18 @@
+= Neo4j
+:scripts: cjk
+:toc: left
+:toclevels: 3
+:toc-title: 目录
+:numbered:
+:sectnums:
+:sectnum-depth: 3
+:source-highlighter: coderay
+
+== 数据库
+=== 多数据库
+- Neo4j社区版不支持多数据库
+=== 列出所有数据库
+[source,cypher]
+----
+SHOW DATABASES
+----

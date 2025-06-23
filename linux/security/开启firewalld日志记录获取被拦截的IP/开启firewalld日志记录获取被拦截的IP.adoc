@@ -1,6 +1,6 @@
 = 开启firewalld日志记录获取被拦截的IP
 :scripts: cjk
-:toc:
+:toc: left
 :toc-title: 目录
 :toclevels: 4
 

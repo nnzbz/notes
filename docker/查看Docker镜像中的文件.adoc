@@ -1,6 +1,6 @@
 = 查看Docker镜像中的文件
 :scripts: cjk
-:toc:
+:toc: left
 :toc-title: 目录
 :toclevels: 4
 

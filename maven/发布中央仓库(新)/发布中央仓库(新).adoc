@@ -1,6 +1,6 @@
 = 发布中央仓库(新)
 :scripts: cjk
-:toc:
+:toc: left
 :toc-title: 目录
 :toclevels: 2
 :doctype: book

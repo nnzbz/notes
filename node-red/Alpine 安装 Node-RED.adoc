@@ -1,5 +1,5 @@
 = Alpine 安装 Node-RED
-:toc:
+:toc: left
 :toc-title: 目录
 :toclevels: 3
 :sectnums:

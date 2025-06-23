@@ -1,7 +1,7 @@
 = 管理消息
 :sectnums:
 :scripts: cjk
-:toc:
+:toc: left
 :toc-title: 目录
 :toclevels: 2
 :doctype: book

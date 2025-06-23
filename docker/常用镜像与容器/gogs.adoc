@@ -1,6 +1,6 @@
 = 在Docker中搭建gogs
 :scripts: cjk
-:toc:
+:toc: left
 :toc-title: 目录
 :toclevels: 4
 

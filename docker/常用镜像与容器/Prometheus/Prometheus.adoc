@@ -1,0 +1,87 @@
+= Prometheus
+:scripts: cjk
+:toc: left
+:toclevels: 3
+:toc-title: 目录
+:numbered:
+:sectnums:
+:sectnum-depth: 3
+
+== Swarm
+[,shell]
+----
+mkdir -p ~/opt/prometheus
+----
+
+.~/opt/prometheus/config.yml
+[source,yaml,%linenums]
+----
+# 全局配置
+global:
+  scrape_interval: 15s # 数据抓取间隔(默认是1分钟)
+  evaluation_interval: 15s # 告警规则评估间隔(默认是1分钟)
+  # scrape_timeout 数据抓取超时时间(默认是10秒)
+
+# Alertmanager的配置
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+          - alertmanager:9093   # Alertmanager 服务地址
+
+# 一次性加载规则，并根据全局的'evaluation_interval'定期评估
+rule_files:
+  # - "first_rules.yml"
+  # - "second_rules.yml"
+
+# 抓取配置(确切包含一个要抓取的端点)
+scrape_configs:
+  # 下面是Prometheus自己的抓取
+  # 此配置将以`job=<job_name>`标签添加到被抓取的任意时间序列
+  - job_name: "prometheus"
+
+    # metrics_path 默认到 '/metrics'
+    # scheme 默认到 'http'.
+
+    static_configs:
+      - targets: ["localhost:9090"]
+       # 此配置将以`label_name=<label_value>`标签添加到被抓取的任意时间序列
+        labels:
+          app: "prometheus"
+----
+
+.~/opt/prometheus/stack.yml
+[source,yaml,%linenums]
+----
+services:
+  svr:
+    image: prom/prometheus
+    hostname: prometheus
+#    ports:
+#      - "9090:9090"
+    volumes:
+      - ~/opt/prometheus/config.yml:/etc/prometheus/prometheus.yml
+      - data:/prometheus
+    deploy:
+      placement:
+        constraints:
+          - node.hostname==prometheus
+    logging:
+      options:
+        max-size: 8m
+
+volumes:
+  data:
+
+networks:
+  default:
+    external: true
+    name: rebue
+----
+
+- 部署
+
+[,shell]
+----
+docker stack deploy -c ~/opt/prometheus/stack.yml prometheus
+----

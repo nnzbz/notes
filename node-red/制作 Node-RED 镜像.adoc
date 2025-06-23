@@ -1,5 +1,5 @@
 = 制作 Node-RED 镜像
-:toc:
+:toc: left
 :toc-title: 目录
 :toclevels: 3
 :sectnums:

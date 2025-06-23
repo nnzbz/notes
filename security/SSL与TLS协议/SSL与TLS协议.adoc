@@ -1,6 +1,6 @@
 = SSL与TLS协议
 :scripts: cjk
-:toc:
+:toc: left
 :toc-title: 目录
 :toclevels: 4
 

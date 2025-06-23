@@ -1,5 +1,5 @@
 = 理解 docker 容器中的 uid 和 gid
-:toc:
+:toc: left
 :toc-title: 目录
 :toclevels: 3
 :sectnums:

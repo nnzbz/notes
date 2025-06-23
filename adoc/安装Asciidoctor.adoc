@@ -1,5 +1,5 @@
 = 安装Asciidoctor
-:toc:
+:toc: left
 :source-highlighter: highlightjs
 
 == 升级 Ruby
