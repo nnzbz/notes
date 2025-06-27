@@ -1,0 +1,39 @@
+= uv
+:scripts: cjk
+:toc: left
+:toclevels: 3
+:toc-title: 目录
+:numbered:
+:sectnums:
+:sectnum-depth: 3
+:source-highlighter: coderay
+
+== 简介
+一款基于 Rust 编写的 Python 包管理工具
+
+
+== 安装
+[source,bash]
+----
+curl -LsSf https://astral.sh/uv/install.sh | sh
+----
+
+== 创建及初始化项目
+[source,bash]
+----
+uv init <项目名称>
+----
+- 如果填写了项目名，会在当前目录下以项目名创建一个目录，并初始化项目
+- 如果没有填写项目名，会在当前目录名直接初始化项目
+
+== 添加依赖
+[source,bash]
+----
+uv add <dependency>
+----
+
+== 运行项目
+[source,bash]
+----
+uv run
+----
