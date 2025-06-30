@@ -1,0 +1,13 @@
+= 机器学习入门
+:scripts: cjk
+:toc: left
+:toclevels: 3
+:toc-title: 目录
+:numbered:
+:sectnums:
+:sectnum-depth: 3
+:source-highlighter: coderay
+
+== 人工智能、机器学习、深度学习之间的关系
+image::人工智能、机器学习、深度学习之间的关系.png[人工智能、机器学习、深度学习之间的关系]
+
