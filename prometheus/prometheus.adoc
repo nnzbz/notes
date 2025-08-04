@@ -1,0 +1,22 @@
+= prometheus
+:scripts: cjk
+:toc: left
+:toclevels: 3
+:toc-title: 目录
+:numbered:
+:sectnums:
+:sectnum-depth: 3
+:source-highlighter: coderay
+
+== Prometheus四种指标类型
+* Counter
+** 递增的计数器，比如请求数，错误数
+** Counter在每次观测时会增加它所代表的值（通常是一个整数），但不会减少或者重置
+* Gauge
+** 用于表示可变化的度量值，比如CPU利用率、内存用量、队列长度
+** 可以增加、减少或重置，代表着当前的状态
+* Histogram
+** 用于表示数据样本的分布情况，例如请求延迟等
+** 将数据按照桶（bucket）进行划分，并对每个桶内的样本计算出一些统计信息，如样本数量、总和、平均值等
+* Summary
+** 类似于Histogram，也用于表示数据样本的分布情况，但同时展示更多的统计信息，如样本数量、总和、平均值、上分位数、下分位数等。

@@ -141,8 +141,8 @@ files = supervisord.d/*.ini
 [,ini]
 ----
 [program:frps]
-directory = ~/opt/frp/
-command = ~/opt/frp/frps -c ~/opt/frp/frps.yml
+directory = /root/opt/frp/
+command = /root/opt/frp/frps -c /root/opt/frp/frps.yml
 autostart = true
 startsecs = 10
 autorestart = true
@@ -276,7 +276,7 @@ Wants = network.target
 [Service]
 Type = simple
 # 启动frpc的命令，需修改为您的frpc的安装路径
-ExecStart = ~/opt/frp/frpc -c ~/opt/frp/frpc.yml
+ExecStart = /root/opt/frp/frpc -c /root/opt/frp/frpc.yml
 
 [Install]
 WantedBy = multi-user.target
@@ -328,7 +328,7 @@ files = /usr/local/etc/supervisor.d/*.ini
 ----
 [program:frpc]
 directory = /root/
-command = ~/opt/frp/frpc -c ~/opt/frp/frpc.yml
+command = /root/opt/frp/frpc -c /root/opt/frp/frpc.yml
 autostart = true
 startsecs = 10
 autorestart = true
