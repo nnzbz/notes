@@ -2,10 +2,18 @@
 
 ## 1. 先用防火墙打开端口
 
+* CentOS
+
 ```sh
 firewall-cmd --permanent --zone=public --add-port=xxxxx/tcp
-
 firewall-cmd --reload
+```
+
+* Ubuntu
+
+```sh
+sudo ufw allow xxxxx/tcp
+sudo ufw reload
 ```
 
 ## 2. 修改SELinux
@@ -23,7 +31,7 @@ semanage port -l | grep ssh
 - 查看SELinux状态
 
 ```sh
-# 
+#
 /usr/sbin/sestatus -v      # 如果SELinux status参数为enabled即为开启状态
 SELinux status:                enabled
 ....
@@ -78,7 +86,17 @@ Port 22         # 这行去掉#号，防止配置不好以后不能远程登录�
 Port xxxxx      # xxxxx为要修改的端口号
 ```
 
+## 4. 重启ssh生效
+
+* CentOS
+
 ```sh
-# 重启ssh生效
 systemctl restart sshd
+```
+
+* Ubuntu
+
+```sh
+sudo systemctl daemon-reload
+sudo systemctl restart ssh.socket
 ```
