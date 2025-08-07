@@ -64,7 +64,7 @@ docker run -dp6379:6379 \
 
 ```sh
 mkdir -p ~/opt/redis/conf
-# 准备密码
+# 密码
 echo 'requirepass xxxxxxxx' >> ~/opt/redis/conf/redis.conf
 # 如果在arm架构服务器上，启动redis启动不起来，报下面的错
 # Redis will now exit to prevent data corruption. Note that it is possible to suppress this warning by setting the following config: ignore-warnings ARM64-COW-BUG
@@ -75,13 +75,13 @@ echo 'requirepass xxxxxxxx' >> ~/opt/redis/conf/redis.conf
 echo 'maxmemory 8gb' >> ~/opt/redis/conf/redis.conf
 echo 'maxmemory-policy volatile-lru' >> ~/opt/redis/conf/redis.conf
 
-vi ~/opt/redis/stack-standalone.yml
+vi ~/opt/redis/stack.yml
 ```
 
 ```yml{.line-numbers}
 services:
   svr:
-    image: redis:alpine
+    image: redis:8-alpine
     hostname: redis
     environment:
       # 最好使用此设定时区，其它镜像也可以使用
@@ -112,7 +112,7 @@ networks:
 - 部署
 
 ```sh
-docker stack deploy -c ~/opt/redis/stack-standalone.yml redis
+docker stack deploy -c ~/opt/redis/stack.yml redis
 ```
 
 ## 3. Swarm(一主多从多哨兵)
