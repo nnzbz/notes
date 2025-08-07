@@ -171,8 +171,8 @@ echo "xxxxxxxx" | docker secret create mysql_root_password -
 #### 2.4.2. 准备 `my.cnf` 文件
 
 ```sh
-mkdir -p ~/opt/mysql
-vi ~/opt/mysql/mysql-my.cnf
+mkdir -p ~/opt/mysql/config
+vi ~/opt/mysql/config/mysql-my.cnf
 ```
 
 ```ini
@@ -184,9 +184,24 @@ log-bin=mysql-bin
 # 每1次在事务提交前会将二进制日志同步到磁盘上，保证在服务器崩溃时不会丢失事件
 # 默认是0，为性能考虑，也可以改为100
 sync_binlog=1
+
+# 服务器默认字符集（推荐 utf8mb4）
+character-set-server = utf8mb4
+collation-server = utf8mb4_unicode_ci
+
+# 客户端连接时的默认字符集（影响服务器对客户端请求的解析）
+init_connect = 'SET NAMES utf8mb4'
+
+[client]
+# 客户端默认字符集
+default-character-set = utf8mb4
+
+[mysql]
+# MySQL 客户端工具的默认字符集
+default-character-set = utf8mb4
 ```
 
-#### 2.4.3. `Docker Compose`
+#### 2.4.3. 准备部署文件
 
 ```sh
 vi ~/opt/mysql/stack.yml
@@ -194,10 +209,8 @@ vi ~/opt/mysql/stack.yml
 
 ```yaml{.line-numbers}
 services:
-  mysql:
-    image: mysql:5.7
-    # 注意: 如果是arm架构服务器，请用下面这个镜像
-    # image: biarms/mysql:5
+  svr:
+    image: mysql:9.4
     hostname: mysql
     ports:
       - 3306:3306
@@ -214,15 +227,12 @@ services:
     # max_connections设置最大连接数，默认151太小
     # skip-name-resolve为了加快连接速度，禁用反向域名解析，这样授权表中的host字段就不能用IP
     command: --default-time-zone='+8:00'
-            --character-set-client-handshake=FALSE
-            --character-set-server=utf8mb4
-            --collation-server=utf8mb4_general_ci
             --max_connections=5000
             --skip-name-resolve
     # deploy:
     #   placement:
     #     constraints:
-    #       #该hostname为指定容器在哪个主机启动
+    #       # hostname指定容器在哪个主机启动
     #       - node.hostname == db1
     logging:
       options:
