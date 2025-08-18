@@ -42,9 +42,9 @@ vi ~/opt/pgsql/stack.yml
 [source,yaml]
 ----
 services:
-  pgsql00:
+  svr:
     image: postgis/postgis:17-3.5-alpine
-    container_name: pgsql
+    hostname: pgsql
     # ports:
     #   - "5432:5432"
     environment:

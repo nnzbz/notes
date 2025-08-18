@@ -10,7 +10,7 @@ mkdir -p ~/opt/kafka
 ----
 services:
   kafka:
-    image: apache/kafka:3.9.0
+    image: apache/kafka:3.9.1
     hostname: kafka
     container_name: kafka
     ports:
@@ -50,7 +50,7 @@ mkdir -p ~/opt/kafka
 ----
 services:
   broker:
-    image: apache/kafka:3.9.0
+    image: apache/kafka:3.9.1
     hostname: kafka
     environment:
       KAFKA_NODE_ID: 1
@@ -94,7 +94,7 @@ mkdir ~/opt/kafka
 ----
 services:
   controller-1:
-    image: apache/kafka:3.9.0
+    image: apache/kafka:3.9.1
     hostname: kafka-controller-1
     environment:
       KAFKA_NODE_ID: 1
@@ -114,7 +114,7 @@ services:
           - node.hostname==kafka01
 
   controller-2:
-    image: apache/kafka:3.9.0
+    image: apache/kafka:3.9.1
     hostname: kafka-controller-2
     environment:
       KAFKA_NODE_ID: 2
@@ -134,7 +134,7 @@ services:
           - node.hostname==kafka02
 
   controller-3:
-    image: apache/kafka:3.9.0
+    image: apache/kafka:3.9.1
     hostname: kafka-controller-3
     environment:
       KAFKA_NODE_ID: 3
@@ -154,7 +154,7 @@ services:
           - node.hostname==kafka03
 
   broker-1:
-    image: apache/kafka:3.9.0
+    image: apache/kafka:3.9.1
     hostname: kafka1
     environment:
       KAFKA_NODE_ID: 4
@@ -178,7 +178,7 @@ services:
       - controller-2
       - controller-3
   broker-2:
-    image: apache/kafka:3.9.0
+    image: apache/kafka:3.9.1
     hostname: kafka2
     environment:
       KAFKA_NODE_ID: 5
@@ -202,7 +202,7 @@ services:
       - controller-2
       - controller-3
   broker-3:
-    image: apache/kafka:3.9.0
+    image: apache/kafka:3.9.1
     hostname: kafka3
     environment:
       KAFKA_NODE_ID: 6

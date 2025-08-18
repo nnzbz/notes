@@ -31,7 +31,7 @@ services:
     command:
       # https://developer.hashicorp.com/consul/docs/agent/config/cli-flags
       agent -server -ui -ui-content-path /consul -bootstrap-expect 1
-    restart: always
+    restart: unless-stopped
 
 volumes:
   consuldata:

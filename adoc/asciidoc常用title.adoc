@@ -7,5 +7,3 @@
 :sectnums:
 :sectnum-depth: 3
 :source-highlighter: coderay
-
-== asciidoc常用title

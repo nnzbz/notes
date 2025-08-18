@@ -1,46 +1,76 @@
-# 制作RabbitMQ的Docker容器
+= 制作RabbitMQ的Docker容器
+:scripts: cjk
+:toc: left
+:toclevels: 3
+:toc-title: 目录
+:numbered:
+:sectnums:
+:sectnum-depth: 3
+:source-highlighter: coderay
 
 [TOC]
 
-## 1. 参考
+== 参考
 
 <https://hub.docker.com/_/rabbitmq>
 <https://www.rabbitmq.com/clustering.html>
 <https://medium.com/hepsiburadatech/implementing-highly-available-rabbitmq-cluster-on-docker-swarm-using-consul-based-discovery-45c4e7919634>
 
-## 2. 单机
+== 单机
 
-- 创建并运行容器
+[source,shell]
+----
+mkdir ~/opt/rabbitmq
+----
 
-```sh
-docker run -d \
-  --name rabbitmq \
-  -h rabbitmq \
-  -e TZ=CST-8 \
-  -p5671:5671 -p5672:5672 \
-  -p4369:4369 -p25672:25672 \
-  -p15671:15671 -p15672:15672 \
-  --restart=always \
-  rabbitmq:3-management-alpine
-```
+.~/opt/rabbitmq/stack.yml
+[source,yaml,%linenums]
+----
+services:
+  rabbitmq:
+    image: rabbitmq:management-alpine
+    hostname: rabbitmq
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      - RABBITMQ_DEFAULT_USER=user
+      - RABBITMQ_DEFAULT_PASS=password
+      - TZ=CST-8
+    logging:
+      options:
+        max-size: 8m
+    restart: unless-stopped
+----
 
-## 3. Swarm
+- 部署
 
-### 3.1. Docker Compose
+[,shell]
+----
+docker compose -f ~/opt/rabbitmq/stack.yml up -d
+----
 
-```sh
+== Swarm
+
+=== 部署文件
+
+[source,shell]
+----
 mkdir -p ~/opt/rabbitmq
 vi ~/opt/rabbitmq/stack.yml
-```
+----
 
-```yml{.line-numbers}
+.~/opt/rabbitmq/stack.yml
+[source,yaml,%linenums]
+----
 services:
   svr:
     image: rabbitmq:management-alpine
     hostname: rabbitmq
     ports:
-      - 5672:5672
-      - 15672:15672
+      - "5672:5672"
+      - "15672:15672"
     environment:
       # 最好使用此设定时区，其它镜像也可以使用
       - TZ=CST-8
@@ -55,15 +85,16 @@ networks:
   default:
     external: true
     name: rebue
-```
+----
 
-### 3.2. 部署
+=== 部署
 
-```sh
+[source,shell]
+----
 docker stack deploy -c ~/opt/rabbitmq/stack.yml rabbitmq
-```
+----
 
-## 4. 访问
+== 访问
 
 容器启动之后就可以访问web 管理端了 <http://127.0.0.1:15672> ，默认创建了一个 guest 用户，密码也是 guest。
 
@@ -72,11 +103,12 @@ docker stack deploy -c ~/opt/rabbitmq/stack.yml rabbitmq
 
 **注意:** 新版本的guest只允许在localhost本地访问，须注册一个新的账户，这里示例添加 `admin` 账户
 
-```sh
+[source,shell]
+----
 # 进入容器
 docker exec -it '容器ID' /bin/sh
 # 添加admin账户并授权
 rabbitmqctl add_user admin '密码'
 rabbitmqctl set_user_tags admin administrator
 rabbitmqctl set_permissions -p / admin ".*" ".*" ".*"
-```
+----
