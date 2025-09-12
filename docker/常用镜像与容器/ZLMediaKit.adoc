@@ -1,0 +1,85 @@
+= ZLMediaKit
+
+[TOC]
+
+== 单机(未测试)
+----
+mkdir -p ~/opt/zlmediakit/
+----
+
+.~/opt/zlmediakit/stack.yml
+[source,yaml,%linenums]
+----
+services:
+  zlmediakit:
+    image: zlmediakit/zlmediakit:master
+    container_name: zlmediakit
+    restart: unless-stopped
+    ports:
+      - "41935:1935"         # RTMP协议端口
+      - "40080:80"           # HTTP协议端口
+      - "40443:443"          # HTTPS协议端口
+      - "40554:554"          # RTSP协议端口
+      - "40000:10000"       # 部分流媒体协议端口(TCP)
+      - "40000:10000/udp"   # 部分流媒体协议端口(UDP)
+      - "40800:8000/udp"     # RTP/RTCP等协议端口
+      - "40900:9000/udp"     # 部分流媒体服务端口
+----
+
+* 部署
+
+[source,shell]
+----
+docker compose -f ~/opt/zlmediakit/stack.yml up -d
+----
+
+* 查看API密钥
+查看容器启动日志，找到如下内容:
+[source,log]
+----
+The api.secret is invalid, modified it to: XXXXXXXX, saved config file: ../conf/config.ini
+----
+其中的 `XXXXXXXX` 就是 API 密钥，也可以查看 `config.ini` 文件获取密钥
+
+== Swarm
+
+[source,sh]
+----
+mkdir -p ~/opt/zlmediakit/
+----
+
+.~/opt/zlmediakit/stack.yml
+[source,yaml]
+----
+services:
+  svr:
+    image: zlmediakit/zlmediakit:master
+    hostname: zlmediakit
+    ports:
+      - "41935:1935"         # RTMP协议端口
+      - "40080:80"           # HTTP协议端口
+      - "40443:443"          # HTTPS协议端口
+      - "40554:554"          # RTSP协议端口
+      - "40000:10000"       # 部分流媒体协议端口(TCP)
+      - "40000:10000/udp"   # 部分流媒体协议端口(UDP)
+      - "40800:8000/udp"     # RTP/RTCP等协议端口
+      - "40900:9000/udp"     # 部分流媒体服务端口
+    deploy:
+      placement:
+        constraints:
+          # 部署的节点指定是 media 角色的
+          - node.labels.role==media
+    logging:
+      options:
+        max-size: 8m
+
+networks:
+  default:
+    external: true
+    name: rebue
+----
+
+[source,shell]
+----
+docker stack deploy -c ~/opt/zlmediakit/stack.yml zlmediakit
+----
