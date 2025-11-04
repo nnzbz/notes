@@ -1,0 +1,107 @@
+= ape-dts应用小结
+:scripts: cjk
+:toc: left
+:toclevels: 3
+:toc-title: 目录
+:numbered:
+:sectnums:
+:sectnum-depth: 3
+:source-highlighter: coderay
+
+== PostgresCDC的准备步骤
+
+=== 进入Postgres命令行
+
+[source,shell]
+----
+psql -U postgres
+----
+
+=== 打开源数据库
+
+[source,sql]
+----
+\c <数据库名称>
+----
+
+=== 配置发布
+
+. 按规范定义发布的名称
+.. 如果同步所有表，<发布名称> = <数据库名称>
+.. 如果只同步某个表，<发布名称> = <数据库名称>_<同步的表名>
+. 检查发布是否存在(发布名称应等于插槽名称，如果已经该发布已存在，可以重用它而无需创建新的发布)
++
+[source,sql]
+----
+SELECT * FROM pg_catalog.pg_publication WHERE pubname = '<发布名称>';
+----
+. 为所有表创建发布(如果存在，无需发布)
++
+[source,sql]
+----
+# 如果同步所有表
+CREATE PUBLICATION <发布名称> FOR ALL TABLES;
+# 如果只同步某个表
+CREATE PUBLICATION <发布名称> FOR TABLE <同步的表名>;
+----
+
+=== 配置插槽
+
+. 按规范定义插槽的名称
+.. 如果同步所有表，<插槽名称> = <数据库名称>
+.. 如果只同步某个表，<插槽名称> = <数据库名称>_<同步的表名>
+. 检查源数据库中是否存在复制槽
++
+[source,sql]
+----
+SELECT * FROM pg_catalog.pg_replication_slots WHERE slot_name = '<插槽名称>';
+----
+. Drop掉插槽(如果存在)
++
+[source,sql]
+----
+SELECT pg_drop_replication_slot('<插槽名称>') FROM pg_replication_slots WHERE slot_name = '<插槽名称>';
+----
+. 创建插槽并获取起始日志序列号(lsn)
++
+[source,sql]
+----
+SELECT * FROM pg_create_logical_replication_slot('<插槽名称>', 'pgoutput');
+----
+
+=== 配置ape-dts的配置文件
+
+[source,ini]
+----
+[extractor]
+....
+# 插槽起始日志序列号(lsn)
+start_lsn=xx/xxxxxxxx
+# 发布名称
+pub_name=<发布名称>
+....
+----
+
+=== 启动迁移快照数据任务
+
+[source,sh]
+----
+docker run --rm --network host -v ~/opt/dts/task/xxx/02.data.ini:/task_config.ini docker.io/apecloud/ape-dts:2.0.24
+/task_config.ini
+----
+
+=== 启动cdc任务命令
+
+* 调试运行(注意修改配置文件中sinker.url项中host名称为127.0.0.1)
++
+[source,sh]
+----
+docker run --rm --network host -v ~/opt/dts/task/xxx/06.cdc.ini:/task_config.ini docker.io/apecloud/ape-dts:2.0.24
+/task_config.ini
+----
+* Swarm(注意修改配置文件中sinker.url项中host名称为pgsql)
++
+[source,ini]
+----
+docker stack deploy -c ~/opt/dts/task/xxx/06.cdc.stack.yml xxx-cdc
+----
