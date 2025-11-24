@@ -94,7 +94,6 @@ docker stack deploy -c ~/opt/consul/stack.yml consul
 .~/opt/consul/template/stack.yml
 [source,yaml,%linenums]
 ----
-version: "3.9"
 services:
   template:
     image: nnzbz/consul-template:0.39
@@ -120,7 +119,7 @@ networks:
 [,json]
 ----
 consul {
-  address = "consul_svr:8500"
+  address = "consul:8500"
 }
 
 template {
@@ -139,7 +138,7 @@ template {
 {{range service .Name "any"}}
 #{{.ID}} {{.Name}} {{.Status}}
 {{if eq .Status "critical"}}
-curl -X PUT "http://consul_svr:8500/v1/agent/service/deregister/{{.ID}}"
+curl -X PUT "http://consul:8500/v1/agent/service/deregister/{{.ID}}"
 {{end}}
 {{end}}
 {{end}}
