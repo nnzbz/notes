@@ -1,4 +1,4 @@
-# Consul
+= Consul
 :sectnums:
 :scripts: cjk
 :toc: left
@@ -19,7 +19,8 @@ mkdir -p ~/opt/consul/
 ----
 services:
   consul:
-    image: hashicorp/consul:1.20.1
+    image: hashicorp/consul:1.22
+    hostname: consul
     container_name: consul
     ports:
       - "8300:8300"
@@ -27,14 +28,19 @@ services:
     environment:
       - CONSUL_BIND_INTERFACE=eth0
     volumes:
-      - consuldata:/consul/data
+      - data:/consul/data
     command:
-      # https://developer.hashicorp.com/consul/docs/agent/config/cli-flags
-      agent -server -ui -ui-content-path /consul -bootstrap-expect 1
+      # https://developer.hashicorp.com/consul/commands/agent
+      agent -server -ui -ui-content-path /consul -client 0.0.0.0
     restart: unless-stopped
 
 volumes:
-  consuldata:
+  data:
+
+networks:
+  default:
+    external: true
+    name: rebue
 ----
 
 * 部署
@@ -49,7 +55,7 @@ docker compose -f ~/opt/consul/stack.yml up -d
 
 [source,sh]
 ----
-mkdir -p ~/opt/consul/
+mkdir -p ~/opt/consul/template/
 ----
 
 .~/opt/consul/stack.yml
@@ -57,21 +63,23 @@ mkdir -p ~/opt/consul/
 ----
 services:
   svr:
-    image: hashicorp/consul:1.20.1
+    image: hashicorp/consul:1.22
+    hostname: consul
     ports:
-      - "8300:8300"
+      #- "8300:8300"
       - "8500:8500"
     environment:
       - CONSUL_BIND_INTERFACE=eth0
+      - CONSUL_CLIENT_INTERFACE=eth0
     volumes:
       - consuldata:/consul/data
     command:
-      # https://developer.hashicorp.com/consul/docs/agent/config/cli-flags
-      agent -server -ui -ui-content-path /consul -bootstrap-expect 1
+      # https://developer.hashicorp.com/consul/commands/agent
+      agent -server -ui -ui-content-path /consul -client 0.0.0.0
     deploy:
       placement:
         constraints:
-          # 部署的节点指定是gateway角色的
+          # 部署的节点指定是consul主机
           - node.hostname==consul
     logging:
       options:
@@ -96,15 +104,15 @@ docker stack deploy -c ~/opt/consul/stack.yml consul
 ----
 services:
   template:
-    image: nnzbz/consul-template:0.39
+    image: nnzbz/consul-template:0.41
     volumes:
       - ~/opt/consul/template:/template
     command: ["-config=/template/deregister.hcl", "-template=/template/deregister.tpl:/template/deregister.sh"]
     deploy:
       placement:
         constraints:
-          # 部署的节点指定是gateway角色的
-          - node.labels.role==gateway
+          # 部署的节点指定是consul主机
+          - node.hostname==consul
     logging:
       options:
         max-size: 8m
@@ -127,6 +135,10 @@ template {
   destination = "/template/deregister.sh"
   command = "/template/deregister.sh"
   perms = 0775
+  wait {
+    min = "30s"
+    max = "60s"
+  }
 }
 ----
 
@@ -148,4 +160,46 @@ curl -X PUT "http://consul:8500/v1/agent/service/deregister/{{.ID}}"
 [source,bash]
 ----
 docker stack deploy -c ~/opt/consul/template/stack.yml consul
+----
+
+== 停止运行超过168小时(7天)会启动不起来
+. 报错信息
++
+[,shell]
+----
+refusing to rejoin cluster because server has been offline for more than the configured server_rejoin_age_max (168h0m0s) - consider wiping your data dir
+----
+. 解决方案
++
+在配置文件中配置server_rejoin_age_max超过当前的停机时间
++
+.~/opt/consul/consul.hcl
+[source,hcl]
+----
+server_rejoin_age_max = "720000h"  # 允许300天离线
+----
++
+.~/opt/consul/stack.yml
+[source,hcl]
+----
+services:
+  consul:
+    image: hashicorp/consul:1.22
+    hostname: consul
+    container_name: consul
+    ports:
+      - "8300:8300"
+      - "8500:8500"
+    environment:
+      - CONSUL_BIND_INTERFACE=eth0
+    volumes:
+      - ~/opt/consul/consul.hcl:/consul/config/consul.hcl
+      - data:/consul/data
+    command:
+      # https://developer.hashicorp.com/consul/commands/agent
+      agent -server -ui -client 0.0.0.0 -config-file=/consul/config/consul.hcl
+    restart: unless-stopped
+
+volumes:
+  data:
 ----
