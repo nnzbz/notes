@@ -1,0 +1,83 @@
+= InfluxDB常用操作
+:scripts: cjk
+:toc: left
+:toclevels: 3
+:toc-title: 目录
+:numbered:
+:sectnums:
+:sectnum-depth: 3
+:source-highlighter: coderay
+
+== 查看当前 bucket 信息（确认 ID 和现有配置）
+
+[source,sh]
+----
+influx bucket list --org <ORG_NAME> --token <API_TOKEN>
+----
+
+* 输出列
+** Retention: 保留时长（例如：1h、24h、7d）
+** Shard group duration: 分片组时长（例如：1h、24h、7d）
+
+== 修改 bucket 的过期时长
+
+[source,sh]
+----
+influx bucket update --id <BUCKET_ID> --retention <NEW_RETENTION_PERIOD> --org <ORG_NAME> --token <API_TOKEN>
+----
+
+== 修改分片组时长
+
+[source,curl]
+----
+curl -X PATCH \
+  http://<influxdb地址>:8086/api/v2/buckets/<目标bucket的ID> \
+  -H "Authorization: Token <你的API令牌>" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "retentionRules": [
+      {
+        "type": "expire",
+        "everySeconds": <过期时长（秒）>,  # 必须指定，即使不修改过期时长也要保留原值
+        "shardGroupDurationSeconds": <分片组时长（秒）>  # 新增/修改分片组时长
+      }
+    ]
+  }'
+----
+
+[NOTE]
+====
+* 修改后的分片组时长只对修改时间之后创建的分片组生效，已存在的分片组仍使用旧的时长，直到被自动清理。
+* 分片组时长不能超过 bucket 的过期时长（否则会报错），且建议遵循 过期时长 / 10 的最佳实践（避免性能问题）。
+* 默认规则：分片组时长 = min(过期时长 / 10, 7天)（如果过期时长 < 1 小时，则分片组时长 = 过期时长）
+* 永不过期的 bucket（retention=0）默认分片组时长为 7 天
+====
+
+== 手动清理过期数据
+
+=== 全量清理指定时间前的数据
+
+[source,sh]
+----
+# 示例：清理 2025-01-01 00:00:00 之前的所有数据
+influx delete \
+--token <your_token> \
+--org <your_org> \
+--bucket <your_bucket> \
+--start '1970-01-01T00:00:00Z' \
+--stop '2025-01-01T00:00:00Z'
+----
+
+=== 指定条件清理
+
+[source,sh]
+----
+# 示例：按测量值 / 标签过滤，避免误删有效数据
+influx delete \
+--token <your_token> \
+--org <your_org> \
+--bucket <your_bucket> \
+--start '1970-01-01T00:00:00Z' \
+--stop '2025-01-01T00:00:00Z' \
+--predicate '_measurement="cpu" AND host="old-server"'
+----
