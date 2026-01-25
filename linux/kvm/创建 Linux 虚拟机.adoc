@@ -3,10 +3,14 @@
 == 创建 Debian 虚拟机
 [source,bash]
 ----
-virt-install --name=Debian12 --memory=2048,maxmemory=4096 \
---vcpus=2,maxvcpus=4 --os-type=linux --os-variant=debian10 \
---location=/home/data/debian-12.9.0-amd64-DVD-1.iso \
---disk path=/kvm-data/images/Debian12.img,size=50 --bridge=br1 \
---graphics=none --console=pty,target_type=serial \
---extra-args="console=tty0 console=ttyS0"
+virt-install \
+    --name=debian12 \                                                   # 虚拟机名称
+    --vcpus=2,maxvcpus=4 \                                              # CPU核心数
+    --memory=2048,maxmemory=4096 \                                      # 内存
+    --os-type=linux --os-variant=debian10 \                             # 操作系统
+    --location=~/kvm/iso/debian-12.9.0-amd64-DVD-1.iso \                # 替换为你的ISO安装镜像的实际路径
+    --disk path=~/kvm/data/debian.qcow2,size=50 \                       # 磁盘50GB，默认qcow2格式（KVM推荐）
+    --network bridge=br0 \                                              # 网络，桥接br0/ NAT virbr0，二选一
+    --graphics=none --console=pty,target_type=serial \
+    --extra-args="console=tty0 console=ttyS0"
 ----

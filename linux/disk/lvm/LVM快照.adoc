@@ -1,0 +1,81 @@
+= LVM快照
+:scripts: cjk
+:toc: left
+:toclevels: 3
+:toc-title: 目录
+:numbered:
+:sectnums:
+:sectnum-depth: 3
+:source-highlighter: coderay
+
+== 查看lv
+
+[source,shell]
+----
+sudo lvs
+----
+
+== 查看vg未分配的空间
+
+[source,shell]
+----
+sudo vgs
+----
+
+== 创建快照
+
+[source,shell]
+----
+sudo lvcreate -L <快照大小> -s -n <快照名> <原逻辑卷路径>
+----
+
+* 原逻辑卷路径: 一般在 `/dev/vg0/` 目录下
+
+== 恢复快照
+
+. 先卸载原逻辑卷（确保数据不被读写）
++
+[source,shell]
+----
+sudo umount <原逻辑卷挂载路径>
+----
+
+. 恢复命令
++
+[source,shell]
+----
+sudo lvconvert --merge /dev/vg0/xxx_snap
+----
+
+* merge: 将快照的状态合并回原逻辑卷，完成恢复
+. 恢复完成后，快照会被自动删除（因为已完成合并）
+
+== 临时挂载快照查看数据
+
+[source,shell]
+----
+# 创建挂载点
+sudo mkdir /mnt/snap_temp
+
+# 挂载快照（ro 表示只读，避免修改快照数据）
+sudo mount /dev/vg01/lv_data_snap /mnt/snap_temp -o ro
+
+# 查看快照里的内容
+ls /mnt/snap_temp
+
+# 用完后卸载快照
+sudo umount /mnt/snap_temp
+----
+
+== 删除无用的快照
+
+[source,shell]
+----
+sudo lvremove /dev/vg0/xxx_snap
+----
+
+== 关键注意事项
+
+. 快照是「写时复制」机制：只有原逻辑卷的数据被修改时，快照才会占用空间，因此快照大小要根据后续数据修改量预留（如果快照空间占满，快照会失效）
+. 快照建议定期更新：比如每周创建一次新快照，删除旧快照，避免占用过多卷组空间
+. 快照不是备份：快照和原逻辑卷在同一卷组，若磁盘物理损坏，快照也会丢失，建议结合 rsync、tar 等工具做异地备份。

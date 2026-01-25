@@ -1,0 +1,119 @@
+= NVIDIA V100驱动安装
+:scripts: cjk
+:toc: left
+:toclevels: 3
+:toc-title: 目录
+:numbered:
+:sectnums:
+:sectnum-depth: 3
+:source-highlighter: coderay
+
+== 禁用 Nouveau 开源驱动
+
+=== 检查是否存在nouveau
+
+命令如果有输出，则说明存在
+
+[source,shell]
+----
+lsmod | grep nouveau
+----
+
+=== 禁用 Nouveau
+
+[source,shell]
+----
+echo -e "blacklist nouveau\noptions nouveau modeset=0" | sudo tee /etc/modprobe.d/blacklist-nouveau.conf
+sudo update-initramfs -u
+sudo reboot
+----
+
+== 彻底清理旧有NVIDIA组件
+
+[source,shell]
+----
+sudo apt purge *nvidia* *cuda*
+sudo apt autoremove
+sudo apt update
+----
+
+== 安装内核头文件(可选)
+
+安装与当前运行内核版本对应的头文件，这是驱动编译所必需的，但更新后的ubuntu一般都已经安装好了
+
+== 安装NVIDIA驱动
+
+=== 搜索NVIDIA所有的驱动版本
+
+最新的版本在最下面
+
+[source,shell]
+----
+apt search nvidia-driver | grep -E "nvidia-driver-[0-9]+"
+----
+
+=== 找到最高版本并安装
+
+[source,shell]
+----
+sudo apt install nvidia-driver-580
+----
+
+=== 检查安装是否成功
+
+[source,shell]
+----
+# 重启系统使驱动生效
+sudo reboot
+
+# 查看驱动版本和显卡信息
+nvidia-smi
+----
+
+[NOTE]
+====
+如果有列出显卡信息说明安装成功，否则说明此版本驱动不支持此显卡，请安装低版本的驱动
+====
+
+== 安装CUDA工具包驱动
+
+=== 查看适配的CUDA版本
+
+[source,shell]
+----
+nvidia-smi
+----
+
+[NOTE]
+====
+查看输出信息中的 `CUDA Version: xx.x` 的版本号
+====
+
+=== 下载与安装指导地址
+
+从下面的网页中找到对应的版本 <https://developer.nvidia.com/cuda-toolkit-archive>，按指导进行安装
+
+=== 13.0版本的安装指导
+
+[source,shell]
+----
+wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2404/x86_64/cuda-keyring_1.1-1_all.deb
+sudo dpkg -i cuda-keyring_1.1-1_all.deb
+sudo apt-get update
+sudo apt-get -y install cuda-toolkit-13-0
+# 设置环境变量
+echo 'export PATH=/usr/local/cuda/bin:$PATH' >> ~/.bashrc
+echo 'export LD_LIBRARY_PATH=/usr/local/cuda/lib64:$LD_LIBRARY_PATH' >> ~/.bashrc
+source ~/.bashrc
+# 确认安装是否成功
+nvcc --version
+----
+
+=== 确认安装是否成功
+
+[source,shell]
+----
+nvcc --version
+----
+
+

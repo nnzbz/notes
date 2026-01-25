@@ -5,29 +5,28 @@
 ----
 # Win7
 virt-install \
---name Win7 \
---vcpus=2,maxvcpus=4 \
---os-type=windows \
---os-variant win7 \
---memory=4096,maxmemory=8096 \
---graphics vnc,listen=0.0.0.0,port=5920 \
---console pty,target_type=serial \
---cdrom=/home/data/cn_windows_7_professional_with_sp1_x64_dvd_u_677031.iso \
---disk path=/kvm-data/images/Win7.img,size=50 \
---network bridge=br1
+    --name win7 \                                                                   # 虚拟机名称
+    --vcpus=2,maxvcpus=4 \                                                          # CPU核心数
+    --memory=8096,maxmemory=16384 \                                                 # 内存
+    --cdrom=~/kvm/iso/cn_windows_7_professional_with_sp1_x64_dvd_u_677031.iso \
+    --disk path=~/kvm/data/Win7.img,size=50 \
+    --os-type=windows --os-variant win7 \
+    --graphics vnc,listen=0.0.0.0,port=5900 \                                       # VNC图形化，端口从5900开始编排（避免冲突）
+    --console pty,target_type=serial \
+    --network bridge=br0                                                            # 网络，桥接br0/ NAT virbr0，二选一
 
 Win10
 virt-install \
---name Win10 \
---vcpus=2,maxvcpus=4 \
---os-type=windows \
---os-variant win10 \
---memory=4096,maxmemory=8096 \
---graphics vnc,listen=0.0.0.0,port=5921 \
---console pty,target_type=serial \
---cdrom=/home/data/cn_windows_10_business_editions_version_1909_x64_dvd_0ca83907.iso \
---disk path=/kvm-data/images/Win10.img,size=50 \
---network bridge=br1
+    --name win10 \                                                                          # 虚拟机名称
+    --vcpus=2,maxvcpus=4 \                                                                  # CPU核心数
+    --memory=8096,maxmemory=16384 \                                                         # 内存
+    --os-type=windows \
+    --os-variant win10 \
+    --graphics vnc,listen=0.0.0.0,port=5900 \                                               # VNC图形化，端口从5900开始编排（避免冲突）
+    --console pty,target_type=serial \
+    --cdrom=/home/data/cn_windows_10_business_editions_version_1909_x64_dvd_0ca83907.iso \
+    --disk path=/kvm-data/images/Win10.img,size=50 \
+    --network bridge=br0                                                                    # 网络，桥接br0/ NAT virbr0，二选一
 ----
 
 参数说明：
