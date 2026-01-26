@@ -1,0 +1,345 @@
+= 安装KVM
+:scripts: cjk
+:toc: left
+:toclevels: 3
+:toc-title: 目录
+:numbered:
+:sectnums:
+:sectnum-depth: 3
+:source-highlighter: coderay
+
+== 检查虚拟化支持
+
+[source,shell]
+----
+egrep -c '(vmx|svm)' /proc/cpuinfo
+----
+
+== 安装
+
+[source,shell]
+----
+# 更新系统
+sudo apt update && sudo apt upgrade -y
+
+# 安装KVM及相关工具（无图形界面）
+sudo apt install -y \
+    qemu-kvm \
+    libvirt-daemon-system \
+    libvirt-clients \
+    bridge-utils \
+    virtinst \
+    virt-viewer \
+    libguestfs-tools \
+    cloud-image-utils \
+    qemu-utils \
+    ovmf
+----
+
+== 启动与配置KVM
+
+=== 启动并启用libvirt服务
+
+[source,shell]
+----
+# 启动服务
+sudo systemctl start libvirtd
+sudo systemctl enable libvirtd
+
+# 检查服务状态
+sudo systemctl status libvirtd
+----
+
+=== 配置用户权限
+
+[source,shell]
+----
+# 将用户添加到libvirt和kvm组
+sudo usermod -aG libvirt $USER sudo usermod -aG kvm $USER
+
+# 重新登录或使用以下命令立即生效
+newgrp libvirt
+----
+
+== 创建桥接网络
+
+[source,shell]
+----
+# 列出所有网络
+sudo virsh net-list --all
+
+# 查看当前网络接口
+ip addr show
+
+# 编辑网络配置文件（Ubuntu 18.04+使用netplan）
+sudo vim /etc/netplan/50-cloud-init.yaml
+----
+
+./etc/netplan/50-cloud-init.yaml
+[source,yaml]
+----
+network:
+  version: 2
+  ethernets:
+    enp3s0:     # 替换为你的网卡名
+      dhcp4: false
+      addresses:
+      - "xxx.xxx.xxx.xxx/24"
+      nameservers:
+        addresses:
+        - 114.114.114.114
+        search: []
+      routes:
+      - to: "default"
+        via: "xxx.xxx.xxx.1"
+  bridges:
+    br0:
+      interfaces: [enp3s0]
+      dhcp4: false
+      addresses:
+      - "xxx.xxx.xxx.xxx/24"
+      # 下面两个参数用于优化网桥 br0 的性能
+      parameters:
+        # 禁用生成树协议（Spanning Tree Protocol），防止网络环路的协议，在单交换机环境中通常可以关闭以提高性能
+        stp: false
+        # 设置网桥转发延迟为0秒，当STP禁用时此设置使网桥能立即开始转发数据包
+        forward-delay: 0
+----
+
+[source,shell]
+----
+# 应用配置
+sudo netplan apply
+----
+
+== 虚拟机管理
+
+=== 基本管理
+
+[source,shell]
+----
+# 列出所有虚拟机
+sudo virsh list --all
+
+# 启动虚拟机
+sudo virsh start vm-name
+
+# 关闭虚拟机
+sudo virsh shutdown vm-name
+
+# 强制关闭
+sudo virsh destroy vm-name
+
+# 重启虚拟机
+sudo virsh reboot vm-name
+
+# 挂起/恢复
+sudo virsh suspend vm-name
+sudo virsh resume vm-name
+----
+
+=== 配置管理
+
+[source,shell]
+----
+# 编辑虚拟机配置
+sudo virsh edit vm-name
+
+# 查看虚拟机配置
+sudo virsh dumpxml vm-name
+
+# 克隆虚拟机
+sudo virt-clone --original vm-name --name vm-clone --file /path/to/clone.qcow2
+
+# 删除虚拟机
+sudo virsh undefine vm-name
+----
+
+=== 监控
+
+[source,shell]
+----
+# 查看虚拟机信息
+sudo virsh dominfo vm-name
+
+# 查看虚拟机状态
+sudo virsh domstate vm-name
+
+# 查看虚拟机统计
+sudo virsh domstats vm-name
+
+# 连接到虚拟机控制台
+sudo virsh console vm-name
+# 退出控制台：Ctrl + ]
+----
+
+== 存储管理
+
+=== 存储池管理
+
+[source,shell]
+----
+# 列出存储池
+sudo virsh pool-list --all
+
+# 创建存储池
+sudo virsh pool-define-as --name default --type dir --target /var/lib/libvirt/images
+sudo virsh pool-build default
+sudo virsh pool-start default
+sudo virsh pool-autostart default
+
+# 删除存储池
+sudo virsh pool-destroy default
+sudo virsh pool-undefine default
+----
+
+=== 磁盘管理
+
+[source,shell]
+----
+# 创建新磁盘
+qemu-img create -f qcow2 /var/lib/libvirt/images/new-disk.qcow2 10G
+
+# 调整磁盘大小
+qemu-img resize /var/lib/libvirt/images/vm-disk.qcow2 +5G
+
+# 转换磁盘格式
+qemu-img convert -f raw -O qcow2 disk.img disk.qcow2
+----
+
+== 虚拟网络
+
+[source,shell]
+----
+# 创建虚拟网络
+cat > network.xml << EOF
+<network>
+  <name>isolated</name>
+  <bridge name="virbr1"/>
+  <ip address="192.168.100.1" netmask="255.255.255.0">
+    <dhcp>
+      <range start="192.168.100.100" end="192.168.100.200"/>
+    </dhcp>
+  </ip>
+</network>
+EOF
+
+sudo virsh net-define network.xml
+sudo virsh net-start isolated
+sudo virsh net-autostart isolated
+
+# 删除网络
+sudo virsh net-destroy isolated
+sudo virsh net-undefine isolated
+----
+
+== 备份与快照
+
+=== 创建快照
+
+[source,shell]
+----
+# 创建快照
+sudo virsh snapshot-create-as --domain vm-name --name snapshot1 --description "Initial setup"
+
+# 列出快照
+sudo virsh snapshot-list vm-name
+
+# 恢复快照
+sudo virsh snapshot-revert vm-name --snapshotname snapshot1
+
+# 删除快照
+sudo virsh snapshot-delete vm-name --snapshotname snapshot1
+----
+
+=== 备份虚拟机
+
+[source,shell]
+----
+# 备份虚拟机配置
+sudo virsh dumpxml vm-name > vm-name.xml
+
+# 备份磁盘
+sudo cp /var/lib/libvirt/images/vm-disk.qcow2 /backup/
+
+# 完整备份脚本
+#!/bin/bash
+VM_NAME=$1
+BACKUP_DIR="/backup/vms/$(date +%Y%m%d)"
+mkdir -p $BACKUP_DIR
+
+# 导出XML配置
+sudo virsh dumpxml $VM_NAME > $BACKUP_DIR/$VM_NAME.xml
+
+# 备份磁盘
+sudo cp /var/lib/libvirt/images/${VM_NAME}.qcow2 $BACKUP_DIR/
+----
+
+== 监控与性能优化
+
+=== 监控
+
+[source,shell]
+----
+# 查看虚拟机资源使用
+sudo virt-top
+
+# 查看虚拟机性能统计
+sudo virsh dommemstat vm-name
+sudo virsh domblkstat vm-name
+
+# 使用性能监控工具
+sudo apt install -y virt-top libvirt-admin
+----
+
+=== 优化建议
+
+[source,shell]
+----
+# 启用KSM（内存共享）
+echo 1 | sudo tee /sys/kernel/mm/ksm/run
+echo 1000 | sudo tee /sys/kernel/mm/ksm/sleep_millisecs
+
+# 配置大页内存
+echo 1024 | sudo tee /proc/sys/vm/nr_hugepages
+
+# 优化CPU调度器
+virsh edit vm-name
+# 添加CPU模式：<cpu mode='host-passthrough'/>
+----
+
+== 故障排除
+
+=== 常见问题解决
+
+[source,shell]
+----
+# 检查KVM模块
+lsmod | grep kvm
+
+# 查看libvirt日志
+sudo journalctl -u libvirtd
+
+# 查看虚拟机日志
+sudo cat /var/log/libvirt/qemu/vm-name.log
+
+# 重置虚拟机状态
+sudo virsh reset vm-name
+
+# 清理缓存
+sudo virsh managedsave-remove vm-name
+----
+
+=== 检查命令
+
+[source,shell]
+----
+# 检查libvirt连接
+sudo virsh uri
+
+# 检查虚拟化支持
+sudo virt-host-validate
+
+# 检查QEMU版本
+qemu-system-x86_64 --version
+----

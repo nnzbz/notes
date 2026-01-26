@@ -56,7 +56,7 @@ apt search nvidia-driver | grep -E "nvidia-driver-[0-9]+"
 
 [source,shell]
 ----
-sudo apt install nvidia-driver-580
+sudo apt install nvidia-driver-580 -y
 ----
 
 === 检查安装是否成功
