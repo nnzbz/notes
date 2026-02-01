@@ -1,53 +1,66 @@
 = 创建 Windows 虚拟机
 
+== virtio-win
+
+* Windows 默认不识别 KVM 的 virtio 磁盘（virtio-blk）和网卡（virtio-net）。
+* 如果你使用默认磁盘/网络模型（如 IDE + rtl8139），性能极差且无法发挥 KVM 优势。
+* 必须提供 VirtIO 驱动 ISO，并在安装过程中加载。
+* 官方下载地址查找 <https://fedorapeople.org/groups/virt/virtio-win/direct-downloads/>
+* 当前下载地址 <https://fedorapeople.org/groups/virt/virtio-win/direct-downloads/archive-virtio/virtio-win-0.1.285-1/virtio-win-0.1.285.iso>
+
 == 创建命令
+
 [source,bash]
 ----
 # Win7
 virt-install \
-    --name win7 \                                                                   # 虚拟机名称
-    --vcpus=2,maxvcpus=4 \                                                          # CPU核心数
-    --memory=8096,maxmemory=16384 \                                                 # 内存
+    --name win7 --os-variant win7 \
+    --vcpus=4 --memory=8192 \
     --cdrom=~/kvm/iso/cn_windows_7_professional_with_sp1_x64_dvd_u_677031.iso \
-    --disk path=~/kvm/data/Win7.img,size=50 \
-    --os-type=windows --os-variant win7 \
-    --graphics vnc,listen=0.0.0.0,port=5900 \                                       # VNC图形化，端口从5900开始编排（避免冲突）
-    --console pty,target_type=serial \
-    --network bridge=br0                                                            # 网络，桥接br0/ NAT virbr0，二选一
+    --disk ~/kvm/iso/virtio-win-0.1.285.iso,device=cdrom,readonly=yes \
+    --disk path=~/kvm/data/Win7.qcow2,format=qcow2,size=50,bus=virtio,cache=writethrough,io=threads,discard=unmap \
+    --graphics vnc,listen=0.0.0.0,port=5900,password=******** \
+    --network bridge=br0,model=e1000e \
+    --controller usb,model=ich9-ehci1 \
+    --virt-type=kvm \
+    --cpu host-model,hv_relaxed,hv_spinlocks=0x1fff,hv_vapic,hv_time
 
 Win10
 virt-install \
-    --name win10 \                                                                          # 虚拟机名称
-    --vcpus=2,maxvcpus=4 \                                                                  # CPU核心数
-    --memory=8096,maxmemory=16384 \                                                         # 内存
-    --os-type=windows \
-    --os-variant win10 \
-    --graphics vnc,listen=0.0.0.0,port=5900 \                                               # VNC图形化，端口从5900开始编排（避免冲突）
-    --console pty,target_type=serial \
-    --cdrom=/home/data/cn_windows_10_business_editions_version_1909_x64_dvd_0ca83907.iso \
-    --disk path=/kvm-data/images/Win10.img,size=50 \
-    --network bridge=br0                                                                    # 网络，桥接br0/ NAT virbr0，二选一
+    --name win10 --os-variant win10 \
+    --vcpus=4 --memory=8192 \
+    --disk path=~/kvm/data/Win10.qcow2,format=qcow2,size=50,bus=virtio,cache=writeback,io=threads,discard=unmap \
+    --disk ~/kvm/iso/virtio-win-0.1.285.iso,device=cdrom,readonly=yes \
+    --cdrom=~/kvm/iso/cn_windows_10_business_editions_version_1909_x64_dvd_0ca83907.iso \
+    --graphics vnc,listen=0.0.0.0,port=5900,password=******** \
+    --network bridge=br0,model=virtio \
+    --virt-type=kvm \
+    --cpu host-passthrough \
+    --features hyperv_relaxed=on,hyperv_spinlocks=on,hyperv_vapic=on
 ----
 
 参数说明：
 
 * --name: 虚拟机名称。
+* --os-variant: 指定操作系统类型和版本。
+* --vcpus: CPU核心数。
 * --memory: 分配的内存大小。
 * --disk: 虚拟硬盘路径和大小。
-* --vcpus: CPU核心数。
-* --os-type和--os-variant: 指定操作系统类型和版本。
-* --graphics none: 使用VNC或SPICE进行图形化管理。
-* --console pty,target_type=serial: 通过串行控制台连接虚拟机。
-* --network: 虚拟机网络配置。
 * --cdrom: Windows安装介质路径。
+* --graphics none: 使用VNC或SPICE进行图形化管理。
+* --network: 虚拟机网络配置。
+* --cpu host-passthrough: 直接将宿主机 CPU 的型号、功能标志（flags）全部暴露给 VM，相当于“让 VM 看到和物理机一模一样的 CPU”。
+* --features hyperv_*：提升 Windows 性能
 
 == VNC客户端连接
+
 [source,bash]
 ----
-vncviewer xxx.xxx.xxx.xxx:5920
+vncviewer xxx.xxx.xxx.xxx:5900
 ----
 
 == 开启 Windows 远程桌面
+
 * Win7
 +
 计算机 -> 属性 -> 远程设置 -> 远程 -> 允许运行任意版本远程桌面的计算机连接(较不安全)(L)

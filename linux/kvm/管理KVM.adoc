@@ -1,4 +1,4 @@
-= 安装KVM
+= 管理KVM
 :scripts: cjk
 :toc: left
 :toclevels: 3
@@ -127,8 +127,11 @@ sudo virsh start vm-name
 # 关闭虚拟机
 sudo virsh shutdown vm-name
 
-# 强制关闭
+# 强制关闭(强制断电)
 sudo virsh destroy vm-name
+
+# 删除虚拟机
+sudo virsh undefine vm-name
 
 # 重启虚拟机
 sudo virsh reboot vm-name
@@ -150,9 +153,6 @@ sudo virsh dumpxml vm-name
 
 # 克隆虚拟机
 sudo virt-clone --original vm-name --name vm-clone --file /path/to/clone.qcow2
-
-# 删除虚拟机
-sudo virsh undefine vm-name
 ----
 
 === 监控
