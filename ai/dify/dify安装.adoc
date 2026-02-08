@@ -1,0 +1,29 @@
+= dify 安装
+:scripts: cjk
+:toc: left
+:toclevels: 3
+:toc-title: 目录
+:numbered:
+:sectnums:
+:sectnum-depth: 3
+:source-highlighter: coderay
+
+== 安装
+
+. 下载最新版dify
++
+[source,bash]
+----
+git clone https://github.com/langgenius/dify.git
+----
+
+. 进入docker目录修改配置
++
+.dify/docker/docker-compose.yml
+[source,bash]
+----
+# 修改: langgenius/dify-api:1.12.0 -> langgenius/dify-api
+# 修改: langgenius/dify-web:1.12.0 -> langgenius/dify-web
+----
+
+.
