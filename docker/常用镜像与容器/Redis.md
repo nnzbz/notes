@@ -23,7 +23,7 @@ services:
       - TZ=CST-8
     volumes:
       - redisdata:/data/:z
-    restart: always
+    restart: unless-stopped
   redisinsight:
     image: redis/redisinsight
     container_name: redisinsight

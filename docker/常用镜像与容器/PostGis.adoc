@@ -12,7 +12,7 @@ vi ~/opt/pgsql/stack.yml
 ----
 services:
   pgsql:
-    image: postgis/postgis:17-3.5-alpine
+    image: postgis/postgis:18-3.6-alpine
     container_name: pgsql
     ports:
       - "5432:5432"
@@ -20,7 +20,7 @@ services:
       - POSTGRES_PASSWORD=postgres
     volumes:
       - pgsqldata:/var/lib/postgresql/data
-    restart: always
+    restart: unless-stopped
 volumes:
   pgsqldata:
 ----
@@ -43,7 +43,7 @@ vi ~/opt/pgsql/stack.yml
 ----
 services:
   svr:
-    image: postgis/postgis:17-3.5-alpine
+    image: postgis/postgis:18-3.6-alpine
     hostname: pgsql
     # ports:
     #   - "5432:5432"

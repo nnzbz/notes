@@ -27,7 +27,7 @@ cd nacos-docker
 ```sh
 # 编辑docker compose文件
 vi example/standalone-derby.yaml
-# 每个容器下都设置 `restart: always`
+# 每个容器下都设置 `restart: unless-stopped`
 ....
 
 # 创建并运行容器
@@ -142,7 +142,7 @@ vi /usr/local/nacos-docker/example/cluster-hostname.yaml
 - 删除 nacos1/nacos2/nacos3 下 `depenOn` 节点
 - 删除 `mysql` 节点
 - 删除 `volumes` 节点
-- 删除 `restart: always`
+- 删除 `restart: unless-stopped`
 - 每个服务添加
 
   ```yml

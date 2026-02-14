@@ -65,7 +65,7 @@ services:
     logging:
       options:
         max-size: 8m
-    restart: always
+    restart: unless-stopped
 ----
 
 - 部署

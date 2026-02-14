@@ -46,7 +46,7 @@ services:
       - NPM_CONFIG_REGISTRY=https://registry.npmmirror.com
     volumes:
       - data:/data
-    restart: always
+    restart: unless-stopped
 volumes:
   data:
 ----

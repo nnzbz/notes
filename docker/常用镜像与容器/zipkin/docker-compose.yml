@@ -33,7 +33,7 @@ services:
       - RABBIT_VIRTUAL_HOST=/
       - STORAGE_TYPE=elasticsearch
       - ES_HOSTS=elasticsearch:9200
-    restart: always
+    restart: unless-stopped
     external_links:
       - rabbitmq:rabbitmq
       - es01:elasticsearch

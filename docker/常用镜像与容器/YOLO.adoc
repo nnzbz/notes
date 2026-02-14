@@ -27,7 +27,7 @@ services:
             - driver: nvidia
               count: all  # 使用所有 GPU
               capabilities: [gpu]
-    restart: always
+    restart: unless-stopped
 ----
 
 * 部署

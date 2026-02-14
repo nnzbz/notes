@@ -18,7 +18,7 @@ services:
       - 8080:8080
     volumes:
       - data:/label-studio/data
-    restart: always
+    restart: unless-stopped
 
 volumes:
   data:

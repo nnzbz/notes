@@ -19,7 +19,7 @@ vi ~/opt/mysql/stack.yml
 services:
   mysql:
     image: mysql:5.7
-    container_name: mysql
+    container_name: mysql57
     ports:
       - "3306:3306"
       - "33060:33060"
@@ -35,7 +35,7 @@ services:
       --skip-name-resolve
     volumes:
       - mysqldata:/var/lib/mysql
-    restart: always
+    restart: unless-stopped
 
   mysql8:
     image: mysql:8
@@ -54,7 +54,7 @@ services:
       --skip-name-resolve
     volumes:
       - mysql8data:/var/lib/mysql
-    restart: always
+    restart: unless-stopped
 
   mysql9:
     image: mysql:9
@@ -73,7 +73,7 @@ services:
       --skip-name-resolve
     volumes:
       - mysql9data:/var/lib/mysql
-    restart: always
+    restart: unless-stopped
 
 volumes:
   mysqldata:

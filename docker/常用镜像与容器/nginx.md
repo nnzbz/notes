@@ -31,7 +31,7 @@ services:
       - /usr/local/nginx/logs:/var/log/nginx:z
       # 网页存放目录，在 1.27.0 版本中不能 mount 成功，只能采用手动复制的方式
       #- /usr/local/nginx/html:/usr/share/nginx/html:z
-    restart: always
+    restart: unless-stopped
 ```
 
 - p: 如果要建立自定义的端口号，请修改“:”前面的80

@@ -30,7 +30,7 @@ services:
       KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
       KAFKA_NUM_PARTITIONS: 3
       KAFKA_SSL_CLIENT_AUTH: none
-    restart: always
+    restart: unless-stopped
 ----
 
 [source, bash]
