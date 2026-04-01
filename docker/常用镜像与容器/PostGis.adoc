@@ -19,10 +19,10 @@ services:
     environment:
       - POSTGRES_PASSWORD=postgres
     volumes:
-      - pgsqldata:/var/lib/postgresql/data
+      - data:/var/lib/postgresql/18/docker/
     restart: unless-stopped
 volumes:
-  pgsqldata:
+  data:
 ----
 
 [source,shell]

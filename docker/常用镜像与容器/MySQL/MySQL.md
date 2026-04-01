@@ -34,7 +34,7 @@ services:
       --max_connections=5000
       --skip-name-resolve
     volumes:
-      - mysqldata:/var/lib/mysql
+      - data57:/var/lib/mysql
     restart: unless-stopped
 
   mysql8:
@@ -53,7 +53,7 @@ services:
       --max_connections=5000
       --skip-name-resolve
     volumes:
-      - mysql8data:/var/lib/mysql
+      - data8:/var/lib/mysql
     restart: unless-stopped
 
   mysql9:
@@ -72,13 +72,13 @@ services:
       --max_connections=5000
       --skip-name-resolve
     volumes:
-      - mysql9data:/var/lib/mysql
+      - data9:/var/lib/mysql
     restart: unless-stopped
 
 volumes:
-  mysqldata:
-  mysql8data:
-  mysql9data:
+  data57:
+  data8:
+  data9:
 ```
 
 - MYSQL_ROOT_PASSWORD: 初始化root账户访问的密码
