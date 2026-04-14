@@ -1,13 +1,77 @@
 = mosquitto
+:scripts: cjk
+:toc: left
+:toclevels: 3
+:toc-title: 目录
+:numbered:
+:sectnums:
+:sectnum-depth: 3
+:source-highlighter: coderay
+
+== 单机
+
+[source,sh]
+----
+mkdir -p ~/opt/mosquitto/{config,log,data}
+----
+
+.~/opt/mosquitto/config/mosquitto.conf
+[source,yaml]
+----
+# 持久化与日志（和你给的页面一致）
+persistence true
+persistence_location /mosquitto/data/
+log_dest file /mosquitto/log/mosquitto.log
+
+# 标准 MQTT (TCP 1883)
+listener 1883
+protocol mqtt
+
+# WebSocket (1884) → 关键配置
+listener 1884
+protocol websockets
+
+# 允许匿名访问（测试环境）
+allow_anonymous true
+----
+
+.~/opt/mosquitto/stack.yml
+[source,yaml]
+----
+services:
+  svr:
+    image: eclipse-mosquitto:2
+    container_name: mqtt
+    hostname: mqtt
+    ports:
+      - "1883:1883"
+      - "1884:1884"
+    volumes:
+      - ~/opt/mosquitto/config:/mosquitto/config
+#      - ~/opt/mosquitto/log:/mosquitto/log
+      - data:/mosquitto/data
+    logging:
+      options:
+        max-size: 8m
+volumes:
+  data:
+----
+
+* 部署
+
+[source,shell]
+----
+docker compose -f ~/opt/mosquitto/stack.yml up -d
+----
 
 == Swarm
 
 [source,sh]
 ----
-mkdir -p /usr/local/mosquitto/{config,data}
+mkdir -p ~/opt/mosquitto/{config,log,data}
 ----
 
-./usr/local/mosquitto/config/mosquitto.conf
+.~/opt/mosquitto/config/mosquitto.conf
 [source,yaml]
 ----
 persistence true
@@ -17,19 +81,19 @@ allow_anonymous true
 listener 1883
 ----
 
-./usr/local/mosquitto/stack.yml
+.~/opt/mosquitto/stack.yml
 [source,yaml]
 ----
-version: "3.9"
 services:
   svr:
     image: eclipse-mosquitto:2
     #ports:
       #- 1883:1883
-      #- 9001:9001
+      #- 1884:8080
     volumes:
-      - /usr/local/mosquitto/config:/mosquitto/config
-      - /usr/local/mosquitto/data:/mosquitto/data
+      - ~/opt/mosquitto/config:/mosquitto/config
+#      - ~/opt/mosquitto/log:/mosquitto/log
+      - ~/opt/mosquitto/data:/mosquitto/data
     deploy:
       placement:
         constraints:
@@ -47,5 +111,73 @@ networks:
 
 [source,shell]
 ----
-docker stack deploy -c /usr/local/mosquitto/stack.yml mqtt
+docker stack deploy -c ~/opt/mosquitto/stack.yml mqtt
+----
+
+== 安全管理
+
+. 禁用匿名访问
++
+.~/opt/mosquitto/config/mosquitto.conf
+[source,yaml]
+----
+....
+allow_anonymous false
+....
+----
+
+. 用户管理
+.. 添加用户到密码文件
++
+[source,sh]
+----
+# 新建密码文件 (-c)，添加用户 user1
+mosquitto_passwd -c /mosquitto/config/password user1
+# 追加用户（不加 -c）
+mosquitto_passwd /mosquitto/config/password user2
+----
+
+.. 配置引用密码文件
++
+.~/opt/mosquitto/config/mosquitto.conf
+[source,yaml]
+----
+....
+# 密码文件
+password_file /mosquitto/config/password
+....
+----
+
+. ACL 访问控制
+.. 启用 ACL 文件
++
+.~/opt/mosquitto/config/mosquitto.conf
+[source,yaml]
+----
+....
+# ACL 文件
+acl_file /mosquitto/config/acl
+....
+----
+
+.. ACL 规则示例
++
+~/opt/mosquitto/config/acl
++
+[source,conf]
+----
+# 匿名用户（仅 allow_anonymous true 时生效）
+topic read $SYS/#  # 仅允许订阅系统信息
+
+# 用户 sensor 只能发布 sensor/ 主题
+user sensor
+topic write sensor/#
+
+# 用户 admin 拥有全部权限
+user admin
+topic readwrite #
+
+# 模式匹配：用户只能访问自己的主题（%u = 用户名）
+user device
+topic readwrite device/%u/#
 ----
