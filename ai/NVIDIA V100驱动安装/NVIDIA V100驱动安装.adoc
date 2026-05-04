@@ -114,4 +114,12 @@ source ~/.bashrc
 nvcc --version
 ----
 
+== 安装nvidia-container-toolkit
+
+[source,shell]
+----
+sudo apt install -y nvidia-container-toolkit
+# 重启docker生效
+sudo systemctl restart docker
+----
 

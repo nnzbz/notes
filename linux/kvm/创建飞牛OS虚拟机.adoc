@@ -7,12 +7,11 @@ virt-install \
     --name=fnos \
     --vcpus=1,maxvcpus=2 \
     --memory=512,maxmemory=1024 \
-    --cdrom ~/kvm/iso/fnos-x.x.x-xxx.iso \
-    --disk path=~/kvm/data/fnos.qcow2,size=4 \
+    --cdrom ~/opt/kvm/iso/fnos-x.x.x-xxx.iso \
+    --disk path=~/opt/kvm/data/fnos.qcow2,size=4 \
     --os-variant generic \
     --network bridge=br0 \
-    --graphics vnc,listen=0.0.0.0,port=5900 \
-    --console pty,target_type=serial \
+    --graphics vnc,listen=0.0.0.0,port=5900,password=******** \
     --noautoconsole \
     --virt-type kvm \
     --firmware bios
@@ -28,7 +27,6 @@ virt-install \
 * `--os-variant generic`：飞牛OS识别为通用Linux，避免检测失败
 * `--network bridge=br0`：网络，桥接br0/ NAT virbr0，二选一
 * `--graphics vnc,listen=0.0.0.0,port=5900`：VNC图形化，端口从5900开始编排（避免冲突）
-* `--console pty,target_type=serial`：串口控制台，备用
 * `--noautoconsole`：不自动打开控制台
 * `--virt-type kvm`：虚拟化类型，固定KVM
 * `--firmware bios`：固件BIOS，适配飞牛OS，强制 BIOS 启动，避免 UEFI 导致飞牛 OS 启动失败

@@ -1,0 +1,84 @@
+= Linux下安装ClashX
+:scripts: cjk
+:toc: left
+:toclevels: 3
+:toc-title: 目录
+:numbered:
+:sectnums:
+:sectnum-depth: 3
+:source-highlighter: coderay
+
+== systemctl
+
+.. clash.service
++
+./etc/systemd/system/clash.service
++
+[source,ini]
+----
+[Unit]
+Description=Clash Daemon
+
+[Service]
+ExecStart=/usr/local/clash/clash -f /usr/local/clash/config/jisu.yaml -d /usr/local/clash/data/
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
+----
+
+.. 重新加载systemd
++
+[source,shell]
+----
+systemctl daemon-reload
+----
+
+.. 常用命令
++
+[source,shell]
+----
+# 启动
+systemctl start clash
+# 检查状态
+systemctl status clash
+----
+
+== 验证代理是否成功
+
+[source,shell]
+----
+curl -x localhost:7890 https://www.google.com
+----
+
+== 开启全局代理
+
+./etc/profile
+[source,shell]
+----
+# 全局代理
+# export http_proxy="http://localhost:7890"
+# export https_proxy="http://localhost:7890"
+# export ftp_proxy="http://localhost:7890"
+# 全部都使用该代理，包含 http、https、ftp
+export all_proxy="http://localhost:7890"
+----
+
+== 验证全局代理是否成功
+
+[source,shell]
+----
+curl https://www.google.com
+----
+
+== 关闭全局代理
+
+. 临时
++
+[source,shell]
+----
+unset all_proxy
+----
+. 永久
++
+注释掉全局代理的export，重新source就可以了

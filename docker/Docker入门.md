@@ -38,7 +38,8 @@
   <https://docs.docker.com/docker-for-mac/install/#what-to-know-before-you-install>
 
 - Deepin
-  由于 Deepin 是基于 debian 的 unstable 版本开发的，通过 `lsb_release -cs` 获取到的版本信息为 unstable，而 docker 官方源并没支持 debian 的 unstable 版本，因此使用 docker 官方教程是安装不成功的。
+  由于 Deepin 是基于 debian 的 unstable 版本开发的，通过 `lsb_release -cs` 获取到的版本信息为 unstable，而 docker 官方源并没支持
+  debian 的 unstable 版本，因此使用 docker 官方教程是安装不成功的。
   安装请参考官方Debian的方案
   <https://docs.docker.com/engine/install/debian/>
   但是在 `SET UP THE REPOSITORY`的第 `3` 步时注意，修改为下面的命令
@@ -53,7 +54,8 @@ deb [arch=amd64] https://download.docker.com/linux/debian buster stable
 
 解释
 
-- 官方文档使用 `$(lsb_release -cs)`，在Deepin中得到 *unstable*， 这里就具体指定debian的版本(在Deepin中查看Debian的版本请用 `cat /etc/debian_version` ，然后查看该版本对应的代号)
+- 官方文档使用 `$(lsb_release -cs)`，在Deepin中得到 *unstable*， 这里就具体指定debian的版本(在Deepin中查看Debian的版本请用
+  `cat /etc/debian_version` ，然后查看该版本对应的代号)
 
 ## 3. 安装后配置系统
 
@@ -61,15 +63,22 @@ deb [arch=amd64] https://download.docker.com/linux/debian buster stable
 
 - 如果还没有 docker group 就添加一个
 
-```sh
-sudo groupadd docker
-```
+  ```sh
+  sudo groupadd docker
+  ```
 
 - 将当前用户加入Docker组
 
-```sh
-sudo usermod -aG docker $USER
-```
+  ```sh
+  sudo usermod -aG docker $USER
+  ```
+
+- 退出重新登录
+- 激活用户组的改变
+
+  ```shell
+  newgrp docker
+  ```
 
 - 改变docker安装的路径
   docker一般安装在 `/var/lib/docker`，但是此路径一般没有分配太大的空间，所以需要更换到有足够容量的空间
@@ -87,7 +96,8 @@ sudo usermod -aG docker $USER
 
 ```sh
 # 设置开机启动
-systemctl enable docker
+sudo systemctl enable docker.service
+sudo systemctl enable containerd.service
 # 启动docker
 systemctl start docker
 ```
@@ -139,7 +149,9 @@ vi /etc/docker/daemon.json
 
 ```json
 {
-  "registry-mirrors": ["https://XXXXXXXX.mirror.aliyuncs.com"]
+  "registry-mirrors": [
+    "https://XXXXXXXX.mirror.aliyuncs.com"
+  ]
 }
 ```
 
@@ -147,7 +159,9 @@ vi /etc/docker/daemon.json
 
 ```json
 {
-  "registry-mirrors": ["https://ustc-edu-cn.mirror.aliyuncs.com"]
+  "registry-mirrors": [
+    "https://ustc-edu-cn.mirror.aliyuncs.com"
+  ]
 }
 ```
 
@@ -159,7 +173,7 @@ systemctl restart docker
 
 - mac
 
- 选择 ```Preferences``` -> ```Daemon``` –> ```Basic``` –> ```Registry mirrors``` ，添加如下内容：
+选择 ```Preferences``` -> ```Daemon``` –> ```Basic``` –> ```Registry mirrors``` ，添加如下内容：
 
 ```text
 https://registry.docker-cn.com
@@ -223,17 +237,17 @@ docker run -d -p 7000:6379 --name redis1 --restart=always redis
 注意顺序，```redis``` 放在最后面
 
 - -d
- 后台运行
+  后台运行
 - -p
- 端口映射，7000代表容器外面的端口号，6379是里面的端口号
+  端口映射，7000代表容器外面的端口号，6379是里面的端口号
 - --name \<string>
- 启动的容器名称
+  启动的容器名称
 - --restart=always
- 重启docker时启动容器(开机启动)
+  重启docker时启动容器(开机启动)
 - -i
- 捕获标准输入输出
+  捕获标准输入输出
 - -t
- 分配一个终端或控制台
+  分配一个终端或控制台
 
 #### 5.1.1. 创建并运行完退出
 
@@ -305,7 +319,7 @@ docker stop $(docker ps -q) & docker rm $(docker ps -aq)
   ```
 
 - 退出容器
- 在容器内的命令行运行 ```exit```的指令或 ```ctrl+d```
+  在容器内的命令行运行 ```exit```的指令或 ```ctrl+d```
 
 ### 5.4. 查看所有容器
 
@@ -314,7 +328,7 @@ docker ps -a
 ```
 
 - -a
- 显示所有状态容器，否则只显示当前运行的容器
+  显示所有状态容器，否则只显示当前运行的容器
 
 ### 5.5. 查看指定端口号的容器是哪个
 
@@ -397,22 +411,20 @@ docker inspect node1 | grep IPA
 docker inspect 【container name】| grep LogPath | cut -d ':' -f 2 | cut -d ',' -f 1 | xargs echo | xargs truncate -s 0
 ```
 
-
 ### 5.15. 卸载docker
+
 为了能彻底清除docker安装痕迹，需要将所有依赖项也清除，较旧版本的Docker被称为docker或docker-engine.请卸载它们以及相关的依赖项
 
-  sudo yum remove docker \
-  docker-client \
-  docker-client-latest \
-  docker-common \
-  docker-latest \
-  docker-latest-logrotate \
-  docker-logrotate \
-  docker-selinux \
-  docker-engine-selinux \
-  docker-engine
-
-
+sudo yum remove docker \
+docker-client \
+docker-client-latest \
+docker-common \
+docker-latest \
+docker-latest-logrotate \
+docker-logrotate \
+docker-selinux \
+docker-engine-selinux \
+docker-engine
 
 ### 5.16. 常见报错
 
@@ -424,7 +436,7 @@ docker inspect 【container name】| grep LogPath | cut -d ':' -f 2 | cut -d ','
   Cannot connect to the Docker daemon at unix:///var/run/docker.sock. Is the docker daemon running?
   ```
 
-  - service docker start 报错
+    - service docker start 报错
 
   ```sh
   Redirecting to /bin/systemctl start docker.service
@@ -473,5 +485,5 @@ docker inspect 【container name】| grep LogPath | cut -d ':' -f 2 | cut -d ','
   如果返回为“net.ipv4.ip_forward = 1”则表示成功了
 
 
- - Docker容器启动失败 Failed to start Docker Application Container Engine
- 参考https://www.cnblogs.com/huhyoung/p/9495956.html
+- Docker容器启动失败 Failed to start Docker Application Container Engine
+  参考https://www.cnblogs.com/huhyoung/p/9495956.html

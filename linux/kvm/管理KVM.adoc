@@ -55,10 +55,12 @@ sudo systemctl status libvirtd
 [source,shell]
 ----
 # 将用户添加到libvirt和kvm组
-sudo usermod -aG libvirt $USER sudo usermod -aG kvm $USER
+sudo usermod -aG libvirt $USER
+sudo usermod -aG kvm $USER
 
 # 重新登录或使用以下命令立即生效
 newgrp libvirt
+newgrp kvm
 ----
 
 == 创建桥接网络
@@ -83,21 +85,22 @@ network:
   ethernets:
     enp3s0:     # 替换为你的网卡名
       dhcp4: false
+      dhcp6: false
+  bridges:
+    br0:
+      interfaces: [enp3s0]  # 替换为上面的网卡名
+      dhcp4: false
+      dhcp6: false
       addresses:
-      - "xxx.xxx.xxx.xxx/24"
+      - "xxx.xxx.xxx.xxx/24"  # 静态IP
       nameservers:
         addresses:
-        - 114.114.114.114
+          - 114.114.114.114
+          - 8.8.8.8
         search: []
       routes:
       - to: "default"
-        via: "xxx.xxx.xxx.1"
-  bridges:
-    br0:
-      interfaces: [enp3s0]
-      dhcp4: false
-      addresses:
-      - "xxx.xxx.xxx.xxx/24"
+        via: "xxx.xxx.xxx.1"   # 替换为你真实的网关地址
       # 下面两个参数用于优化网桥 br0 的性能
       parameters:
         # 禁用生成树协议（Spanning Tree Protocol），防止网络环路的协议，在单交换机环境中通常可以关闭以提高性能
@@ -108,8 +111,27 @@ network:
 
 [source,shell]
 ----
-# 应用配置
+# 先运行这个命令，如果没有任何输出，说明 YAML 格式和语法是正确的
+sudo netplan generate
+
+# 先测试配置是否正确（有 120 秒回滚保护，防止断网）
+sudo netplan try
+
+# 如果没问题，直接应用
 sudo netplan apply
+----
+
+== 授权目录
+
+[source,shell]
+----
+# 创建目录
+mkdir -p /home/super/opt/kvm/{data,iso,sh}
+# 必须让 libvirt 用户能“穿过”你的个人目录
+chmod +x /home/super
+chmod +x /home/super/opt
+chmod +x /home/super/opt/kvm
+chmod +x /home/super/opt/kvm/data
 ----
 
 == 虚拟机管理

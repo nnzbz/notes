@@ -1,0 +1,115 @@
+= Ubuntu服务器典型应用
+:scripts: cjk
+:toc: left
+:toclevels: 3
+:toc-title: 目录
+:numbered:
+:sectnums:
+:sectnum-depth: 3
+:source-highlighter: coderay
+
+== 更新与升级系统软件
+
+[source,shell]
+----
+sudo apt-get update
+sudo apt-get upgrade -y
+sudo apt-get dist-upgrade -y
+sudo apt-get autoremove -y
+sudo apt-get autoclean -y
+----
+
+== 修改ssh端口号
+
+./etc/ssh/sshd_config
+[source,txt]
+----
+....
+#Port 22
+Port 10000
+....
+----
+
+== ssh免密登录
+
+[source,shell]
+----
+mkdir ~/.ssh/
+vim ~/.ssh/authorized_keys
+# 粘贴信任的公钥
+----
+
+== 安装网络常用工具
+
+[source,shell]
+----
+sudo apt-get install iputils-ping -y
+sudo apt-get install telnet -y
+sudo apt-get install rsync -y
+----
+
+== 添加root
+
+[source,shell]
+----
+sudo passwd root
+----
+
+== 安装docker
+
+. 配置docker的apt仓库
++
+[source,shell]
+----
+# Add Docker's official GPG key:
+sudo apt update
+sudo apt install ca-certificates curl
+sudo install -m 0755 -d /etc/apt/keyrings
+sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+sudo chmod a+r /etc/apt/keyrings/docker.asc
+
+# Add the repository to Apt sources:
+sudo tee /etc/apt/sources.list.d/docker.sources <<EOF
+Types: deb
+URIs: https://download.docker.com/linux/ubuntu
+Suites: $(. /etc/os-release && echo "${UBUNTU_CODENAME:-$VERSION_CODENAME}")
+Components: stable
+Architectures: $(dpkg --print-architecture)
+Signed-By: /etc/apt/keyrings/docker.asc
+EOF
+
+sudo apt update
+----
++
+[NOTE]
+====
+一行一行来执行，否则可能会出错
+====
+
+. 安装docker
++
+[source,shell]
+----
+sudo apt install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin -y
+----
+
+. Systemd
++
+[source,shell]
+----
+sudo systemctl start docker
+sudo systemctl enable docker
+sudo systemctl status docker
+----
+
+. 非root用户管理docker
++
+[source,shell]
+----
+# 创建docker用户组
+sudo groupadd docker
+# 添加用户到docker用户组
+sudo usermod -aG docker $USER
+# 重新登录或执行下面的命令
+newgrp docker
+----
