@@ -6,15 +6,14 @@
 virt-install \
     --name=fnos \
     --vcpus=1,maxvcpus=2 \
-    --memory=512,maxmemory=1024 \
+    --memory=2048,maxmemory=4096 \
     --cdrom ~/opt/kvm/iso/fnos-x.x.x-xxx.iso \
-    --disk path=~/opt/kvm/data/fnos.qcow2,size=4 \
-    --os-variant generic \
+    --disk path=~/opt/kvm/data/fnos.qcow2,size=20 \
+    --os-variant debian11 \
     --network bridge=br0 \
     --graphics vnc,listen=0.0.0.0,port=5900,password=******** \
     --noautoconsole \
     --virt-type kvm \
-    --firmware bios
 ----
 
 == 参数说明
@@ -29,4 +28,3 @@ virt-install \
 * `--graphics vnc,listen=0.0.0.0,port=5900`：VNC图形化，端口从5900开始编排（避免冲突）
 * `--noautoconsole`：不自动打开控制台
 * `--virt-type kvm`：虚拟化类型，固定KVM
-* `--firmware bios`：固件BIOS，适配飞牛OS，强制 BIOS 启动，避免 UEFI 导致飞牛 OS 启动失败

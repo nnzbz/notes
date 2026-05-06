@@ -8,15 +8,29 @@
 :sectnum-depth: 3
 :source-highlighter: coderay
 
+== 修改时区
+
+[source,shell]
+----
+sudo timedatectl set-timezone Asia/Shanghai
+----
+
 == 更新与升级系统软件
 
 [source,shell]
 ----
-sudo apt-get update
+sudo apt-get update -y
 sudo apt-get upgrade -y
 sudo apt-get dist-upgrade -y
 sudo apt-get autoremove -y
 sudo apt-get autoclean -y
+----
+
+== 安装常用工具
+
+[source,shell]
+----
+sudo apt install vim iputils-ping telnet rsync p7zip-full -y
 ----
 
 == 修改ssh端口号
@@ -39,15 +53,6 @@ vim ~/.ssh/authorized_keys
 # 粘贴信任的公钥
 ----
 
-== 安装网络常用工具
-
-[source,shell]
-----
-sudo apt-get install iputils-ping -y
-sudo apt-get install telnet -y
-sudo apt-get install rsync -y
-----
-
 == 添加root
 
 [source,shell]
@@ -64,7 +69,7 @@ sudo passwd root
 # Add Docker's official GPG key:
 sudo apt update
 sudo apt install ca-certificates curl
-sudo install -m 0755 -d /etc/apt/keyrings
+sudo apt install -m 0755 -d /etc/apt/keyrings
 sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
 sudo chmod a+r /etc/apt/keyrings/docker.asc
 

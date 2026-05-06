@@ -14,7 +14,7 @@
 
 ---
 
-## 3. PowerDesignr配置
+## 3. PowerDesigner配置
 
 ### 3.1. 配置实体的属性名可以重复
 

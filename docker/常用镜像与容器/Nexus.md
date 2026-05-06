@@ -52,10 +52,10 @@ vi /usr/local/nexus/stack.yml
 ```
 
 ```yml{.line-numbers}
-version: "3.9"
 services:
   nexus:
-    image: sonatype/nexus3
+    # tag超过3.76.1版本会有限制
+    image: sonatype/nexus3:3.76.1
     ports:
       - 8081:8081
       # docker私服HTTP的接口

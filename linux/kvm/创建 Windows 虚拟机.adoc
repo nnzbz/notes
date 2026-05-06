@@ -16,23 +16,26 @@
 # Win7
 virt-install \
     --name win7 --os-variant win7 \
-    --vcpus=4 --memory=8192 \
-    --cdrom=~/kvm/iso/cn_windows_7_professional_with_sp1_x64_dvd_u_677031.iso \
-    --disk ~/kvm/iso/virtio-win-0.1.285.iso,device=cdrom,readonly=yes \
-    --disk path=~/kvm/data/Win7.qcow2,format=qcow2,size=50,bus=virtio,cache=writethrough,io=threads,discard=unmap \
+    --vcpus=4,maxvcpus=8 \
+    --memory=8192,maxmemory=16384 \
+    --cdrom ~/kvm/iso/cn_windows_7_professional_with_sp1_x64_dvd_u_677031.iso \
+    --disk path=~/opt/kvm/data/Win7.qcow2,format=qcow2,size=50,bus=virtio,cache=writethrough,io=threads,discard=unmap \
+    --disk path=~/opt/kvm/iso/virtio-win-0.1.285.iso,device=cdrom,readonly=yes \
     --graphics vnc,listen=0.0.0.0,port=5900,password=******** \
     --network bridge=br0,model=e1000e \
     --controller usb,model=ich9-ehci1 \
     --virt-type=kvm \
     --cpu host-model,hv_relaxed,hv_spinlocks=0x1fff,hv_vapic,hv_time
 
-Win10
+# Win10
 virt-install \
     --name win10 --os-variant win10 \
-    --vcpus=4 --memory=8192 \
+    --vcpus=4,maxvcpus=8 \
+    --memory=8192,maxmemory=16384 \
+    --cdrom ~/opt/kvm/iso/cn_windows_10_business_editions_version_1909_x64_dvd_0ca83907.iso \
+    --cdrom ~/opt/kvm/iso/virtio-win-0.1.285.iso \
     --disk path=~/opt/kvm/data/Win10.qcow2,format=qcow2,size=50,bus=virtio,cache=writeback,io=threads,discard=unmap \
-    --cdrom=~/opt/kvm/iso/cn_windows_10_business_editions_version_1909_x64_dvd_0ca83907.iso \
-    --cdrom=~/opt/kvm/iso/virtio-win-0.1.285.iso \
+    --disk path=~/opt/kvm/iso/virtio-win-0.1.285.iso,device=cdrom,readonly=yes \
     --graphics vnc,listen=0.0.0.0,port=5900,password=******** \
     --network bridge=br0,model=virtio \
     --virt-type=kvm \
@@ -46,8 +49,8 @@ virt-install \
 * --os-variant: 指定操作系统类型和版本。
 * --vcpus: CPU核心数。
 * --memory: 分配的内存大小。
-* --disk: 虚拟硬盘路径和大小。
 * --cdrom: Windows安装介质路径。
+* --disk: 虚拟硬盘路径和大小。
 * --graphics: 使用VNC或SPICE进行图形化管理。
 * --network: 虚拟机网络配置。
 * --cpu host-passthrough: 直接将宿主机 CPU 的型号、功能标志（flags）全部暴露给 VM，相当于“让 VM 看到和物理机一模一样的 CPU”。

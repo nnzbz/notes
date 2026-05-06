@@ -8,7 +8,112 @@
 :sectnum-depth: 3
 :source-highlighter: coderay
 
-== 查看当前 bucket 信息（确认 ID 和现有配置）
+== InfluxDB CLI
+
+=== 配置 InfluxDB CLI
+
+[source,sh]
+----
+influx config create --config-name <配置名称> --host-url <INFLUXDB_URL> --token <API_TOKEN> --active
+----
+
+[NOTE]
+====
+* 配置文件路径：~/.influxdbv2/configs
+* 配置文件格式：YAML
+* 配置文件内容：
+* url: InfluxDB 的 URL
+* token: API 令牌
+* active: 是否为当前活动配置
+====
+
+=== 列出所有配置
+
+[source,sh]
+----
+influx config list
+----
+
+=== 切换到指定配置
+
+[source,sh]
+----
+influx config use <CONFIG_NAME>
+----
+
+=== 删除指定配置
+
+[source,sh]
+----
+influx config delete <CONFIG_NAME>
+----
+
+=== 查看当前配置
+
+[source,sh]
+----
+influx config current
+----
+
+=== 进入 InfluxDB CLI
+
+[source,sh]
+----
+influx
+----
+
+== 组织
+
+=== 列出所有组织
+
+[source,sh]
+----
+influx org list
+----
+
+=== 创建组织
+
+[source,sh]
+----
+influx org create --name <ORG_NAME>
+----
+
+=== 删除组织
+
+[source,sh]
+----
+influx org delete --id <ORG_ID>
+----
+
+=== 查看当前组织
+
+[source,sh]
+----
+influx org list
+----
+
+=== 切换到指定的组织
+
+[source,sh]
+----
+influx switch <ORG_NAME>
+----
+
+== bucket
+
+[source,sh]
+----
+influx bucket list
+----
+
+=== 列出指定组织的 bucket
+
+[source,sh]
+----
+influx bucket list --org <ORG_NAME>
+----
+
+=== 查看当前 bucket 信息
 
 [source,sh]
 ----
@@ -16,17 +121,20 @@ influx bucket list --org <ORG_NAME> --token <API_TOKEN>
 ----
 
 * 输出列
+** ID: bucket 的唯一标识符
+** Name: bucket 的名称
+** Organization ID: 所属组织的 ID
 ** Retention: 保留时长（例如：1h、24h、7d）
 ** Shard group duration: 分片组时长（例如：1h、24h、7d）
 
-== 修改 bucket 的过期时长
+=== 修改 bucket 的过期时长
 
 [source,sh]
 ----
 influx bucket update --id <BUCKET_ID> --retention <NEW_RETENTION_PERIOD> --org <ORG_NAME> --token <API_TOKEN>
 ----
 
-== 修改分片组时长
+=== 修改分片组时长
 
 [source,curl]
 ----
@@ -53,9 +161,9 @@ curl -X PATCH \
 * 永不过期的 bucket（retention=0）默认分片组时长为 7 天
 ====
 
-== 手动清理过期数据
+=== 手动清理过期数据
 
-=== 全量清理指定时间前的数据
+==== 全量清理指定时间前的数据
 
 [source,sh]
 ----
@@ -68,7 +176,7 @@ influx delete \
 --stop '2025-01-01T00:00:00Z'
 ----
 
-=== 指定条件清理
+==== 指定条件清理
 
 [source,sh]
 ----
@@ -81,3 +189,29 @@ influx delete \
 --stop '2025-01-01T00:00:00Z' \
 --predicate '_measurement="cpu" AND host="old-server"'
 ----
+
+== 查询
+=== 查询数据
+[source,sh]
+----
+influx query 'from(bucket:"<BUCKET_NAME>") |> range(start: -1h)'
+----
+=== 查询数据（指定时间范围）
+[source,sh]
+----
+influx query 'from(bucket:"<BUCKET_NAME>") |> range(start: 2023-01-01T00:00:00Z, stop: 2023-01-02T00:00:00Z)'
+----
+=== 查询数据（指定时间范围和时间间隔）
+[source,sh]
+----
+influx query 'from(bucket:"<BUCKET_NAME>") |> range(start: 2023-01-01T00:00:00Z, stop: 2023-01-02T00:00:00Z, every: 1m)'
+----
+=== 查询数据（指定时间范围和时间间隔，并按标签过滤）
+[source,sh]
+----
+influx query 'from(bucket:"<BUCKET_NAME>") |> range(start: 2023-01-01T00:00:00Z, stop: 2023-01-02T00:00:00Z, every: 1m) |> filter(fn: (r) => r["host"] == "server1")'
+----
+=== 查询数据（指定时间范围和时间间隔，并按标签过滤，并按字段排序）
+[source,sh]
+----
+from(bucket:"mt_locator") |> range(start: -1m) |> filter(fn: (r) => r["bindTarget"] == "user" and r["bindTargetId"] == "1453282814928224260") |> map(fn: (r) => ({ r with _type: type(v: r._value) })) |> group(columns: ["_type"]) |> aggregateWindow(every: 5s, fn: (tables=><-) => if exists tables._type and tables._type[0] == "string" then tables |> last() else tables |> mean()) |> ungroup() |> sort(columns: ["_time"])

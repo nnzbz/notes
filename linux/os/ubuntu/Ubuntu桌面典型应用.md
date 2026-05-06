@@ -56,7 +56,7 @@ sudo apt-get install vim
 ### 1.6. 文件管理器
 
 ```sh
-# 增加 `Open as Administator` 功能
+# 增加 `Open as Administrator` 功能
 sudo apt install nautilus-admin
 ```
 
@@ -165,13 +165,13 @@ Categories=Application;Development;
 sudo chmod u+x /usr/share/applications/eclipse.desktop
 ```
 
-### 1.14. meld
+### 1.14. Meld
 
 ```sh
 sudo apt-get install meld
 ```
 
-### 1.15. wireshark
+### 1.15. Wireshark
 
 ppa如果已经安装，可不用再次安装
 
@@ -185,13 +185,13 @@ sudo apt install wireshark
 
 ### 2.1. apt国内镜像
 
-- 查看当前系统的Codename
+- 查看当前系统的 Codename
 
 ```sh
 lsb_release -a
 ```
 
-- 搜索相应Codename的国内镜像
+- 搜索相应 Codename 的国内镜像
 
 - 修改镜像文件
 
