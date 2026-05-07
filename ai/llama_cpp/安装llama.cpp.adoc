@@ -1,0 +1,95 @@
+= 安装llama.cpp
+:scripts: cjk
+:toc: left
+:toclevels: 3
+:toc-title: 目录
+:numbered:
+:sectnums:
+:sectnum-depth: 3
+:source-highlighter: coderay
+
+== 克隆git仓库
+
+[source,shell]
+----
+git clone https://github.com/ggml-org/llama.cpp.git
+----
+
+== 安装编译软件
+
+[source,shell]
+----
+# MacOS
+brew install cmake
+----
+
+== 创建构建目录
+
+[source,shell]
+----
+rm -rf build
+mkdir build
+cd build
+----
+
+== 配置 CMake 开启 Metal(MacOS)
+
+[source,shell]
+----
+cmake .. -DLLAMA_METAL=on
+----
+
+== 编译
+
+[source,shell]
+----
+cmake --build . --config Release -j
+----
+
+== 下载模型
+
+[source,shell]
+----
+modelscope download --model unsloth/Qwen3.5-2B-GGUF Qwen3.5-4B-Q4_K_M.gguf --local_dir ~/Downloads
+----
+
+== 验证
+
+[source,shell]
+----
+./bin/llama-cli -m <你的模型路径> -n 512 --temp 0.7 -ngl 100 -p "你好"
+----
+
+- -ngl 100 (或者 --n-gpu-layers 100): 这是最关键参数！程序尽可能多地把模型层加载到 GPU 上运行。
+- -n 512: 控制模型单次生成的最大 token 数量，强制停止生成，即使内容未结束
+- --temp 0.7: 生成随机性控制，值越大低概率词越易被选中
+
+== 启动服务
+
+[source,shell]
+----
+/bin/llama-server -m ~/opt/llm/Qwen3.5-4B-Q4_K_M.gguf -ngl 99 --host 0.0.0.0 --port 8080
+----
+
+- 多卡 GPU 部署
++
+[source,shell]
+----
+/bin/llama-server -m ~/opt/llm/Qwen3.5-4B-Q4_K_M.gguf --tensor-split 1,1 -ngl 99 --host 0.0.0.0 --port 8080
+----
++
+[NOTE]
+====
+--tensor-split 1,1: 表示双卡平分
+====
+
+== 检查GPU是否生效
+
+- 启动后观察日志，必须出现以下关键行
++
+[source,shell]
+----
+load: offloaded 35/32 layers to GPU
+----
++
+若显示 `offloaded 0/32 layers`，说明 `-ngl` 未生效（或设为 0）。

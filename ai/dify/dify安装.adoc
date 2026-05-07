@@ -8,22 +8,28 @@
 :sectnum-depth: 3
 :source-highlighter: coderay
 
-== 安装
 
-. 下载最新版dify
-+
+== 下载最新版dify
 [source,bash]
 ----
 git clone https://github.com/langgenius/dify.git
 ----
 
-. 进入docker目录修改配置
+== 进入docker目录修改配置
 +
-.dify/docker/docker-compose.yml
+.dify/docker/docker-compose.yaml
 [source,bash]
 ----
 # 修改: langgenius/dify-api:1.12.0 -> langgenius/dify-api
 # 修改: langgenius/dify-web:1.12.0 -> langgenius/dify-web
 ----
 
-.
+== 启动
+
+[source,shell]
+----
+cd dify
+cd docker
+cp .env.example .env
+docker compose up -d
+----
