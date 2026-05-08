@@ -1,0 +1,57 @@
+= ollama安装
+:scripts: cjk
+:toc: left
+:toclevels: 3
+:toc-title: 目录
+:numbered:
+:sectnums:
+:sectnum-depth: 3
+:source-highlighter: coderay
+
+== 命令行安装
+
+[source,shell]
+----
+curl -fsSL https://ollama.com/install.sh | sh
+----
+
+== docker安装
+
+. 创建目录
++
+[source,shell]
+----
+mkdir -p ~/opt/ollama/data
+----
+. docker-compose.yml
++
+.~/opt/ollama/docker-compose.yml
++
+[source,yaml]
+----
+services:
+  ollama:
+    image: ollama/ollama                # 对应镜像
+    container_name: ollama              # 容器名
+    ports:
+      - "11434:11434"                   # 端口映射
+    volumes:
+      - ~/opt/ollama/data:/root/.ollama # 数据卷挂载
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all                # 使用 gpu 全部核心
+              capabilities: [gpu]
+    restart: unless-stopped             # 推荐加上开机自启
+    logging:
+      options:
+        max-size: 8m
+----
+. 部署
++
+[source,shell]
+----
+docker compose -f ~/opt/ollama/docker-compose.yml up -d
+----

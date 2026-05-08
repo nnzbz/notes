@@ -114,11 +114,14 @@ source ~/.bashrc
 nvcc --version
 ----
 
-== 安装nvidia-container-toolkit
+== 支持docker
 
 [source,shell]
 ----
+# 安装 NVIDIA Container Toolkit 包
 sudo apt install -y nvidia-container-toolkit
+# 配置docker使用nvidia驱动
+sudo nvidia-ctk runtime configure --runtime=docker
 # 重启docker生效
 sudo systemctl restart docker
 ----
