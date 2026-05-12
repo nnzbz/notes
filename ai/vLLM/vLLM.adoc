@@ -36,27 +36,28 @@ docker run --gpus all \
 +
 [source,shell]
 ----
-mkdir -p ~/opt/vllm/cache
+mkdir -p ~/opt/vllm/cache/modelscope
+vim ~/opt/vllm/docker-compose.yml
 ----
 
 . 部署文件
 +
-.~/opt/vllm/stack.yml
+.~/opt/vllm/docker-compose.yml
 [source,yaml]
 ----
 services:
-  vllm-multi-model:
-    image: vllm/vllm-openai:v0.19.1-cu130
+  vllm:
+    image: vllm/vllm-openai:v0.20.1-cu130
+    container_name: vllm
     ports:
       - "8000:8000"
-    # 核心：同时加载2个模型，对外服务名自定义
     command: >
       --model Qwen/Qwen3.5-27B --served-model-name qwen3.5-27b
-      --model unsloth/GLM-4.7-Flash-GGUF --served-model-name glm4.7-30b
+      --tensor-parallel-size 2
     volumes:
-      - ~/opt/vllm/cache:/root/.cache/huggingface
+      - ~/opt/vllm/cache/modelscope:/root/.cache/modelscope
     environment:
-      - HF_TOKEN=${HF_TOKEN}
+      - VLLM_USE_MODELSCOPE=True
     ipc: host
     deploy:
       resources:
@@ -72,5 +73,5 @@ services:
 +
 [source,shell]
 ----
-docker compose -f ~/opt/vllm/stack.yml up -d
+docker compose -f ~/opt/vllm/docker-compose.yml up -d
 ----

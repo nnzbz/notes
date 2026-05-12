@@ -1,0 +1,51 @@
+= Xinference安装
+:scripts: cjk
+:toc: left
+:toclevels: 3
+:toc-title: 目录
+:numbered:
+:sectnums:
+:sectnum-depth: 3
+:source-highlighter: coderay
+
+== 创建目录与编辑docker-compose.yml
+[source,shell]
+----
+mkdir -p ~/opt/xinference/cache/modelscope
+mkdir -p ~/opt/xinference/data
+vim ~/opt/xinference/docker-compose.yml
+----
+
+== docker-compose.yml 文件
+.~/opt/xinference/docker-compose.yml
+[source,yaml]
+----
+services:
+  xinference:
+    image: xprobe/xinference:latest
+    container_name: xinference
+    ports:
+      - "9997:9997"
+    volumes:
+      - ~/opt/xinference/data:/root/.xinference
+      - ~/opt/xinference/cache/modelscope:/root/.cache/modelscope
+    command: xinference-local -H 0.0.0.0
+    environment:
+      - XINFERENCE_MODEL_SRC=modelscope
+      - LANG=zh_CN.UTF-8
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    restart: unless-stopped
+----
+
+== 部署
++
+[source,shell]
+----
+docker compose -f ~/opt/xinference/docker-compose.yml up -d
+----

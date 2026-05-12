@@ -56,8 +56,13 @@ apt search nvidia-driver | grep -E "nvidia-driver-[0-9]+"
 
 [source,shell]
 ----
-sudo apt install nvidia-driver-575 -y
+sudo apt install nvidia-driver-580 -y
 ----
+
+[NOTE]
+====
+经测试，目前支持V100算力卡的驱动最高的版本仅为580，不能用590及之上的版本
+====
 
 === 检查安装是否成功
 
