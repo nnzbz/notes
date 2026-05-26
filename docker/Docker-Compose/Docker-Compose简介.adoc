@@ -1,8 +1,12 @@
 = Docker compose 简介
 :scripts: cjk
 :toc: left
+:toclevels: 3
 :toc-title: 目录
-:toclevels: 4
+:numbered:
+:sectnums:
+:sectnum-depth: 3
+:source-highlighter: coderay
 
 == 安装
 <https://docs.docker.com/compose/install/>
@@ -40,15 +44,47 @@ docker compose -f xxx.yml up -d
 [,shell]
 ----
 docker compose -f xxx.yml up -d --force-recreate
-# 或者
-docker compose -f xxx.yml up -d --build
 ----
+[NOTE]
+====
+- 在compose文件中配置 `stop_grace_period`，指定停止服务时的等待最长时间，默认为 `10s`
+====
 
 == 停止所有服务
 [,shell]
 ----
 docker compose down
 ----
+
+== 外部网络
+- 创建外部网络 `rebue`
++
+[source,shell]
+----
+docker network create rebue
+----
+- 在compose文件中配置 `networks`，指定外部网络，默认为 `default`
++
+[source,yaml]
+----
+networks:
+  default:
+    name: rebue
+    external: true
+----
+
+== 限制日志大小
+- 在compose文件中的单个服务的节点下，配置 `logging`，指定日志大小，默认为 `-1`
++
+[source,yaml]
+----
+  logging:
+    options:
+      max-size: 8m
+----
+
+== 健康检查
+见 link:健康检查.adoc[健康检查]
 
 == 参考
 https://docs.docker.com/compose/compose-file/compose-file-v3/

@@ -1,0 +1,145 @@
+= 健康检查
+:scripts: cjk
+:toc: left
+:toclevels: 3
+:toc-title: 目录
+:numbered:
+:sectnums:
+:sectnum-depth: 3
+:source-highlighter: coderay
+
+== 机制说明
+1. **状态转换**：容器启动后初始状态为 `starting`。
+2. **执行测试**：Docker 定期在容器内运行 `test` 命令。
+   - 退出码 `0`：表示容器健康。
+   - 退出码 `1`：表示容器不健康。
+3. **判定逻辑**：
+   - **进入不健康状态**：如果连续 `retries` 次检查失败，状态转为 `unhealthy`。
+   - **恢复健康状态**：处于不健康状态时，只要有一次检查成功，状态立即转为 `healthy`。
+4. **服务依赖**：配合 `depends_on` 的 `condition: service_healthy` 选项，可以实现真正的服务间启动依赖（即等待数据库完全初始化后再启动应用）。
+
+== 自定义条件
+- 在compose文件中的单个服务的节点下，配置 `healthcheck`：
++
+[source,yaml]
+----
+  healthcheck:
+    test: ["CMD", "curl", "-f", "http://localhost:80/_health"]
+    interval: 15s            # 检查间隔：每次检查之间等待的时间。默认为 `30s`
+    timeout: 5s             # 超时时间：单次检查命令运行的最长时间。默认为 `30s`
+    retries: 5              # 重试次数：标记为不健康所需的连续失败次数。默认为 `3`
+    start_period: 10s       # 启动宽限期：在此期间检查失败不计入重试次数。默认为 `0s`
+    start_interval: 1s      # 在启动宽限期内检查间隔，以便让服务在启动成功后能更快被识别为 healthy
+----
+
+== test 命令的灵活性
+`test` 是健康检查的核心，它根据命令的 **退出码 (Exit Code)** 来判断健康状态：
+- **退出码 0**：健康 (Healthy)
+- **退出码 1**：不健康 (Unhealthy)
+
+=== 使用 curl 判断 HTTP 响应
+最常见的用法是检查 Web 服务。
+[source,yaml]
+----
+healthcheck:
+  # -f: HTTP 错误时返回非零退出码 (4xx/5xx)
+  # -s: 静默模式，不显示进度
+  test: ["CMD", "curl", "-f", "http://localhost/health"]
+----
+
+=== 判断特殊响应（业务逻辑）
+如果需要判断响应体内容或特定的 Header，可以利用 `grep` 或逻辑判断：
+[source,yaml]
+----
+healthcheck:
+  # 判断返回内容是否包含 "OK" 字符串
+  test: ["CMD-SHELL", "curl -f http://localhost/status | grep 'OK' || exit 1"]
+----
+
+=== 其他常用工具
+- **wget** (适用于 minimal/alpine 镜像):
+  `test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost/ || exit 1"]`
+- **nc (netcat)** (仅判断端口是否开启):
+  `test: ["CMD", "nc", "-z", "localhost", "8080"]`
+- **pg_isready** (PostgreSQL 专用):
+  `test: ["CMD-SHELL", "pg_isready -U postgres"]`
+- **mysqladmin ping (MySQL 专用)**:
+  `test: ["CMD-SHELL", "mysqladmin ping -h localhost -u root -p"]`
+- **redis-cli (Redis 专用)**:
+  `test: ["CMD-SHELL", "redis-cli -h localhost -p 6379 -a password -c 'SELECT 0' || exit 1"]`
+
+[TIP]
+====
+- **curl -f** 是关键：如果不加 `-f`，即使服务器返回 `500 Internal Server Error`，curl 也会认为请求成功并返回退出码 `0`，导致健康检查失效。
+- **镜像内必须包含工具**：健康检查命令是在容器内部运行的。如果你的基础镜像是 `distroless` 或极简的 `alpine`，可能需要先安装 `curl` 或使用程序自带的健康检查逻辑（如 Go/Node.js 写的脚本）。
+====
+
+== 不健康后的处理机制
+当容器被判定为 `unhealthy` 时，Docker 的处理方式取决于运行模式：
+
+=== Docker Engine (独立容器/Docker Compose)
+   - **不会自动重启**: Docker 默认不会因为健康检查失败而杀死或重启容器。容器会继续运行，但状态会显示为 `(unhealthy)`。
+   - **影响依赖**: 如果其他服务通过 `depends_on` 依赖此服务的 `service_healthy` 状态，那么这些服务将无法启动。
+   - **需手动处理**: 通常需要配合外部工具（见 <<autoheal>>）或人工介入来重启不健康的容器。
+
+=== Docker Swarm (集群模式)
+   - **自动修复**: Swarm 会自动停止不健康的副本（Task），并启动新的副本以维持期望的状态。
+   - **负载均衡**: Swarm 的内置负载均衡器会停止向不健康的容器分发流量。
+
+=== Kubernetes (K8s)
+   - **存活探针 (Liveness Probe)**: 如果存活探针检测失败，K8s 会根据重启策略自动重启容器。
+   - **就绪探针 (Readiness Probe)**: 如果就绪探针检测失败，K8s 会将该 Pod 从 Service 的端点列表中移除，停止向其分发流量。
+
+[#autoheal]
+== autoheal
+`autoheal` 是一个轻量级的辅助容器，专门用于解决 Docker Engine/Compose 模式下“不健康容器不会自动重启”的问题。
+
+=== 工作原理
+`autoheal` 本质上是一个监控 Docker 事件并调用 Docker API 的守护进程：
+
+. **API 访问**：通过挂载 `/var/run/docker.sock`，`autoheal` 获得了调用 Docker 引擎 API 的权限。
+. **状态轮询**：它会定期（默认每 5 秒）轮询所有容器的健康状态。
+. **指令重启**：一旦发现被监控的容器状态变为 `unhealthy`，它会立即调用 Docker API 发送重启指令。
+
+=== 监控范围配置
+通过环境变量 `AUTOHEAL_CONTAINER_LABEL` 控制监控哪些容器：
+
+- **定向监控（推荐）**: 默认监控带有 `autoheal=true` 标签的容器。
+- **全量监控**: 设置 `AUTOHEAL_CONTAINER_LABEL=all` 监控所有配置了健康检查的容器。
+- **自定义标签**: 可以指定其他标签名。
+
+=== 优雅退出与超时
+[IMPORTANT]
+====
+**注意重启时的超时时间（Timeout）**
+
+- **术语映射**: Compose 中的 `stop_grace_period` 在 Docker APITimeout`。
+-Timeout`。
+- **覆盖行为**: `autoheal` 在调用重启 API 时会显式指定超时时间（默认为 10s），这会**覆盖**容器自身定义的 `stop_grace_period`。
+- **同步建议**: 如果你的容器需要更长的优雅退出时间，请在业务容器上同时添加 `autoheal.stop.timeout` 标签。
+====
+
+=== 配置示例
+[source,yaml]
+----
+services:
+  # 业务服务
+  myapp:
+    image: myapp:latest
+    stop_grace_period: 30s
+    labels:
+      - "autoheal=true"
+      - "autoheal.stop.timeout=30"  # 确保 autoheal 重启时等待足够长的时间
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/"]
+
+  # autoheal 服务
+  autoheal:
+    image: willfarrell/autoheal:latest
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - AUTOHEAL_CONTAINER_LABEL=autoheal
+      - AUTOHEAL_INTERVAL=5
+    restart: always
+----
