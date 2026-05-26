@@ -5,10 +5,10 @@
 ----
 virt-install \
     --name=fnos \
-    --vcpus=1,maxvcpus=2 \
+    --vcpus=4,sockets=2,cores=1,threads=2 \
     --memory=2048,maxmemory=4096 \
     --cdrom ~/opt/kvm/iso/fnos-x.x.x-xxx.iso \
-    --disk path=~/opt/kvm/data/fnos.qcow2,size=20 \
+    --disk path=~/opt/kvm/data/fnos.raw,format=raw,size=20 \
     --os-variant debian11 \
     --network bridge=br0 \
     --graphics vnc,listen=0.0.0.0,port=5900,password=******** \

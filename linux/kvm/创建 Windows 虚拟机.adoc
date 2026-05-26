@@ -30,31 +30,36 @@ virt-install \
 # Win10
 virt-install \
     --name win10 --os-variant win10 \
-    --vcpus=4,maxvcpus=8 \
-    --memory=8192,maxmemory=16384 \
+    --vcpus=4,sockets=2,cores=1,threads=2 \
+    --memory=16384,maxmemory=24576 \
     --cdrom ~/opt/kvm/iso/cn_windows_10_business_editions_version_1909_x64_dvd_0ca83907.iso \
-    --cdrom ~/opt/kvm/iso/virtio-win-0.1.285.iso \
-    --disk path=~/opt/kvm/data/Win10.qcow2,format=qcow2,size=50,bus=virtio,cache=writeback,io=threads,discard=unmap \
+    --disk path=~/opt/kvm/data/win10-c.raw,format=raw,size=38,bus=virtio,cache=none,io=native \
     --disk path=~/opt/kvm/iso/virtio-win-0.1.285.iso,device=cdrom,readonly=yes \
-    --graphics vnc,listen=0.0.0.0,port=5900,password=******** \
+    --graphics vnc,listen=0.0.0.0,port=5901,password=******** \
     --network bridge=br0,model=virtio \
     --virt-type=kvm \
     --cpu host-passthrough \
-    --features hyperv_relaxed=on,hyperv_spinlocks=on,hyperv_vapic=on
+    --features hyperv_relaxed=on,hyperv_spinlocks=on,hyperv_vapic=on \
+    --clock offset=localtime,hypervclock_present=yes \
+    --noautoconsole
 ----
 
 参数说明：
 
-* --name: 虚拟机名称。
-* --os-variant: 指定操作系统类型和版本。
-* --vcpus: CPU核心数。
-* --memory: 分配的内存大小。
-* --cdrom: Windows安装介质路径。
-* --disk: 虚拟硬盘路径和大小。
-* --graphics: 使用VNC或SPICE进行图形化管理。
-* --network: 虚拟机网络配置。
-* --cpu host-passthrough: 直接将宿主机 CPU 的型号、功能标志（flags）全部暴露给 VM，相当于“让 VM 看到和物理机一模一样的 CPU”。
+* --name: 虚拟机名称
+* --os-variant: 指定操作系统类型和版本
+* --vcpus: CPU核心数 vcpus = sockets * cores * threads
+* --memory: 分配的内存大小
+* --cdrom: Windows安装介质路径
+* --disk: 虚拟硬盘路径和大小
+** discard=unmap: 本质是让虚拟机把「不再使用的空闲块」通知给宿主机块设备，让它回收空间。对于 SSD/NVMe 等支持 TRIM 的设备启作用，机械硬盘不启作用。
+* --graphics: 使用VNC或SPICE进行图形化管理
+** password: VNC密码，不能超过8位数
+* --network: 虚拟机网络配置
+* --cpu host-passthrough: 直接将宿主机 CPU 的型号、功能标志（flags）全部暴露给 VM，相当于“让 VM 看到和物理机一模一样的 CPU”
 * --features hyperv_*：提升 Windows 性能
+* --clock: 设置时钟同步
+* --noautoconsole: 不自动打开控制台(VNC窗口)
 
 == VNC客户端连接
 
