@@ -16,18 +16,18 @@ mkdir -p ~/opt/mosquitto/{config,log,data}
 ----
 
 .~/opt/mosquitto/config/mosquitto.conf
-[source,yaml]
+[source,ini]
 ----
-# 持久化与日志（和你给的页面一致）
+# 持久化与日志
 persistence true
 persistence_location /mosquitto/data/
 log_dest file /mosquitto/log/mosquitto.log
 
-# 标准 MQTT (TCP 1883)
+# 标准 MQTT
 listener 1883
 protocol mqtt
 
-# WebSocket (1884) → 关键配置
+# WebSocket
 listener 1884
 protocol websockets
 
@@ -35,7 +35,7 @@ protocol websockets
 allow_anonymous true
 ----
 
-.~/opt/mosquitto/stack.yml
+.~/opt/mosquitto/docker-compose.yml
 [source,yaml]
 ----
 services:
@@ -48,20 +48,23 @@ services:
       - "1884:1884"
     volumes:
       - ~/opt/mosquitto/config:/mosquitto/config
-#      - ~/opt/mosquitto/log:/mosquitto/log
-      - data:/mosquitto/data
+      - ~/opt/mosquitto/log:/mosquitto/log
+      - ~/opt/mosquitto/data:/mosquitto/data
+    restart: unless-stopped
     logging:
       options:
         max-size: 8m
-volumes:
-  data:
+networks:
+  default:
+    external: true
+    name: rebue
 ----
 
 * 部署
 
 [source,shell]
 ----
-docker compose -f ~/opt/mosquitto/stack.yml up -d
+docker compose -f ~/opt/mosquitto/docker-compose.yml up -d
 ----
 
 == Swarm
@@ -92,7 +95,7 @@ services:
       #- 1884:8080
     volumes:
       - ~/opt/mosquitto/config:/mosquitto/config
-#      - ~/opt/mosquitto/log:/mosquitto/log
+      - ~/opt/mosquitto/log:/mosquitto/log
       - ~/opt/mosquitto/data:/mosquitto/data
     deploy:
       placement:
@@ -119,14 +122,26 @@ docker stack deploy -c ~/opt/mosquitto/stack.yml mqtt
 . 禁用匿名访问
 +
 .~/opt/mosquitto/config/mosquitto.conf
-[source,yaml]
+[source,ini]
 ----
 ....
+# 禁用匿名访问
 allow_anonymous false
 ....
 ----
 
 . 用户管理
+.. 配置引用密码文件
++
+.~/opt/mosquitto/config/mosquitto.conf
+[source,ini]
+----
+....
+# 密码文件
+password_file /mosquitto/config/password
+....
+----
+
 .. 添加用户到密码文件
 +
 [source,sh]
@@ -135,17 +150,6 @@ allow_anonymous false
 mosquitto_passwd -c /mosquitto/config/password user1
 # 追加用户（不加 -c）
 mosquitto_passwd /mosquitto/config/password user2
-----
-
-.. 配置引用密码文件
-+
-.~/opt/mosquitto/config/mosquitto.conf
-[source,yaml]
-----
-....
-# 密码文件
-password_file /mosquitto/config/password
-....
 ----
 
 . ACL 访问控制

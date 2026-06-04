@@ -3,10 +3,12 @@
 [TOC]
 
 == 单机
+[source, shell]
 ----
 mkdir -p ~/opt/influxdb/config
 ----
 
+[source, yaml]
 ----
 docker run -d \
     --name influxdb \

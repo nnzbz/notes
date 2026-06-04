@@ -1,0 +1,165 @@
+= InfluxDB
+:scripts: cjk
+:toc: left
+:toclevels: 3
+:toc-title: 目录
+:numbered:
+:sectnums:
+:sectnum-depth: 3
+:source-highlighter: coderay
+
+== docker compose
+. 创建目录
++
+[source, shell]
+----
+mkdir -p ~/opt/influxdb/{data,plugins,ui/data}
+----
+
+. docker compose文件
++
+.~/opt/influxdb/docker-compose.yml
+[source, yaml]
+----
+services:
+  svr:
+    image: influxdb:3-core
+    container_name: influxdb
+    hostname: influxdb
+    ports:
+      - "8181:8181"
+    command:
+      - influxdb3
+      - serve
+      - --node-id=node0
+      - --object-store=file
+      - --data-dir=/var/lib/influxdb3/data
+      - --plugin-dir=/var/lib/influxdb3/plugins
+    volumes:
+      # 数据目录
+      - ~/opt/influxdb/data:/var/lib/influxdb3/data:rw
+      # 插件目录
+      - ~/opt/influxdb/plugins:/var/lib/influxdb3/plugins
+    logging:
+      options:
+        max-size: 8m
+    restart: unless-stopped
+  web:
+    image: influxdata/influxdb3-ui
+    container_name: influxdb-web
+    ports:
+      - "8180:8080"
+    command: --mode=admin
+    volumes:
+      # 数据目录
+      - ~/opt/influxdb/ui/data:/db:rw
+    environment:
+      - DEFAULT_SERVER_NAME=influxdb
+      - DEFAULT_INFLUX_SERVER=http://influxdb:8181
+      - DEFAULT_INFLUX_DATABASE=<数据库名称>
+      - DEFAULT_API_TOKEN=<token>
+    logging:
+      options:
+        max-size: 8m
+    restart: unless-stopped
+
+networks:
+  default:
+    external: true
+    name: rebue
+----
+
+. 启动
++
+[source, shell]
+----
+docker compose -f ~/opt/influxdb/docker-compose.yml up -d
+----
+
+== swarm
+[source,shell]
+----
+mkdir -p ~/opt/influxdb/{data,plugins,ui/data}
+vim ~/opt/influxdb/stack.yml
+----
+
+[source,yaml]
+----
+services:
+  svr:
+    image: influxdb:3-core
+    container_name: influxdb
+    hostname: influxdb
+    ports:
+      - "8181:8181"
+    command:
+      - influxdb3
+      - serve
+      - --node-id=node0
+      - --object-store=file
+      - --data-dir=/var/lib/influxdb3/data
+      - --plugin-dir=/var/lib/influxdb3/plugins
+    volumes:
+      # 数据目录
+      - ~/opt/influxdb/data:/var/lib/influxdb3/data
+      # 插件目录
+      - ~/opt/influxdb/plugins:/var/lib/influxdb3/plugins
+    logging:
+      options:
+        max-size: 8m
+  web:
+    image: influxdata/influxdb3-ui
+    container_name: influxdb-web
+    ports:
+      - "8180:8080"
+    command: --mode=admin
+    volumes:
+      # 数据目录
+      - ~/opt/influxdb/ui/data:/db:rw
+    environment:
+      - DEFAULT_SERVER_NAME=influxdb
+      - DEFAULT_INFLUX_SERVER=http://influxdb:8181
+      - DEFAULT_INFLUX_DATABASE=<数据库名称>
+      - DEFAULT_API_TOKEN=<token>
+    deploy:
+      placement:
+        constraints:
+          # 部署的节点指定是influxdb角色的
+          - node.labels.role==influxdb
+    logging:
+      options:
+        max-size: 8m
+
+networks:
+  default:
+    external: true
+    name: rebue
+----
+
+== 创建管理员账号及数据库
+[source,shell]
+----
+# 进入influx客户端
+docker exec -it influxdb bash
+# 创建管理员
+influxdb3 create token --admin
+# 创建数据库
+influxdb3 create database <数据库名称> --token xxxxxxxx
+----
+
+== 管理token
+[source,shell]
+----
+# 进入influx客户端
+docker exec -it influxdb bash
+# 查看token
+influxdb3 show tokens --token xxxxxxxx
+# 注销 / 作废某个 token（禁用账号）
+influxdb3 revoke token <要查看的token id> --token xxxxxxxx
+----
+
+== 客户端使用凭证（替代账号密码）
+[source,html]
+----
+Authorization: Bearer <apiv3_生成的token字符串>
+----
