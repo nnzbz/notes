@@ -1,0 +1,120 @@
+= InfluxDB2
+:scripts: cjk
+:toc: left
+:toclevels: 3
+:toc-title: 目录
+:numbered:
+:sectnums:
+:sectnum-depth: 3
+:source-highlighter: coderay
+
+== docker compose
+. 创建目录
++
+[source, shell]
+----
+mkdir -p ~/opt/influxdb2/{config,secret,data}
+----
+
+. secret文件
++
+[source, shell]
+----
+echo <管理员用户名> > ~/opt/influxdb2/secret/.env.influxdb2-admin-username
+# 密码长度必须在8-72之间
+echo <管理员密码> > ~/opt/influxdb2/secret/.env.influxdb2-admin-password
+echo <管理员令牌> > ~/opt/influxdb2/secret/.env.influxdb2-admin-token
+----
+
+. docker compose文件
++
+.~/opt/influxdb2/docker-compose.yml
+[source, yaml]
+----
+services:
+  svr:
+    image: influxdb:2-alpine
+    container_name: influxdb2
+    hostname: influxdb2
+    ports:
+      - "8086:8086"
+    volumes:
+      - ~/opt/influxdb2/data:/var/lib/influxdb2
+      - ~/opt/influxdb2/config:/etc/influxdb2
+    environment:
+      - DOCKER_INFLUXDB_INIT_MODE=setup
+      - DOCKER_INFLUXDB_INIT_USERNAME_FILE: /run/secrets/influxdb2-admin-username
+      - DOCKER_INFLUXDB_INIT_PASSWORD_FILE: /run/secrets/influxdb2-admin-password
+      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN_FILE: /run/secrets/influxdb2-admin-token
+      - DOCKER_INFLUXDB_INIT_ORG=<ORG_NAME>
+      - DOCKER_INFLUXDB_INIT_BUCKET=<BUCKET_NAME>
+    secrets:
+      - influxdb2-admin-username
+      - influxdb2-admin-password
+      - influxdb2-admin-token
+    logging:
+      options:
+        max-size: 8m
+    restart: unless-stopped
+
+secrets:
+  influxdb2-admin-username:
+    file: ~/opt/influxdb2/secret/.env.influxdb2-admin-username
+  influxdb2-admin-password:
+    file: ~/opt/influxdb2/secret/.env.influxdb2-admin-password
+  influxdb2-admin-token:
+    file: ~/opt/influxdb2/secret/.env.influxdb2-admin-token
+
+networks:
+  default:
+    external: true
+    name: rebue
+----
+
+. 启动
++
+[source, shell]
+----
+docker compose -f ~/opt/influxdb2/docker-compose.yml up -d
+----
+
+== swarm
+----
+mkdir -p ~/opt/influxdb2/config
+vi ~/opt/influxdb2/docker-compose.yml
+----
+
+```yaml{.line-numbers}
+services:
+  svr:
+    image: influxdb:2-alpine
+    environment:
+      - DOCKER_INFLUXDB_INIT_MODE=setup
+      - DOCKER_INFLUXDB_INIT_USERNAME=<USERNAME>
+      - DOCKER_INFLUXDB_INIT_PASSWORD=<PASSWORD>
+      - DOCKER_INFLUXDB_INIT_ORG=<ORG_NAME>
+      - DOCKER_INFLUXDB_INIT_BUCKET=<BUCKET_NAME>
+      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=my-super-secret-auth-token
+    volumes:
+      - ~/opt/influxdb2/data:/var/lib/influxdb2
+      - ~/opt/influxdb2/config:/etc/influxdb2
+    deploy:
+      placement:
+        constraints:
+          # 部署的节点指定是gateway角色的
+          - node.labels.role==gateway
+    logging:
+      options:
+        max-size: 8m
+
+volumes:
+  influxdbdata:
+
+networks:
+  default:
+    external: true
+    name: rebue
+```
+
+
+
