@@ -1,0 +1,48 @@
+= Rust
+:scripts: cjk
+:toc: left
+:toclevels: 3
+:toc-title: 目录
+:numbered:
+:sectnums:
+:sectnum-depth: 3
+:source-highlighter: coderay
+
+== docker compose
+. 创建目录
++
+[source, shell]
+----
+mkdir -p ~/opt/rust/src
+----
+. docker compose文件
++
+.~/opt/rust/docker-compose.yml
+[source, yaml]
+----
+services:
+  svr:
+    image: rust:alpine
+    container_name: rust
+    hostname: rust
+    command: tail -f /dev/null
+    volumes:
+      # 数据目录
+      - ~/opt/rust/src:/usr/src/:rw
+    logging:
+      options:
+        max-size: 8m
+    restart: unless-stopped
+
+networks:
+  default:
+    external: true
+    name: rebue
+----
+
+. 启动
++
+[source, shell]
+----
+docker compose -f ~/opt/rust/docker-compose.yml up -d
+----
