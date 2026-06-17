@@ -1,0 +1,90 @@
+= Redis
+
+:toc:
+
+== 1. docker compose
+
+. 准备目录和文件
++
+[source,sh]
+----
+mkdir -p ~/opt/redis/{config,data}
+mkdir -p ~/opt/redis/redisinsight/data
+
+# 将密码写入配置文件
+echo 'requirepass xxxxxxxx' >> ~/opt/redis/config/redis.conf
+
+# 绑定服务器的所有IP地址
+echo 'bind 0.0.0.0' >> ~/opt/redis/config/redis.conf
+# AOF持久化
+echo 'appendonly yes' >> ~/opt/redis/config/redis.conf
+
+# 设置内存不足执行清理缓存的策略(带有过期时间最近最少使用)
+echo 'maxmemory 8gb' >> ~/opt/redis/config/redis.conf
+echo 'maxmemory-policy volatile-lru' >> ~/opt/redis/config/redis.conf
+
+# 如果在arm架构服务器上，启动redis启动不起来，报下面的错
+# Redis will now exit to prevent data corruption. Note that it is possible to suppress this warning by setting the following config: ignore-warnings ARM64-COW-BUG
+# 那么请运行下面这行
+#echo 'ignore-warnings ARM64-COW-BUG' >> ~/opt/redis/config/redis.conf
+
+# 编辑docker-compose.yml文件
+vim ~/opt/redis/docker-compose.yml
+----
+
+. docker compose文件
++
+.~/opt/redis/docker-compose.yml
+[source,yaml]
+----
+services:
+  redis:
+    image: redis:8-alpine
+    container_name: redis
+    hostname: redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - ~/opt/redis/config/:/opt/redis/config/:z
+      # 持久化数据
+      - ~/opt/redis/data/:/data/:z
+    environment:
+      - TZ=CST-8
+    sysctls:
+      # 消除警告: The TCP backlog setting of 511 cannot be enforced because /proc/sys/net/core/somaxconn is set to the lower value of 128.
+      - net.core.somaxconn=2048
+    command: redis-server /opt/redis/config/redis.conf
+    logging:
+      options:
+        max-size: 8m
+    restart: unless-stopped
+  redisinsight:
+    image: redis/redisinsight
+    container_name: redisinsight
+    hostname: redisinsight
+    ports:
+      - 5540:5540
+    volumes:
+      # 持久化数据
+      - ~/opt/redis/redisinsight/data:/data/:z
+    environment:
+      - TZ=CST-8
+    logging:
+      options:
+        max-size: 8m
+    restart: unless-stopped
+    depends_on:
+      - redis
+
+networks:
+  default:
+    external: true
+    name: rebue
+----
+
+. 启动
++
+[source,sh]
+----
+docker compose -f ~/opt/redis/docker-compose.yml up -d
+----
