@@ -1,6 +1,12 @@
 = Redis
-
-:toc:
+:scripts: cjk
+:toc: left
+:toclevels: 3
+:toc-title: 目录
+:numbered:
+:sectnums:
+:sectnum-depth: 3
+:source-highlighter: coderay
 
 == 1. docker compose
 
