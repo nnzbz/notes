@@ -1,0 +1,94 @@
+= 工控采集存储设计
+:scripts: cjk
+:toc: left
+:toclevels: 3
+:toc-title: 目录
+:numbered:
+:sectnums:
+:sectnum-depth: 3
+:source-highlighter: coderay
+
+在工业控制（工控）和物联网（IoT）场景中，使用 InfluxDB v2 存储数据时，**数据结构的设计（Schema Design）直接决定了查询性能和存储效率**。
+
+由于 InfluxDB 是一个时间序列数据库，其核心由 `Measurement`（表）、`Tags`（索引标签）、`Fields`（指标值）和 `Timestamp`（时间戳）组成。针对工控数据（如 PLC 变量、DCS 测点、传感器数据），最推荐的结构设计方案如下：
+
+---
+
+== 推荐的数据结构：**按设备/系统分类（中粒度设计）**
+
+工控领域通常有成千上万个测点（Tag 点），**最忌讳**把每个测点都单独建成一个 Measurement，也**忌讳**把所有测点都塞进同一个 Measurement 的 Fields 里。
+
+推荐采用“一类设备/一个子系统 = 一个 Measurement”的结构。
+
+=== 结构拆解
+
+* **Bucket (数据库/存储桶):** 按项目或厂区划分（例如：`factory_shanghai` 或 `power_plant_01`）。
+* **Measurement (表):** 按**设备类型**或**系统模块**划分（例如：`pump` 泵, `inverter` 变频器, `environmental` 环境监测）。
+* **Tags (标签 - 用于过滤和分组，有索引):** 存放低基数、常用于查询条件的元数据。
+* `device_id` 或 `tag_name` (设备编号/工控点位名称，如 `PUMP_001` 或 `FIT_101`)
+* `area` (区域，如 `workshop_1`)
+* `protocol` (采集协议，如 `modbus`, `opcua`)
+
+
+* **Fields (字段 - 实际的测量值，无索引):** 存放具体的数据指标。
+* `temperature` (温度)
+* `pressure` (压力)
+* `status` (运行状态，开关量/枚举)
+* `frequency` (频率)
+
+
+* **Timestamp:** 工业网关或 PLC 采集到的精确时间（建议纳秒或毫秒级）。
+
+---
+
+== 最佳实践示例
+
+假设你要采集一号车间（workshop_1）A款水泵（pump_A01）的温度、压力和开关状态：
+
+| 组成部分 | 示例内容 | 说明 |
+| --- | --- | --- |
+| **Measurement** | `pump` | 代表这是一张“水泵类设备”的表 |
+| **Tags** | `device_code=pump_A01`, `area=workshop_1` | 方便你以后一键查询“一车间的所有水泵”或“特定某台水泵” |
+| **Fields** | `temperature=45.2`, `pressure=0.32`, `status=1` | 实际的动态变化数据（数值型、布尔型等） |
+| **Timestamp** | `1782550574000000000` | 采集时间戳 |
+
+在 InfluxDB 的行协议（Line Protocol）中，写入的形式如下：
+
+```text
+pump,device_code=pump_A01,area=workshop_1 temperature=45.2,pressure=0.32,status=1i 1782550574000000000
+
+```
+
+---
+
+== 避坑指南：工控场景下的 4 大铁律
+
+=== 严格控制基数（Series Cardinality）
+
+> **这是 InfluxDB 性能崩溃的第一杀手。** >
+> $Series \ Cardinality = Measurement的数量 \times Tag \ value组合的数量$
+
+* **错误做法：** 把 PLC 的时间戳或者每次都在变化的“流水号”作为 Tag。这会导致内存瞬间暴涨，数据库卡死。
+* **正确做法：** 只有需要作为 `WHERE` 过滤条件或 `GROUP BY` 分组的字段才写成 Tag。测点值（如压力、流量）必须写成 Field。
+
+=== 工控点位（Tag点）是做成 Tag 还是 Measurement？
+
+在传统组态软件（SCADA）中，大家都习惯用 `AI_101.PV` 这种点位名。在 InfluxDB 中：
+
+* **如果你的点位数量小于几万个：** 可以把点位名作为 Tag（如 `tag_name=AI_101`），把值统一叫 `value`（Field）。这样用 Flux 语言查询单个点位非常直观。
+* **如果点位多达几十万甚至上百万：** 建议将点位名进行拆解。比如 `AI_101` 代表一号锅炉的温度，那就把 Measurement 定为 `boiler`，Tag 定为 `id=1`，Field 定为 `temperature=xxx`。这样可以大幅降低基数。
+
+=== 数据类型要前后一致
+
+InfluxDB 在同一个 Measurement 的同一个 Field 中，**数据类型一旦确定就不能修改**。
+
+* 如果第一次写入 `status=1`（默认是浮点数 `1.0`），后面写入 `status=1i`（整数）或 `status="ON"`（字符串）就会报错拒绝写入。
+* **工控建议：** 模拟量统一用浮点数，开关量/状态值明确加上 `i` 结尾转为整数（如 `status=1i`），或者直接用布尔值。
+
+=== 合理设置保留策略（Retention Policies）
+
+工控数据采集频率高（往往 100ms 或 1s 一次），数据量极大。
+
+* 不要把所有数据都永久保存。
+* 建议在 Bucket 上设置**保留历史（例如 30 天）**。
+* 如果需要长期查看趋势，可以使用 InfluxDB 2.0 的 **Task（任务）** 功能，写一个定时脚本，把 1 秒采集的高频数据聚合（Downsampling）成 1 分钟或 1 小时的平均值，然后存入另一个永久保存的 Bucket 中。

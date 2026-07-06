@@ -127,11 +127,11 @@ influx bucket list --org <ORG_NAME> --token <API_TOKEN>
 ** Retention: 保留时长（例如：1h、24h、7d）
 ** Shard group duration: 分片组时长（例如：1h、24h、7d）
 
-=== 修改 bucket 的过期时长
+=== 修改 bucket 的过期时长和分片组时长
 
 [source,sh]
 ----
-influx bucket update --id <BUCKET_ID> --retention <NEW_RETENTION_PERIOD> --org <ORG_NAME> --token <API_TOKEN>
+influx bucket update --id <BUCKET_ID> --retention <NEW_RETENTION_PERIOD> --shard-group-duration <NEW_SHARD_GROUP_DURATION> --token <API_TOKEN>
 ----
 
 === 修改分片组时长
