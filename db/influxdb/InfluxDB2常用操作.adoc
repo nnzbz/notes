@@ -161,9 +161,9 @@ curl -X PATCH \
 * 永不过期的 bucket（retention=0）默认分片组时长为 7 天
 ====
 
-=== 手动清理过期数据
+== 手动清理过期数据
 
-==== 全量清理指定时间前的数据
+=== 全量清理
 
 [source,sh]
 ----
@@ -173,10 +173,10 @@ influx delete \
 --org <your_org> \
 --bucket <your_bucket> \
 --start '1970-01-01T00:00:00Z' \
---stop '2025-01-01T00:00:00Z'
+--stop '9999-01-01T00:00:00Z'
 ----
 
-==== 指定条件清理
+=== 指定条件清理
 
 [source,sh]
 ----
@@ -186,9 +186,28 @@ influx delete \
 --org <your_org> \
 --bucket <your_bucket> \
 --start '1970-01-01T00:00:00Z' \
---stop '2025-01-01T00:00:00Z' \
+--stop '9999-01-01T00:00:00Z' \
 --predicate '_measurement="cpu" AND host="old-server"'
 ----
+
+=== 删除 measurement 中的所有数据
+
+[source,sh]
+----
+influx delete \
+--token <your_token> \
+--org <your_org> \
+--bucket <your_bucket> \
+--start '1970-01-01T00:00:00Z' \
+--stop '9999-01-01T00:00:00Z' \
+--predicate '_measurement="cpu"'
+----
+
+[NOTE]
+====
+* 删除所有数据后，该 measurement 不会立即被删除，至少等待30分钟以后才会被自动删除。
+* 如果不想等待，直接重启 InfluxDB 即可立即生效。
+====
 
 == 查询
 === 查询数据
