@@ -1,5 +1,7 @@
 # 向GitHub上传超过100M的大文件
 
+[TOC]
+
 ## 1. 安装lfs
 
 Git LFS 是 Github 开发的一个 Git 的扩展，用于实现 Git 对大文件的支持
@@ -30,7 +32,7 @@ Git LFS 是 Github 开发的一个 Git 的扩展，用于实现 Git 对大文件
     ```
 
 - CentOS
-  
+
   ```sh
   curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.rpm.sh | sudo bash
   sudo yum install git-lfs -y
@@ -88,10 +90,39 @@ git push origin master
 git lfs ls-files
 ```
 
-## 9. 补充技巧
-
-提交以后出错会比较麻烦，所以要在提交前注意有没有大于 100MB 的文件，搜索命令如下：
+## 9. 查找大于50MB的文件
 
 ```sh
-find ./ -size +100M
+find ./ -size +50M
 ```
+
+## 10. 查找大于50MB的文件并添加到lfs追踪
+
+```sh
+# 可能会反.git目录下的大文件也搜索出来，注意删除已经写入到.gitattributes文件中的这些文件
+find . -type f -size +50M -exec git lfs track {} \;
+```
+
+## 11. 查找大于50MB的文件并添加到lfs追踪，排除不查找指定目录下的文件
+
+```sh
+# 排除单个目录下的文件
+find . -path "./.git" -prune -o -type f -size +50M -exec git lfs track {} \;
+# 排除多个目录下的文件
+find . <inline_LaTeX_Formula> -path "./.git" -o -path "./node_modules" <\inline_LaTeX_Formula> -prune -o -type f -size +50M -exec git lfs track {} \;
+```
+
+* -path "./.git" -prune
+匹配到 .git 文件夹后直接剪枝，不再进入该目录递归查找，彻底跳过版本库内部文件，不会误把 Git 对象库内文件加入 LFS 追踪。
+* -o
+逻辑或：如果没有匹配到 .git 目录，就执行后面的文件查找逻辑。
+
+
+## 12. 如果已经提交了大于50MB的文件，但是没有添加到lfs追踪，需要重新提交覆盖之前的提交
+
+```sh
+git commit --amend --no-edit
+```
+
+* `--amend` 选项表示覆盖上一次的提交
+* `--no-edit` 选项表示直接使用上一次的提交信息
