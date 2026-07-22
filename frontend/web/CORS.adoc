@@ -1,0 +1,119 @@
+= CORS
+:scripts: cjk
+:toc: left
+:toclevels: 3
+:toc-title: 目录
+:numbered:
+:sectnums:
+:sectnum-depth: 3
+:source-highlighter: coderay
+
+== 基本定义
+=== 安全请求头
+==== 安全请求头列表
+* Accept/Accept-Language/Content-Language/Content-Type/Range
+
+==== 安全请求头取值范围
+===== Accept
+* 不能包含 CORS-unsafe request header byte
+* 也就是 0x00-0x1F 除了 0x09 制表符、以及 "():<>?@[]{} 这些字符、还有 0x7F
+
+===== Accept-Language
+* 0-9、A-Z、a-z、空格或 *,-.;=
+
+===== Content-Language
+* 0-9、A-Z、a-z、空格或 *,-.;=
+
+===== Content-Type
+* 不能包含禁止字节（forbidden byte）
+* Content-Type的 MIME type(忽略参数后解析)必须是 `application/x-www-form-urlencoded`/`multipart/form-data`/`text/plain` 三者之一
+
+===== Range
+* 单个字节范围，格式为 bytes=0-9+-0-9*
+
+==== 安全请求头长度限制
+* 任何一个简单头的值长度都不能超过 128 字节
+
+=== 安全响应头
+==== 安全响应头列表
+* Cache-Control/Content-Language/Content-Type/Expires/Last-Modified/Pragma
+
+=== 简单请求
+* GET/POST/HEAD且所有头都是安全请求头
+
+=== 复杂请求
+* 非简单请求
+
+== 浏览器端 CORS 实现原理
+=== 预检请求(Preflight Request)
+- 对于复杂请求，浏览器先发送 OPTIONS 预检请求
+- 检查服务器是否允许跨域请求
+- 预检成功后才发送实际请求，不通过则不会继续
+
+=== 简单请求
+- 对于简单请求，浏览器直接发送请求
+- 检查响应头中的 CORS 相关字段
+- 检查不通过，浏览器会阻止前端代码访问响应内容
+
+=== 发出的 CORS 头
+==== Origin
+* 表示发起请求的源（协议、域名和端口）
+* 如果没有此头，服务器端会认为不是跨域请求，不进行处理，也就不会返回 CORS 相关头
+* 格式: `Origin: 协议://域名[:端口]`
+* 示例: `Origin: http://example.com:8080`
+
+==== Access-Control-Request-Method
+* 表示实际请求的 HTTP 方法
+* 示例: `Access-Control-Request-Method: POST`
+
+==== Access-Control-Request-Headers
+* 表示实际请求中包含的请求头
+* 示例: `Access-Control-Request-Headers: Content-Type, Authorization`
+
+=== 检查响应回来的 CORS 头
+==== Access-Control-Allow-Origin
+* 允许请求的源或 `*`
+* 示例: `Access-Control-Allow-Origin: http://example.com:8080`
+
+==== Access-Control-Allow-Methods
+* 允许请求的 HTTP 方法
+* 示例: `Access-Control-Allow-Methods: POST, PUT`
+
+==== Access-Control-Allow-Headers
+* 允许请求中所有非安全请求头的请求头
+* 示例: `Access-Control-Allow-Headers: Content-Type, Authorization`
+
+==== Access-Control-Expose-Headers
+* 允许前端访问的响应头
+* 示例: `Access-Control-Expose-Headers: Content-Disposition, Content-Length, Content-Range, X-Request-Id`
+
+==== Access-Control-Allow-Credentials
+* 是否允许请求携带凭证（如 Cookie、HTTP 认证等）
+* 示例: `Access-Control-Allow-Credentials: true`
+* 如果 `Access-Control-Allow-Credentials: true`，则响应头中必须包含 `Access-Control-Allow-Origin` 不能为 `*`
+
+==== Access-Control-Max-Age
+* 预检请求缓存时间，单位秒
+* 浏览器在这个时间段内，不会重复发送预检请求
+* 示例: `Access-Control-Max-Age: 86400`
+
+=== 浏览器发出带凭证的跨域请求的两种方式
+==== fetch
+* `fetch(url, { credentials: 'include' })`
+
+==== XMLHttpRequest
+* `XMLHttpRequest.withCredentials = true`
+
+
+== 服务器端 CORS 实现原理
+=== CORS判断
+* 根据是否包含 `Origin` 头判断请求是否为跨域请求
+
+=== 预检请求处理
+* `Options` 请求为预检请求
+* 服务器端需要检查 `Origin`、`Access-Control-Request-Method`、`Access-Control-Request-Headers` 这 3 个头是否符合要求
+* 如果符合要求，返回时添加相应的 CORS 头，否则返回但是不包含 CORS 相关头
+* 返回状态码 `204` (No Content)
+
+=== 实际请求处理
+* 只要有 Origin 头，服务器端不做其它检查，在返回时添加相应的 CORS 头
