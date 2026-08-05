@@ -14,12 +14,12 @@
 mkdir -p ~/opt/consul/
 ----
 
-.~/opt/consul/stack.yml
+.~/opt/consul/docker-compose.yml
 [source,yaml,%linenums]
 ----
 services:
   consul:
-    image: hashicorp/consul:1.22
+    image: hashicorp/consul:2.0
     hostname: consul
     container_name: consul
     ports:
@@ -47,7 +47,7 @@ networks:
 
 [source,shell]
 ----
-docker compose -f ~/opt/consul/stack.yml up -d
+docker compose -f ~/opt/consul/docker-compose.yml up -d
 ----
 
 
@@ -63,7 +63,7 @@ mkdir -p ~/opt/consul/template/
 ----
 services:
   svr:
-    image: hashicorp/consul:1.22
+    image: hashicorp/consul:2.0
     hostname: consul
     ports:
       #- "8300:8300"
@@ -184,7 +184,7 @@ server_rejoin_age_max = "720000h"  # 允许300天离线
 ----
 services:
   consul:
-    image: hashicorp/consul:1.22
+    image: hashicorp/consul:2.0
     hostname: consul
     container_name: consul
     ports:

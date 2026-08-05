@@ -1,0 +1,55 @@
+= etcd
+:scripts: cjk
+:toc: left
+:toclevels: 3
+:toc-title: 目录
+:numbered:
+:sectnums:
+:sectnum-depth: 3
+:source-highlighter: coderay
+
+== 单机
+
+[source,sh]
+----
+mkdir -p ~/opt/etcd/
+----
+
+.~/opt/etcd/docker-compose.yml
+[source,yaml,%linenums]
+----
+services:
+  etcd:
+    image: dhi.io/etcd:3-debian-dev # 如果是生产环境，把后面的 "-dev" 去掉
+    hostname: etcd
+    container_name: etcd
+    ports:
+      - "2379:2379" # 客户端访问端口
+      - "2380:2380" # 集群peer通信端口（不明白官方示例仍保留这个端口）
+    volumes:
+      - data:/etcd-data
+    command:
+      - /usr/local/bin/etcd
+      - --name=node1
+      - --listen-client-urls=http://0.0.0.0:2379
+      - --advertise-client-urls=http://localhost:2379
+      - --listen-peer-urls=http://0.0.0.0:2380
+      - --initial-advertise-peer-urls=http://localhost:2380
+      - --log-level=warn
+    restart: unless-stopped
+
+volumes:
+  data:
+
+networks:
+  default:
+    external: true
+    name: rebue
+----
+
+* 部署
+
+[source,shell]
+----
+docker compose -f ~/opt/etcd/docker-compose.yml up -d
+----
