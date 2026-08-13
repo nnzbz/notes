@@ -70,7 +70,7 @@ services:
       - "8500:8500"
     environment:
       - CONSUL_BIND_INTERFACE=eth0
-      - CONSUL_CLIENT_INTERFACE=eth0
+#      - CONSUL_CLIENT_INTERFACE=eth0
     volumes:
       - consuldata:/consul/data
     command:
