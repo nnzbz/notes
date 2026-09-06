@@ -47,7 +47,8 @@ vim ~/opt/vllm/docker-compose.yml
 ----
 services:
   vllm:
-    image: vllm/vllm-openai:v0.20.1-cu130
+    image: vllm/vllm-openai:v0.28.0
+    hostname: vllm
     container_name: vllm
     ports:
       - "8000:8000"
@@ -67,6 +68,9 @@ services:
               count: all
               capabilities: [gpu]
     restart: unless-stopped
+    logging:
+      options:
+        max-size: 8m
 ----
 
 . 部署
