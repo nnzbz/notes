@@ -1,0 +1,53 @@
+= ddns-go
+:sectnums:
+:scripts: cjk
+:toc: left
+:toc-title: 目录
+:toclevels: 2
+:doctype: book
+:experimental:
+
+== 创建目录
+
+[source,sh]
+----
+mkdir -p ~/opt/ddns-go/data
+----
+
+.~/opt/ddns-go/docker-compose.yml
+[source,yaml,%linenums]
+----
+services:
+  ddns-go:
+    image: ghcr.io/jeessy/ddns-go
+    hostname: ddnsgo
+    container_name: ddnsgo
+    # 关键：host网络，容器直接复用宿主机网络栈，读取宿主机网卡IPv6
+    network_mode: host
+    volumes:
+      # 持久化配置目录，宿主机路径可自行修改
+      - ~/opt/ddns-go/data:/root
+    environment:
+      - TZ=Asia/Shanghai
+    command:
+      -l :<监听地址> -f <间隔时间(秒)>
+    restart: unless-stopped
+
+networks:
+  default:
+    external: true
+    name: rebue
+----
+
+[NOTE]
+====
+调试用 `-dev`，如果服务器应用用 `-server -bootstrap`
+====
+
+* 部署
+
+[source,shell]
+----
+docker compose -f ~/opt/consul/docker-compose.yml up -d
+----
+

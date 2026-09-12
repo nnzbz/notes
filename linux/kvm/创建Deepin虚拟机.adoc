@@ -1,0 +1,17 @@
+= 创建 Deepin 虚拟机
+
+== 创建 Deepin 虚拟机
+[source,bash]
+----
+virt-install \
+    --name=deepin \
+    --vcpus=16,sockets=1,cores=8,threads=2 \
+    --memory=16384,maxmemory=24576 \
+    --cdrom /data/kvm/iso/deepin-desktop-community-25.2.0-amd64.iso \
+    --disk path=~/opt/kvm/data/deepin-system.raw,format=raw,size=50 \
+    --os-variant debian11 \
+    --network bridge=br0 \
+    --graphics vnc,listen=0.0.0.0,port=5902,password=******** \
+    --noautoconsole \
+    --virt-type kvm \
+----

@@ -86,18 +86,21 @@ network:
     enp3s0:     # 替换为你的网卡名
       dhcp4: false
       dhcp6: false
+      # 开机时如果网线没插、链路 down，不会阻塞系统启动，不会卡在网络等待超时。做 KVM 宿主机很适合加上
+      optional: true
   bridges:
     br0:
       interfaces: [enp3s0]  # 替换为上面的网卡名
       dhcp4: false
-      dhcp6: false
+      dhcp6: true           # 中国移动可以直接分配 IPv6 地址
       addresses:
-      - "xxx.xxx.xxx.xxx/24"  # 静态IP
-      nameservers:
-        addresses:
-          - 114.114.114.114
-          - 8.8.8.8
-        search: []
+      - "xxx.xxx.xxx.xxx/24"  # 替换为你要设置的静态IP
+      # 一般会使用供应商提供的 DNS 服务器，不用自己设置
+      #nameservers:
+      #  addresses:
+      #    - 114.114.114.114
+      #    - 8.8.8.8
+      #  search: []
       routes:
       - to: "default"
         via: "xxx.xxx.xxx.1"   # 替换为你真实的网关地址
@@ -126,12 +129,12 @@ sudo netplan apply
 [source,shell]
 ----
 # 创建目录
-mkdir -p /home/super/opt/kvm/{data,iso,sh}
+mkdir -p ~/opt/kvm/{data,iso,sh}
 # 必须让 libvirt 用户能“穿过”你的个人目录
-chmod +x /home/super
-chmod +x /home/super/opt
-chmod +x /home/super/opt/kvm
-chmod +x /home/super/opt/kvm/data
+chmod +x ~
+chmod +x ~/opt
+chmod +x ~/opt/kvm
+chmod +x ~/opt/kvm/data
 ----
 
 == 虚拟机管理
