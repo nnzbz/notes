@@ -1,0 +1,56 @@
+= nats
+:sectnums:
+:scripts: cjk
+:toc: left
+:toc-title: 目录
+:toclevels: 2
+:doctype: book
+:experimental:
+
+== 单机
+
+[source,sh]
+----
+mkdir -p ~/opt/nats/
+----
+
+.~/opt/nats/docker-compose.yml
+[source,yaml,%linenums]
+----
+services:
+  nats:
+    image: nats:2-alpine
+    hostname: nats
+    container_name: nats
+    ports:
+      - "4222:4222"
+      - "8222:8222"
+    volumes:
+      - data:/data
+    command: -js -m 8222
+    restart: unless-stopped
+
+volumes:
+  data:
+
+networks:
+  default:
+    external: true
+    name: rebue
+----
+
+[NOTE]
+====
+* nats 服务端端口: 4222
+* nats 管理端口: 8222
+* -js: 开启JetStream持久化
+* -m: 启动nats monitor
+====
+
+
+* 部署
+
+[source,shell]
+----
+docker compose -f ~/opt/nats/docker-compose.yml up -d
+----
