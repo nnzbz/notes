@@ -3,7 +3,7 @@
 == 单机
 [source,shell]
 ----
-mkdir -p ~/opt/pgsql/
+mkdir -p ~/opt/pgsql/data
 vi ~/opt/pgsql/stack.yml
 ----
 
@@ -19,10 +19,16 @@ services:
     environment:
       - POSTGRES_PASSWORD=postgres
     volumes:
-      - data:/var/lib/postgresql/18/docker/
+      - ~/opt/pgsql/data:/var/lib/postgresql/18/docker/
+    logging:
+      options:
+        max-size: 8m
     restart: unless-stopped
-volumes:
-  data:
+
+networks:
+  default:
+    external: true
+    name: rebue
 ----
 
 [source,shell]

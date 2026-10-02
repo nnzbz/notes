@@ -31,8 +31,8 @@ services:
       - data:/consul/data
     command:
       # https://developer.hashicorp.com/consul/commands/agent
-      # 注意: 调试用 `-dev`，如果服务器应用用 `-server -bootstrap`
-      agent -dev -ui -ui-content-path /consul -client 0.0.0.0
+      # 注意: 如果临时调试用 `-dev` 代替 `-server -bootstrap`，但是调试是不会持久化的
+      agent -ui -ui-content-path /consul -client 0.0.0.0 -server -bootstrap
     restart: unless-stopped
 
 volumes:
@@ -43,11 +43,6 @@ networks:
     external: true
     name: rebue
 ----
-
-[NOTE]
-====
-调试用 `-dev`，如果服务器应用用 `-server -bootstrap`
-====
 
 * 部署
 

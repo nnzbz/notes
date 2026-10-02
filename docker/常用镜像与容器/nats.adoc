@@ -11,7 +11,16 @@
 
 [source,sh]
 ----
-mkdir -p ~/opt/nats/
+mkdir -p ~/opt/nats/config
+----
+
+.~/opt/nats/config/nats.conf
+[source,json,%linenums]
+----
+authorization {
+  user: "ruser"
+  password: "********"
+}
 ----
 
 .~/opt/nats/docker-compose.yml
@@ -27,7 +36,8 @@ services:
       - "8222:8222"
     volumes:
       - data:/data
-    command: -js -m 8222
+      - ~/opt/nats/config/nats.conf:/etc/nats/nats.conf
+    command: -js -m 8222 -c /etc/nats/nats.conf
     restart: unless-stopped
 
 volumes:
