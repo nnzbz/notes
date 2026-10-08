@@ -11,7 +11,7 @@
 
 [source,sh]
 ----
-mkdir -p ~/opt/consul/
+mkdir -p ~/opt/consul/data
 ----
 
 .~/opt/consul/docker-compose.yml
@@ -28,15 +28,12 @@ services:
     environment:
       - CONSUL_BIND_INTERFACE=eth0
     volumes:
-      - data:/consul/data
+      - ~/opt/consul/data:/consul/data
     command:
       # https://developer.hashicorp.com/consul/commands/agent
       # 注意: 如果临时调试用 `-dev` 代替 `-server -bootstrap`，但是调试是不会持久化的
       agent -ui -ui-content-path /consul -client 0.0.0.0 -server -bootstrap
     restart: unless-stopped
-
-volumes:
-  data:
 
 networks:
   default:
