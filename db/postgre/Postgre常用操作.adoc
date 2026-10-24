@@ -69,23 +69,34 @@ sed -i 's/max_connections = 100/max_connections = 300/g' /var/lib/postgresql/dat
 === 单库备份
 [,shell]
 ----
-pg_dump -U <用户名> -1 <数据库名> > <数据库名>_$(date +%Y%m%d_%H%M%S).bak
+# 推荐使用 -Fc (自定义压缩格式)，还原时更灵活
+pg_dump -U <用户名> -Fc -d <数据库名> > <数据库名>_$(date +%Y%m%d_%H%M%S).dump
+
+# 或者纯文本备份（支持单事务）
+pg_dump -U <用户名> -d <数据库名> --single-transaction > <数据库名>_$(date +%Y%m%d_%H%M%S).sql
 ----
 [NOTE]
 ====
 -U: 用户名称
-
--1: 单个事务
+-d: 数据库名称 (显式指定更规范)
+-Fc: 输出适合 pg_restore 使用的自定义格式 (推荐)
+--single-transaction: 保证备份的一致性快照
 ====
 
 === 全库备份
 [,shell]
 ----
-pg_dumpall -U <用户名> > <数据库名>_$(date +%Y%m%d_%H%M%S).bak
+pg_dumpall -U <用户名> > all_databases_$(date +%Y%m%d_%H%M%S).bak
 ----
 
 === 还原
+// 如果是 .sql 纯文本文件
 [,shell]
 ----
-psql -U <用户名> < <备份文件名>
+psql -U <用户名> -d <数据库名> < <备份文件名>.sql
+----
+// 如果是 .dump 自定义压缩文件（对应 -Fc 参数）
+[,shell]
+----
+pg_restore -U <用户名> -d <数据库名> < <备份文件名>.dump
 ----
